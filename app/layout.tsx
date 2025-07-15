@@ -27,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <ColorSchemeScript />
+        
       </head>
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
@@ -38,9 +38,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <MantineProvider>
             {children}
-          </MantineProvider> 
         </ThemeProvider>
       </body>
     </html>
