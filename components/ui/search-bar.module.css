@@ -1,0 +1,11 @@
+.container {
+    display: flex;
+    max-width: 278px;
+    padding: 12px 16px;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1px solid var(--c2c-gray);
+    background: #fff;
+}

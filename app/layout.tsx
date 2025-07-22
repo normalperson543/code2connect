@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Roboto_Mono, Rubik } from "next/font/google";
 import "./globals.css";
-import '@mantine/core/styles.css';
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
+import "@mantine/core/styles.css";
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
+import MTWrapper from "@/components/mt-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -15,9 +15,11 @@ export const metadata: Metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const rubik = Rubik({
   display: "swap",
+  subsets: ["latin"],
+});
+const robotoMono = Roboto_Mono({
   subsets: ["latin"],
 });
 
@@ -27,19 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" {...mantineHtmlProps}>
       <head>
-        
+        <ColorSchemeScript />
       </head>
-      <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-            {children}
-        </ThemeProvider>
+      <body className={`${rubik.className} antialiased`}>
+        <MTWrapper>{children}</MTWrapper>
       </body>
     </html>
   );

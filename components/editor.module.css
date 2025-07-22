@@ -1,0 +1,117 @@
+.body {
+  display: flex;
+  padding: 18px 12px;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  width: 100%;
+}
+.headerContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.headerLeft,
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.headerRight {
+  justify-content: flex-end;
+}
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.leftSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 25%;
+  height: 100%;
+}
+.sidebarSectTitle {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.sidebarSect {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+  height: 90%;
+  justify-content: space-between;
+}
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: flex-end;
+  width: 70%;
+  height: 100%;
+}
+.outputPane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.editorInfo,
+.outputInfo,
+.urlInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.editorWrapper {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.output {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+.url {
+  width: 100%;
+}
+.description {
+  flex: 1;
+}
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 75%;
+  overflow: auto;
+}
+.editorPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  border-radius: 4px;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px
+}
