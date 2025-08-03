@@ -1,8 +1,7 @@
 "use client";
-import { Button, TextInput } from "@mantine/core";
+import { Button, Stack, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useState } from "react";
-import styles from "./modal.module.css"
 
 export default function RenameModal({
   onComplete,
@@ -13,7 +12,7 @@ export default function RenameModal({
 }) {
   const [renameModalName, setRenameModalName] = useState(defaultValue);
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col gap-2">
       <TextInput
         type="text"
         value={renameModalName}

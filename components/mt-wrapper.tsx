@@ -22,7 +22,7 @@ const theme = createTheme({
     }),
   },
   fontFamily:
-    "'Rubik', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+    "'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
   fontFamilyMonospace: "'Roboto Mono', monospace",
   primaryColor: "off-blue",
   primaryShade: { light: 6, dark: 7 },
@@ -54,11 +54,11 @@ const theme = createTheme({
     ],
   },
 });
-export default function MTWrapper({ children }: { children: React.ReactNode }) {
+export default function MTWrapper({ children, includeHeader = true }: { children: React.ReactNode, includeHeader?: boolean }) {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <ModalsProvider>
-        <HeaderLoggedIn />
+        {includeHeader && <HeaderLoggedIn />}
         {children}
         <NavigationProgress />
         <Notifications />

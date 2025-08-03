@@ -1,15 +1,9 @@
-.body {
-  display: flex;
-  padding: 18px 12px;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  width: 100%;
-}
 .headerContainer {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-direction: row;
+  padding: 12px;
 }
 .headerLeft,
 .headerRight {
@@ -27,13 +21,6 @@
   justify-content: center;
   gap: 4px;
 }
-.leftSidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 25%;
-  height: 100%;
-}
 .sidebarSectTitle {
   width: 100%;
   display: flex;
@@ -47,35 +34,29 @@
   flex-direction: column;
   gap: 10px;
 }
-.content {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  width: 100%;
-  height: 90%;
-  justify-content: space-between;
-}
 .workspace {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-self: flex-end;
-  width: 70%;
-  height: 100%;
+  height: calc(100% - 96px);
+  width: 100%;
+  position: fixed;
+  width: calc(100% - (calc(var(--app-shell-navbar-offset, 0rem) + var(--app-shell-padding))) - 12px - 25%);
+  z-index: 2
+
 }
 .outputPane {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /*top: calc(50% + 96px);*/
+  padding: 12px;
+  height: 100%;
+  /*position: fixed;
+  width: calc(100% - (calc(var(--app-shell-navbar-offset, 0rem) + var(--app-shell-padding))) - 12px);
+  z-index: 4*/
 }
-.editorInfo,
-.outputInfo,
-.urlInfo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
+
 .editorWrapper {
   flex: 1;
   width: 100%;
@@ -91,9 +72,6 @@
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-}
-.url {
-  width: 100%;
 }
 .description {
   flex: 1;
@@ -114,4 +92,18 @@
   text-align: center;
   flex-direction: column;
   gap: 10px
+}
+.fullScreened {
+  top: 0;
+  left: 0;
+  z-index: 200;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  padding: 12px;
+  background-color: var(--mantine-color-body);
+}
+.fullScreened iframe {
+  flex: 1;
+  
 }

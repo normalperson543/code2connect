@@ -13,7 +13,7 @@ export default async function EditorPage() {
       contents: `print("Module 2!")`,
     },
   };
-  async function save(files: Files, description: string, title: string) {
+  async function save(files: Files, description: string, title: string, thumbnail: Blob) {
     "use server";
     try {
       console.log("Saving...");
@@ -23,6 +23,7 @@ export default async function EditorPage() {
       console.log(files);
       console.log(description);
       console.log(title);
+      console.log(thumbnail)
       return { status: "success", message: "" };
     } catch (e) {
       if (e instanceof Error) {
@@ -33,7 +34,6 @@ export default async function EditorPage() {
   }
   return (
     <Editor
-      creatorImageSrc="/assets/default-image.jpg"
       creator="normalperson543"
       canEditInfo={true}
       files={files}

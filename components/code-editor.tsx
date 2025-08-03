@@ -12,8 +12,6 @@ import {
   highlightActiveLineGutter,
 } from "@codemirror/view";
 import {
-  defaultHighlightStyle,
-  syntaxHighlighting,
   indentOnInput,
   bracketMatching,
   foldGutter,
@@ -29,12 +27,22 @@ import {
 } from "@codemirror/autocomplete";
 import { python } from "@codemirror/lang-python";
 import { lintKeymap } from "@codemirror/lint";
-import { aura, auraInit } from "@uiw/codemirror-theme-aura";
+import { auraInit } from "@uiw/codemirror-theme-aura";
 import { tags as t } from '@lezer/highlight';
+import { Roboto_Mono } from "next/font/google";
+import { RefAttributes, useRef } from "react";
+
+interface Props extends ReactCodeMirrorProps, RefAttributes<ReactCodeMirrorRef> {}
+
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+});
 
 export default function CodeEditor({
   ...props
-}: ReactCodeMirrorProps) {
+}: Props) {
+
+  const cmRef = useRef(null)
   return (
     <CodeMirror
       {...props}
@@ -46,7 +54,7 @@ export default function CodeEditor({
         // Replace non-printable characters with placeholders
         highlightSpecialChars(),
         // The undo history
-        history(),
+        history({minDepth: 100, newGroupDelay: 50}),
         // Replace native cursor/selection with our own
         drawSelection(),
         // Show a drop cursor when dragging over the editor
@@ -89,15 +97,16 @@ export default function CodeEditor({
         ]),
         python(),
       ]}
-      style={{ height: "100%", overflow: "auto" }}
       height="100%"
       theme={auraInit({
         settings: {
           caret: "#c6c6c6",
-          fontFamily: "monospace",
+          fontFamily: "'Roboto Mono', monospace",
         },
         styles: [{ tag: t.comment, color: "#6272a4" }],
       })}
+      className={`${robotoMono.className} overflow-auto w-full h-full`}
+
     />
   );
 }

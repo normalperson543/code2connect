@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Mono, Rubik } from "next/font/google";
+import { Roboto_Mono, Rubik, Open_Sans } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
@@ -15,11 +15,8 @@ export const metadata: Metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-const rubik = Rubik({
+const openSans = Open_Sans({
   display: "swap",
-  subsets: ["latin"],
-});
-const robotoMono = Roboto_Mono({
   subsets: ["latin"],
 });
 
@@ -33,9 +30,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={`${rubik.className} antialiased`}>
-        <MTWrapper>{children}</MTWrapper>
-      </body>
+      <body className={`${openSans.className} antialiased`}>{children}</body>
     </html>
   );
 }
