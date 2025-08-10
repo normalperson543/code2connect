@@ -8,7 +8,7 @@ export default function ThumbPreview({
   projectId,
   thumbnailUrl,
   width,
-  maxWidth
+  maxWidth,
 }: {
   projectId: string;
   thumbnailUrl: string;
@@ -17,14 +17,20 @@ export default function ThumbPreview({
 }) {
   return (
     <Link href={`/projects/${projectId}/editor`} className="w-full h-full">
-      <AspectRatio ratio={16 / 9} maw={maxWidth} w={width} mx="auto" pos="relative">
+      <AspectRatio
+        ratio={16 / 9}
+        maw={maxWidth}
+        w={width}
+        mx="auto"
+        pos="relative"
+      >
         <div
-          className="flex justify-center items-center w-full h-full rounded-sm !bg-cover"
+          className="flex justify-center items-center w-full h-full rounded-sm bg-cover!"
           style={{
             background: `url(${thumbnailUrl})`,
           }}
         >
-          <div className="flex justify-center items-center w-full h-full backdrop-blur-sm">
+          <div className="flex justify-center items-center w-full h-full backdrop-blur-xs">
             <Button leftSection={<PlayIcon width={16} height={16} />}>
               See Inside to Run
             </Button>

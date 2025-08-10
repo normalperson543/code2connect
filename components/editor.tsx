@@ -5,6 +5,7 @@ import {
   AppShell,
   Avatar,
   Badge,
+  Burger,
   Button,
   ButtonGroup,
   Divider,
@@ -13,6 +14,7 @@ import {
   Text,
   Textarea,
   TextInput,
+  ThemeIcon,
   Title,
   Tooltip,
 } from "@mantine/core";
@@ -63,9 +65,8 @@ import UndoRedoModal from "./ui/modals/undo-redo-modal";
 import CtrlCmd from "./ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
 import domtoimage from "dom-to-image";
-import Image from "next/image";
-import saveAs from "file-saver";
 import StoppedProject from "./stopped-project";
+import { useDisclosure } from "@mantine/hooks";
 
 function getExtension(filename: string) {
   const splitFn = filename.split(".");
@@ -181,6 +182,7 @@ export default function Editor({
   const [currThumb, setCurrThumb] = useState<Blob>();
   const [isStopped, setIsStopped] = useState(true);
   const [thumbUrl, setThumbUrl] = useState("");
+  const [opened, { toggle }] = useDisclosure();
 
   let frameSrc = previewUrl;
 
@@ -382,24 +384,28 @@ export default function Editor({
     <AppShell
       header={{ height: 72 }}
       padding={12}
-      navbar={{ width: 300, breakpoint: 0 }}
+      navbar={{ width: 300, breakpoint: 768, collapsed: { mobile: !opened } }}
+      className="bg-offblue-700"
     >
-      <AppShell.Header className={styles.headerContainer}>
+      <AppShell.Header className={`${styles.headerContainer} bg-[var(--c2c-dark-off-blue)]`} zIndex={100}>
         <div className={styles.headerLeft}>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Badge size="lg" tt="capitalize">
             Editor
           </Badge>
-          <Divider orientation="vertical" />
-          <Avatar src={creatorImageSrc} size="md" />
-          <div className={styles.userInfo}>
-            <Title order={5}>{title}</Title>
+          <div className="hidden items-center flex-row gap-2 md:flex">
+            <Divider orientation="vertical" />
+            <Avatar src={creatorImageSrc} size="md" />
+            <div className={styles.userInfo}>
+              <Title order={5}>{title}</Title>
 
-            <Text>
-              by{" "}
-              <Link href={`/profile/${creator}`} target="_blank">
-                <Anchor component="button">{creator}</Anchor>
-              </Link>
-            </Text>
+              <Text>
+                by{" "}
+                <Link href={`/profile/${creator}`} target="_blank">
+                  <Anchor component="button">{creator}</Anchor>
+                </Link>
+              </Text>
+            </div>
           </div>
         </div>
         <div className={styles.headerRight}>
@@ -411,17 +417,11 @@ export default function Editor({
             }
           >
             <Button
-              leftSection={
-                !isChanged ? (
-                  <CheckIcon width={16} height={16} />
-                ) : (
-                  <CloudArrowUpIcon width={16} height={16} />
-                )
-              }
+              leftSection={<CloudArrowUpIcon width={16} height={16} />}
               loading={isSaving}
               onClick={save}
               disabled={isSaving}
-              variant="outline"
+              variant={isChanged ? "filled" : "outline"}
               color="off-blue"
             >
               Save
@@ -466,74 +466,9 @@ export default function Editor({
           </Link>
         </div>
       </AppShell.Header>
-      <AppShell.Navbar>
+      <AppShell.Navbar zIndex={102}>
         <div className="flex flex-col gap-2 p-2 h-full">
-          <AppShell.Section className="h-1/2 flex flex-col gap-2">
-            <div className="w-full flex flex-row justify-between gap-2 items-center">
-              <Text c="dimmed" tt="uppercase">
-                My files
-              </Text>
-              <div className="flex flex-row gap-2">
-                <Button variant="outline">
-                  <ArrowUpTrayIcon
-                    onClick={() => dropzoneRef.current?.()}
-                    width={16}
-                    height={16}
-                  />
-                </Button>
-                <Button onClick={() => newFileModal()}>
-                  <PlusIcon width={16} height={16} />
-                </Button>
-              </div>
-            </div>
-            <Dropzone
-              onDrop={handleDrop}
-              openRef={dropzoneRef}
-              activateOnClick={false}
-            >
-              <div className="flex flex-col gap-2">
-                {iterableFiles.map((file) => {
-                  const fileId = file[0];
-                  const fileInfo: FileInfo = file[1] as FileInfo;
-                  return (
-                    <SidebarFile
-                      desc={fileInfo.name === "main.py" ? "Code" : ""}
-                      name={fileInfo.name}
-                      onClick={() => {
-                        handleSwitchFile(fileId);
-                      }}
-                      selected={fileId === currentFile}
-                      key={fileId}
-                      onDeleteConfirm={() => deleteConfirm(fileId)}
-                      onRename={() => renameModal(fileId)}
-                      onDownload={() => saveFile(fileId)}
-                    />
-                  );
-                })}
-              </div>
-            </Dropzone>
-          </AppShell.Section>
-          <AppShell.Section className="h-1/2">
-            <div className="flex flex-col gap-2">
-              <Text c="dimmed" tt="uppercase">
-                Description
-              </Text>
-              <Textarea
-                rows={6}
-                placeholder="What is your project about? What are the instructions? Any credits?"
-                value={description}
-                onChange={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  handleChangeDescription(target.value);
-                }}
-              />
-            </div>
-          </AppShell.Section>
-        </div>
-      </AppShell.Navbar>
-      <AppShell.Main>
-        <div className={styles.workspace}>
-          <div className="flex flex-row gap-2">
+          <AppShell.Section>
             <div className="flex-1">
               <Menu shadow="md" width={200} position="bottom-start">
                 <Menu.Target>
@@ -610,23 +545,19 @@ export default function Editor({
                   >
                     Redo
                   </Menu.Item>
-                  {cmRef.current && cmRef.current.view && (
-                    <Menu.Item
-                      leftSection={
-                        <MagnifyingGlassIcon width={16} height={16} />
-                      }
-                      onClick={() =>
-                        openSearchPanel(cmRef.current?.view as EditorView)
-                      }
-                      rightSection={
-                        <div>
-                          <CtrlCmd />+<Kbd>F</Kbd>
-                        </div>
-                      }
-                    >
-                      Find and Replace
-                    </Menu.Item>
-                  )}
+                  <Menu.Item
+                    leftSection={<MagnifyingGlassIcon width={16} height={16} />}
+                    onClick={() =>
+                      openSearchPanel(cmRef.current?.view as EditorView)
+                    }
+                    rightSection={
+                      <div>
+                        <CtrlCmd />+<Kbd>F</Kbd>
+                      </div>
+                    }
+                  >
+                    Find and Replace
+                  </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
               <Menu shadow="md" position="bottom-start">
@@ -650,6 +581,73 @@ export default function Editor({
                 </Menu.Dropdown>
               </Menu>
             </div>
+          </AppShell.Section>
+          <AppShell.Section className="h-1/2 flex flex-col gap-2">
+            <div className="w-full flex flex-row justify-between gap-2 items-center">
+              <Text c="dimmed" tt="uppercase">
+                My files
+              </Text>
+              <div className="flex flex-row gap-2">
+                <Button variant="outline">
+                  <ArrowUpTrayIcon
+                    onClick={() => dropzoneRef.current?.()}
+                    width={16}
+                    height={16}
+                  />
+                </Button>
+                <Button onClick={() => newFileModal()}>
+                  <PlusIcon width={16} height={16} />
+                </Button>
+              </div>
+            </div>
+            <Dropzone
+              onDrop={handleDrop}
+              openRef={dropzoneRef}
+              activateOnClick={false}
+            >
+              <div className="flex flex-col gap-2">
+                {iterableFiles.map((file) => {
+                  const fileId = file[0];
+                  const fileInfo: FileInfo = file[1] as FileInfo;
+                  return (
+                    <SidebarFile
+                      desc={fileInfo.name === "main.py" ? "Code" : ""}
+                      name={fileInfo.name}
+                      onClick={() => {
+                        handleSwitchFile(fileId);
+                      }}
+                      selected={fileId === currentFile}
+                      key={fileId}
+                      onDeleteConfirm={() => deleteConfirm(fileId)}
+                      onRename={() => renameModal(fileId)}
+                      onDownload={() => saveFile(fileId)}
+                    />
+                  );
+                })}
+              </div>
+            </Dropzone>
+          </AppShell.Section>
+          <AppShell.Section className="h-1/2">
+            <div className="flex flex-col gap-2">
+              <Text c="dimmed" tt="uppercase">
+                Description
+              </Text>
+              <Textarea
+                rows={6}
+                placeholder="What is your project about? What are the instructions? Any credits?"
+                value={description}
+                onChange={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  handleChangeDescription(target.value);
+                }}
+              />
+            </div>
+          </AppShell.Section>
+        </div>
+      </AppShell.Navbar>
+      <AppShell.Main>
+        <div className={styles.workspace}>
+          <div className="flex flex-row gap-2">
             <div className="flex flex-row gap-2">
               <Button
                 color="off-blue"
@@ -669,13 +667,9 @@ export default function Editor({
             </div>
           </div>
           <div className="flex flex-row gap-2">
-            <div className="p-1 rounded-full bg-[var(--mantine-primary-color-filled)] ">
-              <CodeBracketIcon
-                width={16}
-                height={16}
-                className="text-[var(--mantine-color-white)]"
-              />
-            </div>
+            <ThemeIcon radius="xl">
+              <CodeBracketIcon width={16} height={16} />
+            </ThemeIcon>
             <Text fw={700}>Code</Text>
             {files[currentFile] && (
               <Text fw={400}>({files[currentFile].name})</Text>
@@ -698,19 +692,15 @@ export default function Editor({
           )}
         </div>
       </AppShell.Main>
-      <AppShell.Aside w="25%">
+      <AppShell.Aside w="25%" zIndex={101}>
         <div
           className={`${styles.outputPane} ${outputFullScreened && styles.fullScreened}`}
         >
           <div className="flex flex-row gap-2 w-full flex-nowrap justify-between items-center">
             <div className="flex flex-row gap-2">
-              <div className="p-1 rounded-full bg-[var(--mantine-primary-color-filled)] h-min">
-                <WindowIcon
-                  width={16}
-                  height={16}
-                  className="text-[var(--mantine-color-white)]"
-                />
-              </div>
+              <ThemeIcon radius="xl">
+                <WindowIcon width={16} height={16} />
+              </ThemeIcon>
               <Text fw={700}>Output</Text>
             </div>
             {outputFullScreened ? (

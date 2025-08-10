@@ -10,7 +10,6 @@ export default function SettingsModal({
   const [newFileName, setNewFileName] = useState("");
   return (
     <div className="flex flex-col gap-2">
-      
       <Button
         fullWidth
         onClick={() => {

@@ -6,5 +6,5 @@ export default function StoppedProject() {
       <Title order={5}>Project Stopped</Title>
       <Text>Click the Run button to restart the project.</Text>
     </div>
-  )
+  );
 }

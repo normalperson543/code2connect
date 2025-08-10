@@ -1,4 +1,7 @@
-import CodeMirror, { ReactCodeMirrorProps, ReactCodeMirrorRef } from "@uiw/react-codemirror";
+import CodeMirror, {
+  ReactCodeMirrorProps,
+  ReactCodeMirrorRef,
+} from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
 import {
   keymap,
@@ -28,21 +31,20 @@ import {
 import { python } from "@codemirror/lang-python";
 import { lintKeymap } from "@codemirror/lint";
 import { auraInit } from "@uiw/codemirror-theme-aura";
-import { tags as t } from '@lezer/highlight';
+import { tags as t } from "@lezer/highlight";
 import { Roboto_Mono } from "next/font/google";
 import { RefAttributes, useRef } from "react";
 
-interface Props extends ReactCodeMirrorProps, RefAttributes<ReactCodeMirrorRef> {}
+interface Props
+  extends ReactCodeMirrorProps,
+    RefAttributes<ReactCodeMirrorRef> {}
 
 const robotoMono = Roboto_Mono({
   subsets: ["latin"],
 });
 
-export default function CodeEditor({
-  ...props
-}: Props) {
-
-  const cmRef = useRef(null)
+export default function CodeEditor({ ...props }: Props) {
+  const cmRef = useRef(null);
   return (
     <CodeMirror
       {...props}
@@ -54,7 +56,7 @@ export default function CodeEditor({
         // Replace non-printable characters with placeholders
         highlightSpecialChars(),
         // The undo history
-        history({minDepth: 100, newGroupDelay: 50}),
+        history({ minDepth: 100, newGroupDelay: 50 }),
         // Replace native cursor/selection with our own
         drawSelection(),
         // Show a drop cursor when dragging over the editor
@@ -106,7 +108,6 @@ export default function CodeEditor({
         styles: [{ tag: t.comment, color: "#6272a4" }],
       })}
       className={`${robotoMono.className} overflow-auto w-full h-full`}
-
     />
   );
 }

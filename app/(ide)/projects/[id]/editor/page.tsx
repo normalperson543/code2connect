@@ -13,7 +13,12 @@ export default async function EditorPage() {
       contents: `print("Module 2!")`,
     },
   };
-  async function save(files: Files, description: string, title: string, thumbnail: Blob) {
+  async function save(
+    files: Files,
+    description: string,
+    title: string,
+    thumbnail: Blob,
+  ) {
     "use server";
     try {
       console.log("Saving...");
@@ -23,7 +28,7 @@ export default async function EditorPage() {
       console.log(files);
       console.log(description);
       console.log(title);
-      console.log(thumbnail)
+      console.log(thumbnail);
       return { status: "success", message: "" };
     } catch (e) {
       if (e instanceof Error) {

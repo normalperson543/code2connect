@@ -1,12 +1,12 @@
-'use client';
-import { Kbd } from '@mantine/core';
-import { useOs } from '@mantine/hooks';
+"use client";
+import { Kbd } from "@mantine/core";
+import { useOs } from "@mantine/hooks";
 
 export default function CtrlCmd() {
   const os = useOs();
   if (os === "macos") {
-    return <Kbd>⌘</Kbd>
+    return <Kbd>⌘</Kbd>;
   } else {
-    return <Kbd>Ctrl</Kbd>
+    return <Kbd>Ctrl</Kbd>;
   }
 }

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Roboto_Mono, Rubik, Open_Sans } from "next/font/google";
+import { Manrope, Public_Sans } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
-import MTWrapper from "@/components/mt-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -15,9 +14,16 @@ export const metadata: Metadata = {
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-const openSans = Open_Sans({
+const manrope = Manrope({
   display: "swap",
   subsets: ["latin"],
+  variable: "--font-manrope"
+});
+
+const publicSans = Public_Sans({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-public-sans"
 });
 
 export default function RootLayout({
@@ -30,7 +36,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={`${openSans.className} antialiased`}>{children}</body>
+      <body className={`${manrope.className} ${publicSans.className} antialiased`}>{children}</body>
     </html>
   );
 }

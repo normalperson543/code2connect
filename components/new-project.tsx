@@ -1,6 +1,14 @@
 "use client";
 
-import { Center, Flex, Title, Text, Button, Badge, Blockquote } from "@mantine/core";
+import {
+  Center,
+  Flex,
+  Title,
+  Text,
+  Button,
+  Badge,
+  Blockquote,
+} from "@mantine/core";
 import Image from "next/image";
 
 export default function NewProjectUI() {

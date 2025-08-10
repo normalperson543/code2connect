@@ -62,13 +62,13 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Container size={420} my={40}>
+        <Title>👋</Title>
+        <Title>Sign in</Title>
+        <Text>
+          Don't have an account? <Anchor>Create a new account</Anchor>
+        </Text>
         <form onSubmit={handleLogin}>
           <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
-            <Title>👋</Title>
-            <Title>Sign in</Title>
-            <Text>
-              Don't have an account? <Anchor>Create a new account</Anchor>
-            </Text>
             {error}
             <TextInput
               label="Email"
@@ -97,12 +97,18 @@ export function LoginForm({
                 href="/auth/forgot-password"
                 className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
               >
-                <Anchor component="button" size="sm">
+                <Anchor size="sm">
                   Forgot password?
                 </Anchor>
               </Link>
             </Group>
-            <Button fullWidth mt="xl" radius="sm" type="submit" disabled={isLoading}>
+            <Button
+              fullWidth
+              mt="xl"
+              radius="sm"
+              type="submit"
+              loading={isLoading}
+            >
               Sign in
             </Button>
           </Paper>

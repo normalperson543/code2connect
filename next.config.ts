@@ -16,12 +16,12 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "cross-origin-isolated=*"
-          }
-        ]
-      }
-    ]
-  }
+            value: "cross-origin-isolated=*",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

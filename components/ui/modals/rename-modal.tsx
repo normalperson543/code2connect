@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function RenameModal({
   onComplete,
-  defaultValue
+  defaultValue,
 }: {
   onComplete: (newName: string) => void;
   defaultValue: string;
