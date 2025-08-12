@@ -10,20 +10,20 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Code2Connect",
+  description: "The free coding community where you belong",
 };
 
 const manrope = Manrope({
   display: "swap",
   subsets: ["latin"],
-  variable: "--font-manrope"
+  variable: "--font-manrope",
 });
 
 const publicSans = Public_Sans({
   display: "swap",
   subsets: ["latin"],
-  variable: "--font-public-sans"
+  variable: "--font-public-sans",
 });
 
 export default function RootLayout({
@@ -32,11 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html
+      lang="en"
+      className={`${manrope.className} ${publicSans.className} antialiased`}
+      {...mantineHtmlProps}
+    >
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript  />
       </head>
-      <body className={`${manrope.className} ${publicSans.className} antialiased`}>{children}</body>
+      {children}
     </html>
   );
 }

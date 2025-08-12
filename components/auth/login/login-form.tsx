@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MTLoginForm } from "./ui/mt-login-form";
+import { MTLoginForm } from "./mt-login-form";
 import {
   Anchor,
   Button,
@@ -97,9 +97,7 @@ export function LoginForm({
                 href="/auth/forgot-password"
                 className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
               >
-                <Anchor size="sm">
-                  Forgot password?
-                </Anchor>
+                <Anchor size="sm">Forgot password?</Anchor>
               </Link>
             </Group>
             <Button

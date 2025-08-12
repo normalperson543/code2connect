@@ -54,18 +54,18 @@ import { FileInfo, Files } from "@/app/lib/files";
 import "@mantine/notifications/styles.css";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
-import RenameModal from "./ui/modals/rename-modal";
+import RenameModal from "../../modals/rename-modal";
 import FileSaver from "file-saver";
-import NewFileModal from "./ui/modals/new-file-modal";
+import NewFileModal from "../../modals/new-file-modal";
 import download from "@/app/lib/downloader";
 import { Dropzone, FileWithPath } from "@mantine/dropzone";
 import { UserPlusIcon } from "lucide-react";
 import { EditorView, ReactCodeMirrorRef } from "@uiw/react-codemirror";
-import UndoRedoModal from "./ui/modals/undo-redo-modal";
-import CtrlCmd from "./ctrl-cmd";
+import UndoRedoModal from "../../modals/undo-redo-modal";
+import CtrlCmd from "../../ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
 import domtoimage from "dom-to-image";
-import StoppedProject from "./stopped-project";
+import StoppedProject from "../../stopped-project";
 import { useDisclosure } from "@mantine/hooks";
 
 function getExtension(filename: string) {
@@ -164,7 +164,7 @@ export default function Editor({
     files: Files,
     description: string,
     title: string,
-    thumbnail: Blob
+    thumbnail: Blob,
   ) => Promise<{ status: string; message: string }>;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
@@ -189,7 +189,7 @@ export default function Editor({
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement
+      cmRef.current?.editor as HTMLElement,
     );
     console.log("Done saving");
   }
@@ -200,7 +200,7 @@ export default function Editor({
       files,
       description,
       title,
-      currThumb as Blob
+      currThumb as Blob,
     );
     setIsSaving(false);
     if (status.status === "error") {
@@ -385,9 +385,11 @@ export default function Editor({
       header={{ height: 72 }}
       padding={12}
       navbar={{ width: 300, breakpoint: 768, collapsed: { mobile: !opened } }}
-      className="bg-offblue-700"
     >
-      <AppShell.Header className={`${styles.headerContainer} bg-[var(--c2c-dark-off-blue)]`} zIndex={100}>
+      <AppShell.Header
+        className={`${styles.headerContainer} bg-[var(--c2c-dark-off-blue)]!`}
+        zIndex={100}
+      >
         <div className={styles.headerLeft}>
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Badge size="lg" tt="capitalize">
@@ -466,7 +468,7 @@ export default function Editor({
           </Link>
         </div>
       </AppShell.Header>
-      <AppShell.Navbar zIndex={102}>
+      <AppShell.Navbar zIndex={102} className="bg-[var(--c2c-dark-off-blue)]!">
         <div className="flex flex-col gap-2 p-2 h-full">
           <AppShell.Section>
             <div className="flex-1">
@@ -692,7 +694,11 @@ export default function Editor({
           )}
         </div>
       </AppShell.Main>
-      <AppShell.Aside w="25%" zIndex={101}>
+      <AppShell.Aside
+        w="25%"
+        zIndex={101}
+        className="bg-[var(--c2c-dark-off-blue)]!"
+      >
         <div
           className={`${styles.outputPane} ${outputFullScreened && styles.fullScreened}`}
         >

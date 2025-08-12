@@ -10,7 +10,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/nprogress/styles.css";
 import "@mantine/carousel/styles.css";
-import HeaderLoggedIn from "./ui/header-logged-in";
+import HeaderLoggedIn from "./header-logged-in";
 import { ModalsProvider } from "@mantine/modals";
 
 export default function MTWrapper({
@@ -67,13 +67,15 @@ export default function MTWrapper({
     },
   });
   return (
-    <MantineProvider theme={theme} defaultColorScheme="dark">
-      <ModalsProvider>
-        {includeHeader && <HeaderLoggedIn />}
-        {children}
-        <NavigationProgress />
-        <Notifications />
-      </ModalsProvider>
-    </MantineProvider>
+    <body>
+      <MantineProvider theme={theme} >
+        <ModalsProvider>
+          {includeHeader && <HeaderLoggedIn />}
+          {children}
+          <NavigationProgress />
+          <Notifications />
+        </ModalsProvider>
+      </MantineProvider>
+    </body>
   );
 }

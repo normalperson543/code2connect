@@ -1,37 +1,18 @@
 "use client";
 
+import { Project } from "@/app/lib/projects";
 import { HandThumbUpIcon } from "@heroicons/react/24/outline";
-import {
-  Avatar,
-  Badge,
-  Card,
-  Title,
-  Text,
-  AspectRatio,
-  Anchor,
-} from "@mantine/core";
+import { Avatar, Card, Title, Text, AspectRatio, Anchor } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProjectCard({
-  title,
-  creator,
-  likeCount,
-  thumbnail,
-  badge,
-}: {
-  title: string;
-  creator: string;
-  likeCount?: number;
-  thumbnail: string;
-  badge?: string;
-}) {
+export default function ProjectCard({ projectInfo }: { projectInfo: Project }) {
   return (
-    <Card shadow="sm" padding="lg" radius="md" className="min-w-1/4"  withBorder>
+    <Card shadow="sm" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
-        <AspectRatio ratio={240 / 135}>
+        <AspectRatio ratio={16 / 9}>
           <Image
-            src={thumbnail}
+            src={projectInfo.thumbnail}
             height={135}
             width={240}
             alt="Project thumbnail"
@@ -39,19 +20,18 @@ export default function ProjectCard({
         </AspectRatio>
       </Card.Section>
       <div className="flex flex-col gap-2 mt-4">
-        {badge && <Badge>{badge}</Badge>}
-        <Title order={5}>{title}</Title>
+        <Title order={5}>{projectInfo.name}</Title>
         <div className="flex flex-row gap-2 items-center">
           <Avatar size="sm" />
-          <Link href={`/profile/${creator}`}>
-            <Anchor component="button">{creator}</Anchor>
+          <Link href={`/profile/${projectInfo.owner.username}`}>
+            <Anchor component="button">{projectInfo.owner.username}</Anchor>
           </Link>
         </div>
         <div className="flex flex-row gap-2 items-center">
-          {likeCount && (
+          {projectInfo.likes && (
             <>
               <HandThumbUpIcon width={16} height={16} />
-              <Text>{likeCount}</Text>
+              <Text>{projectInfo.likes}</Text>
             </>
           )}
         </div>

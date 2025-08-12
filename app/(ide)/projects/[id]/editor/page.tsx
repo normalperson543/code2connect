@@ -1,5 +1,5 @@
 import { Files } from "@/app/lib/files";
-import Editor from "@/components/editor";
+import Editor from "@/components/projects/editor/editor";
 import { useDebouncedCallback } from "use-debounce";
 
 export default async function EditorPage() {

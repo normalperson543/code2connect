@@ -1,4 +1,5 @@
 import MTWrapper from "@/components/mt-wrapper";
+import EduAppShell from "@/components/edu/app-shell";
 import { ColorSchemeScript } from "@mantine/core";
 
 export default function Layout({
@@ -8,10 +9,10 @@ export default function Layout({
 }>) {
   return (
     <>
-      <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
-      </head>
-      <MTWrapper includeHeader={false}>{children}</MTWrapper>
+      
+      <MTWrapper includeHeader={false}>
+        <EduAppShell>{children}</EduAppShell>
+      </MTWrapper>
     </>
   );
 }

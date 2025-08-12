@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import styles from "./project-preview-page.module.css";
 import Link from "next/link";
-import ThumbPreview from "./ui/thumb-preview";
+import ThumbPreview from "../thumb-preview";
 import {
   ChatBubbleOvalLeftIcon,
   CodeBracketIcon,
@@ -27,9 +27,10 @@ import {
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import OutlinedHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
-import Comment from "./comment";
-import ProjectCard from "./project-card";
+import Comment from "../comment";
+import ProjectCard from "../project-card";
 import { Carousel } from "@mantine/carousel";
+import ProjectCarousel from "../project-carousel";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -139,79 +140,97 @@ export default function ProjectPreviewPageUI({
           <SparklesIcon width={16} height={16} />
           <Title order={3}>Forks</Title>
         </div>
-        <Carousel controlsOffset="sm" controlSize={26} withControls className="flex flex-row gap-2 w-full">
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-            <ProjectCard
-              title="Guess the Number"
-              thumbnail="/assets/default-image.png"
-              likeCount={69}
-              badge="Featured"
-              creator="normalperson543"
-            />
-        </Carousel>
+        <ProjectCarousel projects={[{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      },{
+        name: "Guess the Number",
+        projectId: "a",
+        owner: {
+          username: "normalperson543",
+        },
+        likes: 69,
+        featured: false,
+        thumbnail: "/assets/default-image.png",
+      }]}/>
       </div>
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row gap-2 items-center">

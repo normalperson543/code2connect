@@ -1,4 +1,4 @@
-import ProjectPreviewPageUI from "@/components/project-preview-page";
+import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
 
 export default function ProjectPreviewPage() {
   return (

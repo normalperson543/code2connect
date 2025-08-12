@@ -104,7 +104,7 @@
   height: 100%;
   position: fixed;
   padding: 12px;
-  background-color: var(--mantine-color-body);
+  background-color: var(--body-bg-color);
 }
 .fullScreened iframe {
   flex: 1;
