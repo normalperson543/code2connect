@@ -10,6 +10,7 @@ import {
   Tabs,
   BackgroundImage,
   NavLink,
+  Divider,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import MiniClass from "./mini-class";
@@ -37,7 +38,9 @@ export default function EduAppShell({
             <ThemeIcon radius="xl">
               <AcademicCapIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={3}>Education</Title>
+            <Title order={3}><Text variant="gradient" gradient={{from: "blue", to: "black", deg: 90}} inherit>Education</Text></Title>
+            <Divider orientation="vertical"/>
+            <Text>Centennial HS</Text>
           </div>
           <div className="flex flex-row justify-end h-full">
             <div className="flex flex-row gap-2 rounded-xl p-1 h-full items-center">

@@ -11,12 +11,12 @@ export default function MiniClass({
   teacherName: string;
 }) {
   return (
-    <Card shadow="sm" padding="sm" radius="sm">
+    <Card withBorder shadow="sm" padding="sm" radius="sm" w={240}>
       <Card.Section>
         <Image
           src={imageSrc}
           height={240}
-          width={320}
+          width={240}
           alt="Class cover"
           className="h-24 object-cover"
         />

@@ -16,6 +16,7 @@ export default function MiniAssignment({
       shadow="sm"
       radius="sm"
       className="w-full p-2 flex! flex-row justify-between"
+      withBorder
     >
       <div className="flex flex-row gap-2 items-center">
         <ClipboardCheckIcon width={16} height={16} />

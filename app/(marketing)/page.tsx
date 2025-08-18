@@ -9,68 +9,31 @@ import {
   UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import ProjectCarousel from "@/components/project-carousel";
-import { HandThumbUpIcon, PaintBrushIcon, StarIcon } from "@heroicons/react/24/solid";
+import {
+  GlobeAmericasIcon,
+  HandThumbUpIcon,
+  PaintBrushIcon,
+  SparklesIcon,
+  StarIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
-
+import { placeholder } from "../lib/constants";
 export default function Home() {
-  const placeholder = [ // BACKEND DEVELOPERS PLEASE REMOVE
-    {
-      name: "Guess the Number",
-      projectId: "a",
-      owner: {
-        username: "normalperson543",
-      },
-      likes: 69,
-      featured: false,
-      thumbnail: "/assets/default-image.png",
-    },
-    {
-      name: "Guess the Number",
-      projectId: "a",
-      owner: {
-        username: "normalperson543",
-      },
-      likes: 69,
-      featured: false,
-      thumbnail: "/assets/default-image.png",
-    },
-    {
-      name: "Guess the Number",
-      projectId: "a",
-      owner: {
-        username: "normalperson543",
-      },
-      likes: 69,
-      featured: false,
-      thumbnail: "/assets/default-image.png",
-    },
-    {
-      name: "Guess the Number",
-      projectId: "a",
-      owner: {
-        username: "normalperson543",
-      },
-      likes: 69,
-      featured: false,
-      thumbnail: "/assets/default-image.png",
-    },
-    {
-      name: "Guess the Number",
-      projectId: "a",
-      owner: {
-        username: "normalperson543",
-      },
-      likes: 69,
-      featured: false,
-      thumbnail: "/assets/default-image.png",
-    },
-  ];
   return (
     <div className="flex flex-col gap-2">
       <div className="pl-30 pr-30 pt-18 pb-18 spacing-between gap-4 ">
         <div className="flex flex-col gap-4 justify-center text-center">
-          <Title className="text-5xl! font-bold text-balance">
-            Welcome to the coding community where you belong
+          <Title className="text-5xl! font-bold text-balance inline">
+            Welcome to the{" "}
+            <Text
+              variant="gradient"
+              gradient={{ from: "blue", to: "turquoise", deg: 90 }}
+              inherit
+              span
+            >
+              coding community
+            </Text>{" "}
+            where you belong
           </Title>
           <Text className="text-2xl!" c="dimmed">
             Learn real programming in Python, share with other like-minded
@@ -105,6 +68,46 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full bg-offblue-950">
+        <div className="flex flex-col gap-2 w-1/2">
+        <ThemeIcon radius="xl">
+            <SparklesIcon width={16} height={16} />
+          </ThemeIcon>
+          <Title order={2} c="white">
+            Simple and easy, your grandma can probably do this
+          </Title>
+          <Text c="white">
+            Code2Connect is designed to be easy to get started and start using,
+            even if you don't have programming experience. We simplified the IDE
+            so we put only the things you need, and nothing you don't. Just
+            pure, blissful coding.
+          </Text>
+          <Button leftSection={<BoltIcon width={16} height={16} />}>
+            I want an easy IDE, let's get started
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full bg-offblue-50">
+        <div className="flex flex-col gap-2 w-1/2"></div>
+        <div className="flex flex-col gap-2 w-1/2">
+          <ThemeIcon radius="xl">
+            <GlobeAmericasIcon width={16} height={16} />
+          </ThemeIcon>
+          <Title order={2}>
+            Explore and share creations with a worldwide community
+          </Title>
+          <Text>
+            We're a community of coders and love to see what you create! Publish
+            your projects with just a couple of clicks, so others can play with
+            your code. Explore other Python projects and play around or see
+            their code. If you feel inspired, you can even fork projects so you
+            can change their code!
+          </Text>
+          <Text>
+            Want to see what our coders are creating? Check out the top projects below 👇
+          </Text>
+        </div>
+      </div>
       <div className="flex flex-col gap-2 pl-30 pr-30">
         <div className="flex flex-row gap-2 items-center">
           <ThemeIcon radius="xl">
@@ -112,7 +115,7 @@ export default function Home() {
           </ThemeIcon>
           <Title order={3}>Featured by Code2Connect</Title>
         </div>
-        <ProjectCarousel projects={placeholder}/>
+        <ProjectCarousel projects={placeholder} />
       </div>
       <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
         <div className="flex flex-col gap-2 w-1/2">
@@ -143,9 +146,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col gap-2 w-1/2">
-          <ProjectCarousel
-            projects={placeholder}
-          />
+          <ProjectCarousel projects={placeholder} />
         </div>
       </div>
       <div className="flex flex-col gap-2 pl-30 pr-30">
@@ -155,15 +156,17 @@ export default function Home() {
           </ThemeIcon>
           <Title order={3}>Top liked</Title>
         </div>
-        <ProjectCarousel projects={placeholder}/>
+        <ProjectCarousel projects={placeholder} />
       </div>
       <div className="flex flex-col gap-2 pt-18 pb-18 pr-30 pl-30 bg-offblue-950 justify-center text-center">
-        <Title order={3} c="white">Ready to get started?</Title>
-            <div className="flex flex-row gap-2 justify-center">
-            <Button leftSection={<BoltIcon width={16} height={16} />}>
-              Get started for free
-            </Button>
-            </div>
+        <Title order={3} c="white">
+          Ready to join our community of Python coders?
+        </Title>
+        <div className="flex flex-row gap-2 justify-center">
+          <Button leftSection={<BoltIcon width={16} height={16} />}>
+            Get started for free
+          </Button>
+        </div>
       </div>
     </div>
   );

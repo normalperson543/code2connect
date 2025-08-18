@@ -132,8 +132,7 @@ export default function EduAssignmentUI({
           <Button leftSection={<PlusIcon width={16} height={16} />}>
             Attach project
           </Button>
-          {!isAdmin &&
-            assignmentState === 0 || assignmentState === 1 ? (
+          {(!isAdmin && assignmentState === 0) || assignmentState === 1 ? (
             <Button leftSection={<CheckIcon width={16} height={16} />}>
               Turn in
             </Button>
@@ -141,9 +140,7 @@ export default function EduAssignmentUI({
             <Button leftSection={<CheckIcon width={16} height={16} />} disabled>
               Turned in on {turnInDate?.toLocaleString()}
             </Button>
-          )
-          }
-          
+          )}
         </div>
       </div>
     </div>

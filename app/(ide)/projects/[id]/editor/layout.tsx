@@ -8,9 +8,6 @@ export default function Layout({
 }>) {
   return (
     <>
-      <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
-      </head>
       <MTWrapper includeHeader={false}>{children}</MTWrapper>
     </>
   );

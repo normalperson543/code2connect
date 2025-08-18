@@ -140,97 +140,110 @@ export default function ProjectPreviewPageUI({
           <SparklesIcon width={16} height={16} />
           <Title order={3}>Forks</Title>
         </div>
-        <ProjectCarousel projects={[{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      },{
-        name: "Guess the Number",
-        projectId: "a",
-        owner: {
-          username: "normalperson543",
-        },
-        likes: 69,
-        featured: false,
-        thumbnail: "/assets/default-image.png",
-      }]}/>
+        <ProjectCarousel
+          projects={[
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+            {
+              name: "Guess the Number",
+              projectId: "a",
+              owner: {
+                username: "normalperson543",
+              },
+              likes: 69,
+              featured: false,
+              thumbnail: "/assets/default-image.png",
+            },
+          ]}
+        />
       </div>
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row gap-2 items-center">

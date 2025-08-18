@@ -6,12 +6,5 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <>
-      <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
-      </head>
-      <MTWrapper>{children}</MTWrapper>
-    </>
-  );
+  return <MTWrapper>{children}</MTWrapper>;
 }

@@ -9,7 +9,6 @@ export default function Layout({
 }>) {
   return (
     <>
-      
       <MTWrapper includeHeader={false}>
         <EduAppShell>{children}</EduAppShell>
       </MTWrapper>

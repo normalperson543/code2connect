@@ -38,9 +38,9 @@ export default function RootLayout({
       {...mantineHtmlProps}
     >
       <head>
-        <ColorSchemeScript  />
+        <ColorSchemeScript />
       </head>
-      {children}
+      <body>{children}</body>
     </html>
   );
 }

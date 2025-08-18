@@ -67,15 +67,13 @@ export default function MTWrapper({
     },
   });
   return (
-    <body>
-      <MantineProvider theme={theme} >
-        <ModalsProvider>
-          {includeHeader && <HeaderLoggedIn />}
-          {children}
-          <NavigationProgress />
-          <Notifications />
-        </ModalsProvider>
-      </MantineProvider>
-    </body>
+    <MantineProvider theme={theme}>
+      <ModalsProvider>
+        {includeHeader && <HeaderLoggedIn />}
+        {children}
+        <NavigationProgress />
+        <Notifications />
+      </ModalsProvider>
+    </MantineProvider>
   );
 }
