@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Manrope, Public_Sans } from "next/font/google";
 import "./globals.css";
-import '@mantine/core/styles.css';
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
+import "@mantine/core/styles.css";
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -11,14 +10,20 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Code2Connect",
+  description: "The free coding community where you belong",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
   display: "swap",
   subsets: ["latin"],
+  variable: "--font-manrope",
+});
+
+const publicSans = Public_Sans({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-public-sans",
 });
 
 export default function RootLayout({
@@ -27,20 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${manrope.className} ${publicSans.className} antialiased`}
+      {...mantineHtmlProps}
+    >
       <head>
-        
+        <ColorSchemeScript />
       </head>
-      <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-            {children}
-        </ThemeProvider>
-      </body>
+      <body className="w-full h-full">{children}</body>
     </html>
   );
 }

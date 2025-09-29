@@ -1,0 +1,111 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row;
+  padding: 12px;
+}
+.headerLeft,
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.headerRight {
+  justify-content: flex-end;
+}
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.sidebarSectTitle {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.sidebarSect {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100% - 96px);
+  width: 100%;
+  position: fixed;
+  width: calc(
+    100% -
+      (calc(var(--app-shell-navbar-offset, 0rem) + var(--app-shell-padding))) -
+      12px - 25%
+  );
+  z-index: 2;
+}
+.outputPane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /*top: calc(50% + 96px);*/
+  padding: 12px;
+  height: 100%;
+  /*position: fixed;
+  width: calc(100% - (calc(var(--app-shell-navbar-offset, 0rem) + var(--app-shell-padding))) - 12px);
+  z-index: 4*/
+}
+
+.editorWrapper {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.output {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+.description {
+  flex: 1;
+}
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 75%;
+  overflow: auto;
+}
+.editorPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  border-radius: 4px;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px;
+}
+.fullScreened {
+  top: 0;
+  left: 0;
+  z-index: 200;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  padding: 12px;
+  background-color: var(--body-bg-color);
+}
+.fullScreened iframe {
+  flex: 1;
+}
