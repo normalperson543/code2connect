@@ -1,5 +1,4 @@
 "use client";
-
 import { Title, Text, List, ThemeIcon, Button, Anchor } from "@mantine/core";
 import {
   ArrowRightIcon,
@@ -20,8 +19,8 @@ import Link from "next/link";
 import { placeholder } from "../lib/constants";
 export default function Home() {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="pl-30 pr-30 pt-18 pb-18 spacing-between gap-4 ">
+    <div className="flex flex-col gap-2 justify-center">
+      <div className="pt-18 pb-18 spacing-between gap-4 ">
         <div className="flex flex-col gap-4 justify-center text-center">
           <Title className="text-5xl! font-bold text-balance inline">
             Welcome to the{" "}
@@ -43,7 +42,7 @@ export default function Home() {
           <List
             spacing="sm"
             icon={
-              <ThemeIcon size="sm" radius="xl">
+              <ThemeIcon radius="xl" className="shadow-md">
                 <CheckIcon width={16} height={16} />
               </ThemeIcon>
             }
@@ -68,13 +67,16 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full bg-offblue-950">
+      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full backdrop-blur-sm shadow-2xs bg-offblue-800">
         <div className="flex flex-col gap-2 w-1/2">
-        <ThemeIcon radius="xl">
+          <ThemeIcon radius="xl" className="shadow-md">
             <SparklesIcon width={16} height={16} />
           </ThemeIcon>
+          <Text c="off-blue.1" className="uppercase">
+            Ease of use
+          </Text>
           <Title order={2} c="white">
-            Simple and easy, your grandma can probably do this
+            Ridiculously easy to use
           </Title>
           <Text c="white">
             Code2Connect is designed to be easy to get started and start using,
@@ -90,7 +92,7 @@ export default function Home() {
       <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full bg-offblue-50">
         <div className="flex flex-col gap-2 w-1/2"></div>
         <div className="flex flex-col gap-2 w-1/2">
-          <ThemeIcon radius="xl">
+          <ThemeIcon radius="xl" className="shadow-md">
             <GlobeAmericasIcon width={16} height={16} />
           </ThemeIcon>
           <Title order={2}>
@@ -104,13 +106,14 @@ export default function Home() {
             can change their code!
           </Text>
           <Text>
-            Want to see what our coders are creating? Check out the top projects below 👇
+            Want to see what our coders are creating? Check out the top projects
+            below 👇
           </Text>
         </div>
       </div>
       <div className="flex flex-col gap-2 pl-30 pr-30">
         <div className="flex flex-row gap-2 items-center">
-          <ThemeIcon radius="xl">
+          <ThemeIcon radius="xl" className="shadow-md">
             <StarIcon width={16} height={16} />
           </ThemeIcon>
           <Title order={3}>Featured by Code2Connect</Title>
@@ -120,7 +123,7 @@ export default function Home() {
       <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
         <div className="flex flex-col gap-2 w-1/2">
           <div className="flex flex-row gap-2 items-center">
-            <ThemeIcon radius="xl">
+            <ThemeIcon radius="xl" className="shadow-md">
               <PaintBrushIcon width={16} height={16} />
             </ThemeIcon>
             <Title order={3}>Idea of the Month</Title>
@@ -151,7 +154,7 @@ export default function Home() {
       </div>
       <div className="flex flex-col gap-2 pl-30 pr-30">
         <div className="flex flex-row gap-2 items-center">
-          <ThemeIcon radius="xl">
+          <ThemeIcon radius="xl" className="shadow-md">
             <HandThumbUpIcon width={16} height={16} />
           </ThemeIcon>
           <Title order={3}>Top liked</Title>

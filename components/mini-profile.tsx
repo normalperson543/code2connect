@@ -1,0 +1,22 @@
+import { Avatar, Paper, Text } from "@mantine/core";
+import React from "react";
+
+export default function MiniProfile({
+  username,
+  pfpLink,
+  topRightComponent,
+}: {
+  username: string;
+  pfpLink?: string;
+  topRightComponent?: React.ReactNode;
+}) {
+  return (
+    <Paper radius="sm" shadow="md">
+      <div className="p-4 flex flex-col gap-2 items-center relative">
+        <div className="absolute right-0 top-0">{topRightComponent}</div>
+        <Avatar size="lg" src={pfpLink} />
+        <Text fw={700}>{username}</Text>
+      </div>
+    </Paper>
+  );
+}

@@ -52,7 +52,7 @@ export default function EduAssignmentUI({
     <div className="flex flex-col gap-2">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-row gap-2 items-center">
-          <ThemeIcon radius="xl">
+          <ThemeIcon radius="xl" className="shadow-md">
             <ClipboardDocumentCheckIcon width={16} height={16} />
           </ThemeIcon>
           <Title order={3}>{assignmentName}</Title>

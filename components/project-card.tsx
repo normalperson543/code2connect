@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function ProjectCard({ projectInfo }: { projectInfo: Project }) {
   return (
-    <Card shadow="sm" padding="lg" radius="md" className="min-w-60" withBorder>
+    <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
         <AspectRatio ratio={16 / 9}>
           <Image

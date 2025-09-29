@@ -11,7 +11,7 @@ export default function MiniClass({
   teacherName: string;
 }) {
   return (
-    <Card withBorder shadow="sm" padding="sm" radius="sm" w={240}>
+    <Card withBorder shadow="md" padding="sm" radius="sm" w={240}>
       <Card.Section>
         <Image
           src={imageSrc}

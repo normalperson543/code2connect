@@ -164,7 +164,7 @@ export default function Editor({
     files: Files,
     description: string,
     title: string,
-    thumbnail: Blob,
+    thumbnail: Blob
   ) => Promise<{ status: string; message: string }>;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
@@ -189,7 +189,7 @@ export default function Editor({
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement,
+      cmRef.current?.editor as HTMLElement
     );
     console.log("Done saving");
   }
@@ -200,7 +200,7 @@ export default function Editor({
       files,
       description,
       title,
-      currThumb as Blob,
+      currThumb as Blob
     );
     setIsSaving(false);
     if (status.status === "error") {
@@ -669,7 +669,7 @@ export default function Editor({
             </div>
           </div>
           <div className="flex flex-row gap-2">
-            <ThemeIcon radius="xl">
+            <ThemeIcon radius="xl" className="shadow-md">
               <CodeBracketIcon width={16} height={16} />
             </ThemeIcon>
             <Text fw={700}>Code</Text>
@@ -704,7 +704,7 @@ export default function Editor({
         >
           <div className="flex flex-row gap-2 w-full flex-nowrap justify-between items-center">
             <div className="flex flex-row gap-2">
-              <ThemeIcon radius="xl">
+              <ThemeIcon radius="xl" className="shadow-md">
                 <WindowIcon width={16} height={16} />
               </ThemeIcon>
               <Text fw={700}>Output</Text>

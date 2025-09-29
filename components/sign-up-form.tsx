@@ -60,13 +60,12 @@ export function SignUpForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Container size={420} my={40}>
-        <Title>👋</Title>
-        <Title>Register</Title>
+        <Title>Welcome to Code2Connect</Title>
         <Text>
           Don't have an account? <Anchor>Create a new account</Anchor>
         </Text>
         <form onSubmit={handleSignUp}>
-          <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
+          <Paper withBorder shadow="md" p={22} mt={30} radius="md">
             {error}
             <TextInput
               label="Email"
@@ -107,6 +106,8 @@ export function SignUpForm({
               className="w-full"
               disabled={isLoading}
               loading={isLoading}
+              mt="xl"
+              fullWidth
             >
               Sign up
             </Button>

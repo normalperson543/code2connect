@@ -15,8 +15,11 @@ import {
   PasswordInput,
   Text,
   TextInput,
+  ThemeIcon,
   Title,
 } from "@mantine/core";
+import Image from "next/image";
+import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm({
   className,
@@ -50,58 +53,71 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Container size={420} my={40}>
-        <Title>👋</Title>
-        <Title>Sign in</Title>
-        <Text>
-          Don't have an account? <Anchor>Create a new account</Anchor>
-        </Text>
-        <form onSubmit={handleLogin}>
-          <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
-            {error}
-            <TextInput
-              label="Email"
-              placeholder="name@example.com"
-              required
-              radius="md"
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Your password"
-              required
-              mt="md"
-              radius="md"
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Group justify="space-between" mt="lg">
-              <Checkbox label="Remember me" />
-              <Link
-                href="/auth/forgot-password"
-                className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+    <div
+      className={cn(
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex flex-col w-full">
+        <Container className="w-full" my={40}>
+          <form onSubmit={handleLogin}>
+            <Paper withBorder shadow="md" p={22} mt={30} radius="md" className="flex! flex-col gap-2">
+              <ThemeIcon className="shadow-md" size="xl" radius="xl">
+                <ArrowRightStartOnRectangleIcon width={16} height={16} />
+              </ThemeIcon> 
+              <Text className="uppercase font-mono" c="dimmed">
+                Welcome to Code2Connect
+              </Text>
+              <Title>Sign In</Title>
+              <Text>
+                Don't have an account? <Anchor>Create a new account</Anchor>
+              </Text>
+              {error}
+              <TextInput
+                label="Email"
+                placeholder="name@example.com"
+                required
+                radius="md"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                required
+                mt="md"
+                radius="md"
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Group justify="space-between" mt="lg">
+                <Checkbox label="Remember me" />
+                <Link
+                  href="/auth/forgot-password"
+                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                >
+                  <Anchor size="sm">Forgot password?</Anchor>
+                </Link>
+              </Group>
+              <Button
+                fullWidth
+                mt="xl"
+                radius="sm"
+                type="submit"
+                loading={isLoading}
               >
-                <Anchor size="sm">Forgot password?</Anchor>
-              </Link>
-            </Group>
-            <Button
-              fullWidth
-              mt="xl"
-              radius="sm"
-              type="submit"
-              loading={isLoading}
-            >
-              Sign in
-            </Button>
-          </Paper>
-        </form>
-      </Container>
+                Sign in
+              </Button>
+            </Paper>
+          </form>
+        </Container>
+      </div>
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>{children}</body>
+      <body className="w-full h-full">{children}</body>
     </html>
   );
 }

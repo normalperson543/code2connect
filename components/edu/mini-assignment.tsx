@@ -13,7 +13,7 @@ export default function MiniAssignment({
 }) {
   return (
     <Paper
-      shadow="sm"
+      shadow="md"
       radius="sm"
       className="w-full p-2 flex! flex-row justify-between"
       withBorder

@@ -35,11 +35,19 @@ export default function EduAppShell({
       <AppShell.Header className="bg-[var(--body-bg-color)]!" zIndex={100}>
         <div className="flex flex-row justify-between items-center h-full p-4">
           <div className="flex flex-row gap-2 w-full h-full items-center">
-            <ThemeIcon radius="xl">
+            <ThemeIcon radius="xl" className="shadow-md">
               <AcademicCapIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={3}><Text variant="gradient" gradient={{from: "blue", to: "black", deg: 90}} inherit>Education</Text></Title>
-            <Divider orientation="vertical"/>
+            <Title order={3}>
+              <Text
+                variant="gradient"
+                gradient={{ from: "blue", to: "black", deg: 90 }}
+                inherit
+              >
+                Education
+              </Text>
+            </Title>
+            <Divider orientation="vertical" />
             <Text>Centennial HS</Text>
           </div>
           <div className="flex flex-row justify-end h-full">

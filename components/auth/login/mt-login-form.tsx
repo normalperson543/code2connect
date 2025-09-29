@@ -20,7 +20,7 @@ export function MTLoginForm() {
         Do not have an account yet? <Anchor>Create account</Anchor>
       </Text>
 
-      <Paper withBorder shadow="sm" p={22} mt={30}>
+      <Paper withBorder shadow="md" p={22} mt={30}>
         <TextInput label="Email" placeholder="you@mantine.dev" required />
         <PasswordInput
           label="Password"

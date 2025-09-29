@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           {
+            key: "Access-Control-Allow-Origin",
+            value: "http://localhost:3000",
+          },
+          {
             key: "Cross-Origin-Embedder-Policy",
             value: "require-corp",
           },

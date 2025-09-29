@@ -2,18 +2,17 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import { useState } from "react";
+import {
+  Container,
+  Paper,
+  TextInput,
+  ThemeIcon,
+  Title,
+  Text,
+  Button,
+} from "@mantine/core";
+import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 export function ForgotPasswordForm({
   className,
@@ -45,35 +44,44 @@ export function ForgotPasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {success ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
+    <div
+      className={cn(
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex flex-col h-full w-full">
+        <Container className="w-full" my={40}>
+          <Paper withBorder shadow="md" p={22} mt={30} radius="md" className="flex! flex-col gap-2">
+            <ThemeIcon color={success ? "green" : ""} className="shadow-md" radius="xl" size="xl">
+              {success ? (
+                <CheckIcon width={16} height={16} />
+              ) : (
+                <QuestionMarkCircleIcon width={16} height={16} />
+              )}
+            </ThemeIcon>
+            <Text className="uppercase font-mono" c="dimmed">
+              Get back into your account
+            </Text>
+            {success ? (
+              <div className="flex flex-col gap-2">
+                <Title>Email Sent</Title>
+                <Text>
+                  If this email address is associated with an account, you'll
+                  receive an email to reset your password.
+                </Text>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Title>Reset Password</Title>
+                <Text>
+                  If you forgot your password, enter your email and we'll try to
+                  recover your password.
+                </Text>
+                {error}
+                <form onSubmit={handleForgotPassword}>
+                  <TextInput
                     id="email"
                     type="email"
                     placeholder="m@example.com"
@@ -81,25 +89,21 @@ export function ForgotPasswordForm({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
-                </Button>
+                  <Button
+                    fullWidth
+                    mt="xl"
+                    radius="sm"
+                    type="submit"
+                    loading={isLoading}
+                  >
+                    Send reset email
+                  </Button>
+                </form>
               </div>
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="underline underline-offset-4"
-                >
-                  Login
-                </Link>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
+            )}
+          </Paper>
+        </Container>
+      </div>
     </div>
   );
 }
