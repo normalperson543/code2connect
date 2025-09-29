@@ -14,14 +14,13 @@ export default function SearchUI() {
       <Heading>
         <div className="flex flex-row gap-2 items-center">
           <div className="w-1/2">
-          <Title>Search results for "game"</Title>
-          <Text>returned 100+ results</Text>
+            <Title>Search results for "game"</Title>
+            <Text>returned 100+ results</Text>
           </div>
           <div className="flex-1">
             <SearchBar bgColor="" />
           </div>
         </div>
-        
       </Heading>
       <div className="items-center flex flex-col gap-2">
         <div className="flex flex-row gap-4 flex-wrap pl-30 pr-30">

@@ -110,10 +110,10 @@ export default function ProjectPreviewPageUI({
       </div>
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">
         <div className="flex-1 flex flex-row items-center gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <ChatBubbleOvalLeftIcon width={16} height={16} />
-            </ThemeIcon>
-            <Title order={4}>Comments (20+)</Title>
+          <ThemeIcon radius="xl" className="shadow-md">
+            <ChatBubbleOvalLeftIcon width={16} height={16} />
+          </ThemeIcon>
+          <Title order={4}>Comments (20+)</Title>
         </div>
         <Title order={4}>Add a comment</Title>
         <div className="flex flex-row gap-2 w-full">
@@ -145,10 +145,10 @@ export default function ProjectPreviewPageUI({
 
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">
         <div className="flex-1 flex flex-row items-center gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <SparklesIcon width={16} height={16} />
-            </ThemeIcon>
-            <Title order={4}>Forks</Title>
+          <ThemeIcon radius="xl" className="shadow-md">
+            <SparklesIcon width={16} height={16} />
+          </ThemeIcon>
+          <Title order={4}>Forks</Title>
         </div>
         <ProjectCarousel
           projects={[
@@ -257,10 +257,10 @@ export default function ProjectPreviewPageUI({
       </div>
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">
         <div className="flex-1 flex flex-row items-center gap-2">
-                    <ThemeIcon radius="xl" className="shadow-md">
-                      <RectangleStackIcon width={16} height={16} />
-                    </ThemeIcon>
-                    <Title order={4}>Clusters</Title>
+          <ThemeIcon radius="xl" className="shadow-md">
+            <RectangleStackIcon width={16} height={16} />
+          </ThemeIcon>
+          <Title order={4}>Clusters</Title>
         </div>
       </div>
     </div>

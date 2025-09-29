@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@mantine/core"
+import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {

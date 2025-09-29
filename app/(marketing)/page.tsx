@@ -17,12 +17,15 @@ import {
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { placeholder } from "../lib/constants";
+import HomepageCarousel from "@/components/homepage-carousel";
+import ProjectCard from "@/components/project-card";
 export default function Home() {
   return (
     <div className="flex flex-col gap-2 justify-center">
-      <div className="pt-18 pb-18 spacing-between gap-4 ">
+      <div className="pt-6 pb-18 spacing-between gap-4 bg-gradient-to-b from-black to-offblue-800 from-30%">
         <div className="flex flex-col gap-4 justify-center text-center">
-          <Title className="text-5xl! font-bold text-balance inline">
+          <HomepageCarousel projects={placeholder} />
+          <Title className="text-5xl! font-bold text-balance inline text-white">
             Welcome to the{" "}
             <Text
               variant="gradient"
@@ -47,10 +50,10 @@ export default function Home() {
               </ThemeIcon>
             }
           >
-            <List.Item>Share your creations with other coders</List.Item>
-            <List.Item>Works in your browser - not in the cloud</List.Item>
-            <List.Item>Tutorials and education oriented features</List.Item>
-            <List.Item>
+            <List.Item c="white">Share your creations with other coders</List.Item>
+            <List.Item c="white">Works in your browser - not in the cloud</List.Item>
+            <List.Item c="white">Tutorials and education oriented features</List.Item>
+            <List.Item c="white">
               <b>100% free</b>
             </List.Item>
           </List>

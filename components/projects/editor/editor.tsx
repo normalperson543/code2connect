@@ -164,7 +164,7 @@ export default function Editor({
     files: Files,
     description: string,
     title: string,
-    thumbnail: Blob
+    thumbnail: Blob,
   ) => Promise<{ status: string; message: string }>;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
@@ -189,7 +189,7 @@ export default function Editor({
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement
+      cmRef.current?.editor as HTMLElement,
     );
     console.log("Done saving");
   }
@@ -200,7 +200,7 @@ export default function Editor({
       files,
       description,
       title,
-      currThumb as Blob
+      currThumb as Blob,
     );
     setIsSaving(false);
     if (status.status === "error") {

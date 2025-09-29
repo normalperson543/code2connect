@@ -12,10 +12,12 @@ import {
   Anchor,
   TextInput,
   PasswordInput,
+  ThemeIcon,
 } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 
 export function SignUpForm({
   className,
@@ -58,62 +60,78 @@ export function SignUpForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Container size={420} my={40}>
-        <Title>Welcome to Code2Connect</Title>
-        <Text>
-          Don't have an account? <Anchor>Create a new account</Anchor>
-        </Text>
-        <form onSubmit={handleSignUp}>
-          <Paper withBorder shadow="md" p={22} mt={30} radius="md">
-            {error}
-            <TextInput
-              label="Email"
-              description="If you're creating a student account, make sure to enter your school email. Otherwise, you may not be able to enroll into a class!"
-              placeholder="name@example.com"
-              required
+    <div
+      className={cn(
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
+        className,
+      )}
+      {...props}
+    >
+      <div className="flex flex-col w-full">
+        <Container className="w-full" my={40}>
+          <form onSubmit={handleSignUp}>
+            <Paper
+              withBorder
+              shadow="md"
+              p={22}
+              mt={30}
               radius="md"
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Your password"
-              required
-              mt="md"
-              radius="md"
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <PasswordInput
-              label="Repeat password"
-              placeholder="Repeat password"
-              required
-              mt="md"
-              radius="md"
-              id="repeat-password"
-              type="password"
-              value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-              loading={isLoading}
-              mt="xl"
-              fullWidth
+              className="flex! flex-col gap-2"
             >
-              Sign up
-            </Button>
-          </Paper>
-        </form>
-      </Container>
+              <ThemeIcon className="shadow-md" size="xl" radius="xl">
+                <SparklesIcon width={16} height={16} />
+              </ThemeIcon>
+              <Text className="uppercase font-mono" c="dimmed">
+                Welcome to Code2Connect
+              </Text>
+              <Title>Register</Title>
+              {error}
+              <TextInput
+                label="Email"
+                description="If you're creating a student account, make sure to enter your school email. Otherwise, you may not be able to enroll into a class!"
+                placeholder="name@example.com"
+                required
+                radius="md"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                required
+                mt="md"
+                radius="md"
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <PasswordInput
+                label="Repeat password"
+                placeholder="Repeat password"
+                required
+                mt="md"
+                radius="md"
+                id="repeat-password"
+                type="password"
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
+              />
+              <Button
+                fullWidth
+                mt="xl"
+                radius="sm"
+                type="submit"
+                loading={isLoading}
+              >
+                Register
+              </Button>
+            </Paper>
+          </form>
+        </Container>
+      </div>
     </div>
   );
 }
