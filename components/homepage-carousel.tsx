@@ -10,7 +10,17 @@ import Image from "next/image";
 
 function ProjectCard({ projectInfo }: { projectInfo: Project }) {
   return (
-    <Card shadow="md" padding="lg" radius="md" ml="xs" mr="xs" bg="black" c="white" className="min-w-120" withBorder>
+    <Card
+      shadow="md"
+      padding="lg"
+      radius="md"
+      ml="xs"
+      mr="xs"
+      bg="black"
+      c="white"
+      className="min-w-120"
+      withBorder
+    >
       <Card.Section>
         <AspectRatio ratio={16 / 9}>
           <Image
