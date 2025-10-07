@@ -47,14 +47,26 @@ export function ForgotPasswordForm({
     <div
       className={cn(
         "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900",
-        className
+        className,
       )}
       {...props}
     >
       <div className="flex flex-col h-full w-full">
         <Container className="w-full" my={40}>
-          <Paper withBorder shadow="md" p={22} mt={30} radius="md" className="flex! flex-col gap-2">
-            <ThemeIcon color={success ? "green" : ""} className="shadow-md" radius="xl" size="xl">
+          <Paper
+            withBorder
+            shadow="md"
+            p={22}
+            mt={30}
+            radius="md"
+            className="flex! flex-col gap-2"
+          >
+            <ThemeIcon
+              color={success ? "green" : ""}
+              className="shadow-md"
+              radius="xl"
+              size="xl"
+            >
               {success ? (
                 <CheckIcon width={16} height={16} />
               ) : (

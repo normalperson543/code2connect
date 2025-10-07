@@ -17,13 +17,17 @@ import {
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { placeholder } from "../lib/constants";
+import HomepageCarousel from "@/components/homepage-carousel";
+import ProjectCard from "@/components/project-card";
+import Image from "next/image";
 export default function Home() {
   return (
     <div className="flex flex-col gap-2 justify-center">
-      <div className="pt-18 pb-18 spacing-between gap-4 ">
-        <div className="flex flex-col gap-4 justify-center text-center">
-          <Title className="text-5xl! font-bold text-balance inline">
-            Welcome to the{" "}
+      <div className="pt-24 pb-24 pl-12 pr-12 spacing-between gap-4 bg-gradient-to-b from-black to-offblue-950 rounded-b-xl flex flex-row">
+        <div className="flex flex-col gap-4 w-1/2">
+          <Text className="uppercase text-white!">Welcome to Code2Connect</Text>
+          <Title className="text-5xl! font-extrabold text-balance inline text-white">
+            The{" "}
             <Text
               variant="gradient"
               gradient={{ from: "blue", to: "turquoise", deg: 90 }}
@@ -35,9 +39,7 @@ export default function Home() {
             where you belong
           </Title>
           <Text className="text-2xl!" c="dimmed">
-            Learn real programming in Python, share with other like-minded
-            coders. Everything works entirely in your browser. All 100% free and
-            open source.
+            Learn how to code, right in your browser. Easy and free.
           </Text>
           <List
             spacing="sm"
@@ -47,14 +49,20 @@ export default function Home() {
               </ThemeIcon>
             }
           >
-            <List.Item>Share your creations with other coders</List.Item>
-            <List.Item>Works in your browser - not in the cloud</List.Item>
-            <List.Item>Tutorials and education oriented features</List.Item>
-            <List.Item>
+            <List.Item c="white">
+              Share your creations with other coders
+            </List.Item>
+            <List.Item c="white">
+              Works in your browser - not in the cloud
+            </List.Item>
+            <List.Item c="white">
+              Tutorials and education oriented features
+            </List.Item>
+            <List.Item c="white">
               <b>100% free</b>
             </List.Item>
           </List>
-          <div className="flex flex-row gap-2 justify-center">
+          <div className="flex flex-row gap-2">
             <Button leftSection={<BoltIcon width={16} height={16} />}>
               Try it out
             </Button>
@@ -66,8 +74,16 @@ export default function Home() {
             </Button>
           </div>
         </div>
+        <div className="flex flex-row items-center justify-center w-1/2">
+          <Image
+            src="/assets/logo-white.svg"
+            width={384}
+            height={384}
+            alt="Code2Connect logo"
+          />
+        </div>
       </div>
-      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full backdrop-blur-sm shadow-2xs bg-offblue-800">
+      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 ml-2 mr-2 rounded-lg backdrop-blur-sm shadow-2xs bg-offblue-800">
         <div className="flex flex-col gap-2 w-1/2">
           <ThemeIcon radius="xl" className="shadow-md">
             <SparklesIcon width={16} height={16} />
@@ -89,7 +105,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full bg-offblue-50">
+      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 ml-2 mr-2 rounded-lg w-full bg-offblue-50">
         <div className="flex flex-col gap-2 w-1/2"></div>
         <div className="flex flex-col gap-2 w-1/2">
           <ThemeIcon radius="xl" className="shadow-md">

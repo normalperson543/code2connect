@@ -1,31 +1,45 @@
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  CheckIcon,
+  Container,
+  Paper,
+  ThemeIcon,
+  Title,
+  Text,
+} from "@mantine/core";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Thank you for signing up!
-              </CardTitle>
-              <CardDescription>Check your email to confirm</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                You&apos;ve successfully signed up. Please check your email to
-                confirm your account before signing in.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+    <div className="flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900">
+      <div className="flex flex-col h-full w-full">
+        <Container className="w-full" my={40}>
+          <Paper
+            withBorder
+            shadow="md"
+            p={22}
+            mt={30}
+            radius="md"
+            className="flex! flex-col gap-2"
+          >
+            <ThemeIcon
+              color="green"
+              className="shadow-md"
+              radius="xl"
+              size="xl"
+            >
+              <CheckIcon width={16} height={16} />
+            </ThemeIcon>
+            <Text className="uppercase font-mono" c="dimmed">
+              Welcome to Code2Connect
+            </Text>
+            <div className="flex flex-col gap-2">
+              <Title>Almost There</Title>
+              <Text>
+                You've just registered for an account - congratulations! Check
+                your email for instructions to activate your account.
+              </Text>
+            </div>
+          </Paper>
+        </Container>
       </div>
     </div>
   );

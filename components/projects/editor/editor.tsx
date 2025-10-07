@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   Divider,
   Kbd,
+  LoadingOverlay,
   Menu,
   Text,
   Textarea,
@@ -47,7 +48,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import CodeEditor from "./code-editor";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useDebouncedCallback } from "use-debounce";
 import { FileInfo, Files } from "@/app/lib/files";
@@ -66,7 +67,18 @@ import CtrlCmd from "../../ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
 import domtoimage from "dom-to-image";
 import StoppedProject from "../../stopped-project";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useForceUpdate } from "@mantine/hooks";
+import { createClient } from "@/lib/supabase/client";
+import { ProjectSessionToken } from "@prisma/client";
+import {
+  getFirstProjectSession,
+  getProjectFiles,
+  getProjectSession,
+  newProjectSession,
+  renewProjectSession,
+} from "@/app/lib/data";
+import moment from "moment";
+import Image from "next/image";
 
 function getExtension(filename: string) {
   const splitFn = filename.split(".");
@@ -100,9 +112,9 @@ function SidebarFile({
         onClick={onClick}
       >
         {desc && (
-          <>
+          <div className="flex flex-row gap-2">
             <Text fw={700}>{desc} </Text> <Text>(</Text>
-          </>
+          </div>
         )}
         <Text fw={400}>{name}</Text>
         {desc && <Text>)</Text>}
@@ -145,47 +157,82 @@ export default function Editor({
   creatorImageSrc,
   creator,
   canEditInfo,
-  files: dbFiles,
   description: dbDesc,
   previewUrl,
   id,
   title: dbTitle,
-  handleSave,
 }: {
   creatorImageSrc?: string;
   creator: string;
   canEditInfo: boolean;
-  files: Files;
   description: string;
   previewUrl: string;
   id: string;
   title: string;
-  handleSave: (
-    files: Files,
-    description: string,
-    title: string,
-    thumbnail: Blob
-  ) => Promise<{ status: string; message: string }>;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
   const [description, setDescription] = useState(dbDesc);
   const [title, setTitle] = useState(dbTitle);
-  const [files, setFiles] = useState<Files>(dbFiles);
+  const [files, setFiles] = useState<Files>({});
   const [currentFile, setCurrentFile] = useState(Object.keys(files)[0]);
   const [isChanged, setIsChanged] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSave, setLastSave] = useState<Date>();
-  const iterableFiles = Object.entries(files);
   const dropzoneRef = useRef<() => void>(null);
   const cmRef = useRef<ReactCodeMirrorRef>(null);
   const [outputFullScreened, setOutputFullScreened] = useState(false);
   const [currThumb, setCurrThumb] = useState<Blob>();
   const [isStopped, setIsStopped] = useState(true);
   const [thumbUrl, setThumbUrl] = useState("");
+  const [filesLoaded, setFilesLoaded] = useState(false);
   const [opened, { toggle }] = useDisclosure();
+  const forceUpdate = useForceUpdate();
+  const [activeSession, setActiveSession] = useState<ProjectSessionToken>();
+  const [isStarting, setIsStarting] = useState(false);
 
-  let frameSrc = previewUrl;
+  let frameSrc = "";
 
+  const supabase = createClient();
+
+  async function loadFiles() {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    let fileArr: (
+      | string
+      | {
+          name: string;
+          contents: string;
+        }
+    )[][] = [];
+
+    const { data: projectFiles } = await getProjectFiles(userId as string, id);
+
+    console.log(projectFiles);
+    projectFiles?.forEach(async (file) => {
+      if (!(file.name === ".emptyFolderPlaceholder")) {
+        console.log(file);
+        const { data: dataUrl } = supabase.storage
+          .from("projects")
+          .getPublicUrl(`/${userId}/${id}/${file.name}`);
+        console.log("Fetching...");
+        const fileContents = await fetch(
+          `${dataUrl.publicUrl}?cache=${Math.random()}`,
+          { cache: "no-store" }
+        );
+        console.log("Fetching complete!");
+        let tempFileArr = [
+          file.id,
+          { name: file.name, contents: await fileContents.text() },
+        ];
+        console.log(tempFileArr);
+        fileArr.push(tempFileArr);
+        setFiles(Object.fromEntries(fileArr));
+        if (fileArr.length === projectFiles.length - 1) {
+          console.log("Done");
+          setFilesLoaded(true);
+        }
+      }
+    });
+  }
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
@@ -193,37 +240,71 @@ export default function Editor({
     );
     console.log("Done saving");
   }
-  async function save() {
-    setIsSaving(true);
-    await saveThumbnail();
-    const status = await handleSave(
-      files,
-      description,
-      title,
-      currThumb as Blob
-    );
-    setIsSaving(false);
-    if (status.status === "error") {
-      console.error(status.message);
-      notifications.show({
-        position: "top-center",
-        withCloseButton: true,
-        autoClose: false,
-        title: "Your project did not save",
-        message: `Check your Internet connection, and try again later. Error info: ${status.message}`,
-        color: "red",
-        icon: <XMarkIcon />,
-      });
-      setIsChanged(true);
+  async function handleDelete(file: FileInfo) {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    console.log("Deleting");
+    console.log(file);
+    try {
+      const supabase = await createClient();
+      const err = await supabase.storage
+        .from("projects")
+        .remove([`${userId}/${id}/${file.name}`]);
+      if (err.error) {
+        console.error(err);
+        saveError(err.error?.message as string);
+      }
+      console.log("Deleted.");
+    } catch (e) {
+      console.error(e);
+      if (e instanceof Error) {
+        saveError(e.message);
+      } else {
+        saveError("Unknown error");
+      }
     }
-    if (status.status === "success") {
+  }
+  function saveError(err: string) {
+    console.error(err);
+    notifications.show({
+      position: "top-center",
+      withCloseButton: true,
+      autoClose: false,
+      title: "Your project did not save",
+      message: `Check your Internet connection, and try again later. Error info: ${err}`,
+      color: "red",
+      icon: <XMarkIcon />,
+    });
+  }
+  async function handleSave() {
+    setIsSaving(true);
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+
+    try {
+      const fileArr = Object.entries(files);
+      fileArr.forEach(async (file) => {
+        const err = await supabase.storage
+          .from("projects")
+          .upload(`/${userId}/${id}/${file[1].name}`, file[1].contents, {
+            upsert: true,
+          });
+        if (err.error) {
+          saveError(err.error?.message as string);
+        }
+      });
       notifications.clean();
       setIsChanged(false);
       setLastSave(new Date());
+      forceUpdate();
+    } catch (e) {
+      if (e instanceof Error) {
+        saveError(e.message);
+      }
+      saveError("Unknown error");
     }
+    setIsSaving(false);
   }
   const debounceSave = useDebouncedCallback(() => {
-    save();
+    handleSave();
   }, 2000);
 
   function handleChangeTitle(newTitle: string) {
@@ -248,10 +329,13 @@ export default function Editor({
   }
   function deleteFile(id: string) {
     let newFiles = files;
+    handleDelete(files[id]);
     delete newFiles[id];
+    console.log("okay I deleted it from the new dataset");
     setFiles(newFiles);
-    setIsChanged(true);
-    debounceSave();
+    console.log(files);
+    setCurrentFile("");
+    forceUpdate();
   }
   function checkDuplicateNames(id: string, name: string) {
     console.log("checking");
@@ -349,12 +433,34 @@ export default function Editor({
       children: <UndoRedoModal />,
     });
   }
-  function refreshPreview() {
+  async function refreshPreview() {
     setIsStopped(false);
+    setIsStarting(true);
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+
+    let session = activeSession;
+    if (
+      moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))
+    ) {
+      //validate session ID
+      console.log("Renewing");
+      const renewedSession = await renewProjectSession(id);
+      setActiveSession(renewedSession);
+      console.log("Renewed!")
+      console.log(renewedSession)
+      session = renewedSession;
+      forceUpdate();
+    }
+    console.log("Moving on")
+    console.log(session)
+    frameSrc = `http://localhost:5173/?project=${id}&user=${userId}&session=${session?.id}`;
+    console.log(frameSrc);
     if (outputFrame.current) {
       const frame = outputFrame.current as HTMLIFrameElement;
+      frame.src = frameSrc;
       frame.src = frame.src;
     }
+    setIsStarting(false);
   }
   function saveFile(id: string) {
     const file = new File([files[id].contents], files[id].name, {
@@ -380,95 +486,129 @@ export default function Editor({
     setIsStopped(true);
   }
 
+  async function syncSession() {
+    // TODO: Add logic to validate if project owner is correct
+    // This code will only run if:
+    // A) the code is private, and
+    // B) the owner or mods are viewing the project.
+    // This is to allow the runner to only download files
+    // pertaining to that session.
+    const session = await getFirstProjectSession(id); // gets recent project sessions
+    if (session) {
+      const newSession = await renewProjectSession(id);
+      setActiveSession(newSession);
+    } else {
+      const newSession = await newProjectSession(id);
+      setActiveSession(newSession);
+    }
+  }
+
+  useEffect(() => {
+    syncSession();
+    loadFiles();
+    return;
+  }, []);
+
   return (
     <AppShell
-      header={{ height: 72 }}
+      header={{ height: 78 }}
       padding={12}
       navbar={{ width: 300, breakpoint: 768, collapsed: { mobile: !opened } }}
     >
-      <AppShell.Header
-        className={`${styles.headerContainer} bg-[var(--c2c-dark-off-blue)]!`}
-        zIndex={100}
-      >
-        <div className={styles.headerLeft}>
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Badge size="lg" tt="capitalize">
-            Editor
-          </Badge>
-          <div className="hidden items-center flex-row gap-2 md:flex">
-            <Divider orientation="vertical" />
-            <Avatar src={creatorImageSrc} size="md" />
-            <div className={styles.userInfo}>
-              <Title order={5}>{title}</Title>
+      <AppShell.Header zIndex={49}>
+        <div className="flex items-center gap-2 flex-row p-3 bg-offblue-800 text-white">
+          <div className={styles.headerLeft}>
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
+            <div className="hidden items-center flex-row gap-2 md:flex">
+              <Image
+                src="/assets/logo-white.svg"
+                width={48}
+                height={48}
+                alt="Code2Connect logo"
+              />
+              <Divider orientation="vertical" />
+              <Avatar src={creatorImageSrc} size="md" />
+              <div className={styles.userInfo}>
+                <Title order={5}>{title}</Title>
 
-              <Text>
-                by{" "}
-                <Link href={`/profile/${creator}`} target="_blank">
-                  <Anchor component="button">{creator}</Anchor>
-                </Link>
-              </Text>
+                <Text>
+                  by{" "}
+                  <Link href={`/profile/${creator}`} target="_blank">
+                    <Anchor component="button" c="white">
+                      {creator}
+                    </Anchor>
+                  </Link>
+                </Text>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={styles.headerRight}>
-          <Tooltip
-            label={
-              lastSave
-                ? `Last saved ${lastSave.toLocaleTimeString()}`
-                : "Last saved never"
-            }
-          >
-            <Button
-              leftSection={<CloudArrowUpIcon width={16} height={16} />}
-              loading={isSaving}
-              onClick={save}
-              disabled={isSaving}
-              variant={isChanged ? "filled" : "outline"}
-              color="off-blue"
+          <div className={styles.headerRight}>
+            <Tooltip
+              label={
+                lastSave
+                  ? `Last saved ${lastSave.toLocaleTimeString()}`
+                  : "Last saved never"
+              }
             >
-              Save
-            </Button>
-          </Tooltip>
-          <Menu shadow="md" width={200} position="bottom-end">
-            <Menu.Target>
               <Button
-                color="orangey.3"
-                leftSection={<ShareIcon width={16} height={16} />}
-                autoContrast
+                leftSection={<CloudArrowUpIcon width={16} height={16} />}
+                loading={isSaving}
+                onClick={handleSave}
+                disabled={isSaving}
+                variant={isChanged ? "white" : "outline"}
+                color={isChanged ? "" : "white"}
               >
-                Share
+                Save
               </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<GlobeAmericasIcon width={16} height={16} />}
+            </Tooltip>
+            <Menu shadow="md" width={200} position="bottom-end">
+              <Menu.Target>
+                <Button
+                  color="orange.3"
+                  leftSection={<ShareIcon width={16} height={16} />}
+                  autoContrast
+                >
+                  Share
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<GlobeAmericasIcon width={16} height={16} />}
+                >
+                  Publish to the world
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Label>Education</Menu.Label>
+                <Menu.Item
+                  leftSection={<UserPlusIcon width={16} height={16} />}
+                >
+                  Add collaborator from your class
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<AcademicCapIcon width={16} height={16} />}
+                >
+                  Send to teacher
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+            <Link href={`/projects/${id}`}>
+              <Button
+                variant="white"
+                autoContrast
+                leftSection={<EyeIcon width={16} height={16} />}
               >
-                Publish to the world
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Label>Education</Menu.Label>
-              <Menu.Item leftSection={<UserPlusIcon width={16} height={16} />}>
-                Add collaborator from your class
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<AcademicCapIcon width={16} height={16} />}
-              >
-                Send to teacher
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-          <Link href={`/projects/${id}`}>
-            <Button
-              color="off-blue"
-              autoContrast
-              leftSection={<EyeIcon width={16} height={16} />}
-            >
-              Preview Public Page
-            </Button>
-          </Link>
+                Preview Public Page
+              </Button>
+            </Link>
+          </div>
         </div>
       </AppShell.Header>
-      <AppShell.Navbar zIndex={102} className="bg-[var(--c2c-dark-off-blue)]!">
+      <AppShell.Navbar zIndex={51} className="bg-[var(--c2c-dark-off-blue)]!">
         <div className="flex flex-col gap-2 p-2 h-full">
           <AppShell.Section>
             <div className="flex-1">
@@ -497,7 +637,7 @@ export default function Editor({
                   </Link>
                   <Menu.Item
                     leftSection={<CloudArrowUpIcon width={16} height={16} />}
-                    onClick={save}
+                    onClick={handleSave}
                   >
                     Save to the cloud
                   </Menu.Item>
@@ -608,7 +748,7 @@ export default function Editor({
               activateOnClick={false}
             >
               <div className="flex flex-col gap-2">
-                {iterableFiles.map((file) => {
+                {Object.entries(files).map((file) => {
                   const fileId = file[0];
                   const fileInfo: FileInfo = file[1] as FileInfo;
                   return (
@@ -646,15 +786,27 @@ export default function Editor({
             </div>
           </AppShell.Section>
         </div>
+        <LoadingOverlay visible={!filesLoaded} />
       </AppShell.Navbar>
       <AppShell.Main>
         <div className={styles.workspace}>
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 flex-1">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <CodeBracketIcon width={16} height={16} />
+              </ThemeIcon>
+              <Text fw={700}>Code</Text>
+              {files[currentFile] && (
+                <Text fw={400}>({files[currentFile].name})</Text>
+              )}
+            </div>
+
             <div className="flex flex-row gap-2">
               <Button
                 color="off-blue"
                 leftSection={<PlayIcon width={16} height={16} />}
                 onClick={refreshPreview}
+                loading={isStarting}
               >
                 Run
               </Button>
@@ -668,15 +820,6 @@ export default function Editor({
               </Button>
             </div>
           </div>
-          <div className="flex flex-row gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <CodeBracketIcon width={16} height={16} />
-            </ThemeIcon>
-            <Text fw={700}>Code</Text>
-            {files[currentFile] && (
-              <Text fw={400}>({files[currentFile].name})</Text>
-            )}
-          </div>
           {files[currentFile] ? (
             <CodeEditor
               className={styles.editorWrapper}
@@ -686,19 +829,20 @@ export default function Editor({
             />
           ) : (
             <div className={styles.editorPlaceholder}>
-              <FaceSmileIcon width={36} height={36} />
-              <Text>
-                Let's get started! Choose a file from the My Files pane.
-              </Text>
+              <Image
+                src="/assets/logo-black.svg"
+                width={240}
+                height={240}
+                alt="Code2Connect logo"
+                className="opacity-25"
+              />
+              <Text c="dimmed">Choose a file from the My Files pane</Text>
             </div>
           )}
         </div>
+        {!filesLoaded && <LoadingOverlay visible={!filesLoaded} />}
       </AppShell.Main>
-      <AppShell.Aside
-        w="25%"
-        zIndex={101}
-        className="bg-[var(--c2c-dark-off-blue)]!"
-      >
+      <AppShell.Aside w="25%" className="bg-[var(--c2c-dark-off-blue)]!">
         <div
           className={`${styles.outputPane} ${outputFullScreened && styles.fullScreened}`}
         >
@@ -710,7 +854,7 @@ export default function Editor({
               <Text fw={700}>Output</Text>
             </div>
             {outputFullScreened ? (
-              <div className="flex flex-row">
+              <div className="flex flex-row gap-2">
                 <Button
                   color="off-blue"
                   leftSection={<PlayIcon width={16} height={16} />}
@@ -743,17 +887,14 @@ export default function Editor({
               <ArrowTopRightOnSquareIcon width={16} height={16} />
             </Link>
           </div>
-          {isStopped ? (
-            <StoppedProject />
-          ) : (
-            <iframe
-              src={frameSrc}
-              sandbox="allow-scripts allow-same-origin"
-              allow="cross-origin-isolated"
-              className="rounded-sm h-full"
-              ref={outputFrame}
-            />
-          )}
+          {isStopped && <StoppedProject />}
+          <iframe
+            src={isStopped ? "about:blank" : frameSrc}
+            sandbox="allow-scripts allow-same-origin"
+            allow="cross-origin-isolated"
+            className={`rounded-sm h-full ${isStopped && "hidden"}`}
+            ref={outputFrame}
+          />
         </div>
       </AppShell.Aside>
     </AppShell>

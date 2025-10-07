@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           {
-            key: "Access-Control-Allow-Origin",
-            value: "http://localhost:3000",
-          },
-          {
             key: "Cross-Origin-Embedder-Policy",
             value: "require-corp",
           },
@@ -21,6 +17,15 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value: "cross-origin-isolated=*",
+          },
+        ],
+      },
+      {
+        source: "/api/(.*)",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "http://localhost:5173",
           },
         ],
       },

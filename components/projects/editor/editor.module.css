@@ -1,10 +1,3 @@
-.headerContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-direction: row;
-  padding: 12px;
-}
 .headerLeft,
 .headerRight {
   display: flex;
@@ -99,7 +92,7 @@
 .fullScreened {
   top: 0;
   left: 0;
-  z-index: 200;
+  z-index: 1001;
   width: 100%;
   height: 100%;
   position: fixed;

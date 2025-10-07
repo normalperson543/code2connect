@@ -56,23 +56,31 @@ export function LoginForm({
     <div
       className={cn(
         "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
-        className
+        className,
       )}
       {...props}
     >
       <div className="flex flex-col w-full">
         <Container className="w-full" my={40}>
           <form onSubmit={handleLogin}>
-            <Paper withBorder shadow="md" p={22} mt={30} radius="md" className="flex! flex-col gap-2">
+            <Paper
+              withBorder
+              shadow="md"
+              p={22}
+              mt={30}
+              radius="md"
+              className="flex! flex-col gap-2"
+            >
               <ThemeIcon className="shadow-md" size="xl" radius="xl">
                 <ArrowRightStartOnRectangleIcon width={16} height={16} />
-              </ThemeIcon> 
+              </ThemeIcon>
               <Text className="uppercase font-mono" c="dimmed">
                 Welcome to Code2Connect
               </Text>
               <Title>Sign In</Title>
               <Text>
-                Don't have an account? <Anchor>Create a new account</Anchor>
+                Don't have an account?{" "}
+                <Anchor href="/auth/sign-up">Create a new account</Anchor>
               </Text>
               {error}
               <TextInput
