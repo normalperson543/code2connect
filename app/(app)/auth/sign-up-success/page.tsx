@@ -34,7 +34,7 @@ export default function Page() {
             <div className="flex flex-col gap-2">
               <Title>Almost There</Title>
               <Text>
-                You've just registered for an account - congratulations! Check
+                You&apos;ve just registered for an account - congratulations! Check
                 your email for instructions to activate your account.
               </Text>
             </div>

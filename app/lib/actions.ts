@@ -3,11 +3,10 @@
 import { redirect } from "next/navigation";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
-import { getProject } from "./data";
 
 export async function createProject() {
   const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  //const user = await supabase.auth.getUser();
 
   console.log("Creating");
   const project = await prisma.project.create({
@@ -27,7 +26,7 @@ export async function renameProject(projectId: string, title: string) {
   const supabase = await createClient();
 
   const user = await supabase.auth.getUser();
-  const userId = user.data.user?.id as string;
+  //const userId = user.data.user?.id as string;
 
   /*console.log(userId) //TODO: add verify logic
   const project = await getProject(projectId, userId);
@@ -40,8 +39,8 @@ export async function renameProject(projectId: string, title: string) {
       id: projectId,
     },
     data: {
-      title: title
-    }
-  })
+      title: title,
+    },
+  });
   return updatedProject;
 }

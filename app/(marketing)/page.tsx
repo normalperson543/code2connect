@@ -1,5 +1,5 @@
 "use client";
-import { Title, Text, List, ThemeIcon, Button, Anchor } from "@mantine/core";
+import { Title, Text, List, ThemeIcon, Button } from "@mantine/core";
 import {
   ArrowRightIcon,
   BoltIcon,
@@ -15,10 +15,7 @@ import {
   SparklesIcon,
   StarIcon,
 } from "@heroicons/react/24/solid";
-import Link from "next/link";
 import { placeholder } from "../lib/constants";
-import HomepageCarousel from "@/components/homepage-carousel";
-import ProjectCard from "@/components/project-card";
 import Image from "next/image";
 export default function Home() {
   return (
@@ -97,11 +94,11 @@ export default function Home() {
           <Text c="white">
             Code2Connect is designed to be easy to get started and start using,
             even if you don't have programming experience. We simplified the IDE
-            so we put only the things you need, and nothing you don't. Just
+            so we put only the things you need, and nothing you don&apos;t. Just
             pure, blissful coding.
           </Text>
           <Button leftSection={<BoltIcon width={16} height={16} />}>
-            I want an easy IDE, let's get started
+            I want an easy IDE, let&apos;s get started
           </Button>
         </div>
       </div>
@@ -115,7 +112,7 @@ export default function Home() {
             Explore and share creations with a worldwide community
           </Title>
           <Text>
-            We're a community of coders and love to see what you create! Publish
+            We&apos;re a community of coders and love to see what you create! Publish
             your projects with just a couple of clicks, so others can play with
             your code. Explore other Python projects and play around or see
             their code. If you feel inspired, you can even fork projects so you

@@ -41,7 +41,7 @@ export default function ProjectPreviewPageUI({
   description,
   comments,
   clusters,
-  likes
+  likes,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -50,7 +50,7 @@ export default function ProjectPreviewPageUI({
   description: string;
   comments: CommentData[];
   clusters: Cluster[];
-  likes: number
+  likes: number;
 }) {
   return (
     <div className="flex flex-col ap-2">

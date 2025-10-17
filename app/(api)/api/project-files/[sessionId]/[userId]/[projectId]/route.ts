@@ -40,13 +40,6 @@ export async function GET(
   const { data: projectFiles } = await supabase.storage
     .from("projects")
     .list(`${userId}/${projectId}`);
-  let fileArr: (
-    | string
-    | {
-        name: string;
-        contents: string;
-      }
-  )[][] = [];
 
   let pysConfig = {};
 
@@ -55,7 +48,7 @@ export async function GET(
       packages: [],
     };
   }
-  let fileUrls = projectFiles.map((file) => [
+  const fileUrls = projectFiles.map((file) => [
     `http://localhost:3000/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
     `./${file.name}`,
   ]);

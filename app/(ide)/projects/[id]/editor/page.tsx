@@ -1,11 +1,7 @@
 import { getProject } from "@/app/lib/data";
-import prisma from "@/app/lib/db";
-import { FileInfo, Files } from "@/app/lib/files";
 import Editor from "@/components/projects/editor/editor";
 import { createClient } from "@/lib/supabase/server";
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
 
 export default async function EditorPage({
   params,

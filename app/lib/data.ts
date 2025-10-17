@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "./db";
-import moment from "moment";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getFirstProjectSession(projectId: string) {
@@ -51,7 +50,6 @@ export async function getProjectFiles(userId: string, id: string) {
 }
 export async function verifyProjectAccess(
   projectId: string,
-  authUserId: string
 ) {
   const project = prisma.project.findUnique({
     where: {
@@ -69,10 +67,20 @@ export async function verifyProjectAccess(
   }*/
   return project;
 }
-export async function getProject(projectId: string, authUserId: string) {
-  const project = await verifyProjectAccess(projectId, authUserId);
+export async function getProject(projectId: string) {
+  const project = await verifyProjectAccess(projectId);
   return project;
 }
-export async function getProjectLikes(projectId: string, authUserId: string) {
-  
+export async function getProjectLikes(projectId: string) {
+  const likes = await prisma.project.findMany({
+    where: {
+      id: projectId
+    },
+    include: {
+      _count: {
+        select: { likers: true }
+      }
+    }
+  })
+  return likes
 }

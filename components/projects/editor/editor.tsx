@@ -210,7 +210,7 @@ export default function Editor({
     const { data: projectFiles } = await getProjectFiles(userId as string, id);
 
     console.log(projectFiles);
-    if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true)
+    if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
         console.log(file);
@@ -220,7 +220,7 @@ export default function Editor({
         console.log("Fetching...");
         const fileContents = await fetch(
           `${dataUrl.publicUrl}?cache=${Math.random()}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         console.log("Fetching complete!");
         let tempFileArr = [
@@ -240,7 +240,7 @@ export default function Editor({
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement
+      cmRef.current?.editor as HTMLElement,
     );
     console.log("Done saving");
   }
@@ -271,7 +271,7 @@ export default function Editor({
     popupError(
       "Your project did not save",
       "Check your Internet connection, and try again later.",
-      err
+      err,
     );
   }
   function popupError(title: string, message: string, err: string) {
@@ -328,7 +328,7 @@ export default function Editor({
       popupError(
         "Couldn't rename your project",
         "",
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -663,12 +663,12 @@ export default function Editor({
                   >
                     New file
                   </Menu.Item>
-                    <Menu.Item
-                      leftSection={<PlusIcon width={16} height={16} />}
-                      onClick={createProject}
-                    >
-                      New project
-                    </Menu.Item>
+                  <Menu.Item
+                    leftSection={<PlusIcon width={16} height={16} />}
+                    onClick={createProject}
+                  >
+                    New project
+                  </Menu.Item>
                   <Menu.Item
                     leftSection={<CloudArrowUpIcon width={16} height={16} />}
                     onClick={handleSave}

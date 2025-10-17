@@ -28,11 +28,11 @@ model Profile {
   isTeacher     Boolean         @default(false)
 
   clusters         Cluster[]
-  managingClusters Cluster[]           @relation(name: "managers")
-  curatingClusters Cluster[]           @relation(name: "curators")
+  managingClusters Cluster[] @relation(name: "managers")
+  curatingClusters Cluster[] @relation(name: "curators")
   comments         Comment[]
-  replies            Reply[]
-  likedProjects    Project[]           @relation(name: "likers")
+  replies          Reply[]
+  likedProjects    Project[] @relation(name: "likers")
 }
 
 model Project {
@@ -46,11 +46,11 @@ model Project {
   isFeatured       Boolean   @default(false)
   isStarter        Boolean   @default(false)
 
-  owner     Profile?            @relation(fields: [profileId], references: [id])
+  owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?
-  clusters  Cluster?            @relation(fields: [clusterId], references: [id])
+  clusters  Cluster?  @relation(fields: [clusterId], references: [id])
   clusterId String?
-  likers    Profile[]           @relation(name: "likers")
+  likers    Profile[] @relation(name: "likers")
 }
 
 model Cluster {
@@ -61,7 +61,7 @@ model Cluster {
   dateCreated  DateTime  @default(now())
   dateModified DateTime  @default(now())
   isDisabled   Boolean   @default(false)
-  isIotm       Boolean  @default(false)
+  isIotm       Boolean   @default(false)
   projects     Project[]
   profileId    String
   managers     Profile[] @relation(name: "managers")
@@ -95,7 +95,6 @@ model Reply {
   Comment     Comment? @relation(fields: [commentId], references: [id])
   commentId   String?
 }
-
 
 model EduClass {
   id   String @id @unique @default(uuid())

@@ -1,4 +1,4 @@
-import { getProject } from "@/app/lib/data";
+import { getProject, getProjectLikes } from "@/app/lib/data";
 import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -13,11 +13,12 @@ export default async function ProjectPreviewPage({
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
-  const project = await getProject(id, user.data.user?.id as string);
+  const project = await getProject(id);
 
   if (!project) notFound();
 
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
+  const likes = await getProjectLikes(id);
 
   return (
     <ProjectPreviewPageUI
@@ -27,8 +28,7 @@ export default async function ProjectPreviewPage({
       description={project.description as string}
       comments={project.comments}
       clusters={project.clusters}
-      likes={project.likes}
-
+      likes={likes}
     />
   );
 }
