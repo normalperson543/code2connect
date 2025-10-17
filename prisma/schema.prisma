@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -31,25 +31,26 @@ model Profile {
   managingClusters Cluster[]           @relation(name: "managers")
   curatingClusters Cluster[]           @relation(name: "curators")
   comments         Comment[]
-  projectReports   ProjectReportCase[] @relation(name: "reporter")
-  projectReviews   ProjectReportCase[] @relation(name: "reviewer")
-  Reply            Reply[]
+  replies            Reply[]
+  likedProjects    Project[]           @relation(name: "likers")
 }
 
 model Project {
-  id          String    @id @unique @default(uuid())
-  title       String?
-  description String?
-  thumbnailId String?
-  likes       Int       @default(0)
-  comments    Comment[]
-  isPublic    Boolean @default(false)
+  id               String    @id @unique @default(uuid())
+  title            String?
+  description      String?
+  thumbnailId      String?
+  comments         Comment[]
+  isPublic         Boolean   @default(false)
+  commentsDisabled Boolean   @default(false)
+  isFeatured       Boolean   @default(false)
+  isStarter        Boolean   @default(false)
 
   owner     Profile?            @relation(fields: [profileId], references: [id])
   profileId String?
   clusters  Cluster?            @relation(fields: [clusterId], references: [id])
   clusterId String?
-  reports   ProjectReportCase[]
+  likers    Profile[]           @relation(name: "likers")
 }
 
 model Cluster {
@@ -60,6 +61,7 @@ model Cluster {
   dateCreated  DateTime  @default(now())
   dateModified DateTime  @default(now())
   isDisabled   Boolean   @default(false)
+  isIotm       Boolean  @default(false)
   projects     Project[]
   profileId    String
   managers     Profile[] @relation(name: "managers")
@@ -94,21 +96,6 @@ model Reply {
   commentId   String?
 }
 
-model ProjectReportCase {
-  id           String  @id @unique @default(uuid())
-  type         Int
-  reporter     Profile @relation(name: "reporter", fields: [reporterId], references: [id])
-  reviewer     Profile @relation(name: "reviewer", fields: [reviewerId], references: [id])
-  project      Project @relation(fields: [projectId], references: [id])
-  reason       String?
-  isReviewed   Boolean
-  actionTaken  Int
-  actionReason String
-  isClosed     Boolean
-  reporterId   String
-  reviewerId   String
-  projectId    String
-}
 
 model EduClass {
   id   String @id @unique @default(uuid())

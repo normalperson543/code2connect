@@ -49,7 +49,10 @@ export async function getProjectFiles(userId: string, id: string) {
 
   return await supabase.storage.from("projects").list(`${userId}/${id}`);
 }
-export async function getProject(projectId: string, authUserId: string) {
+export async function verifyProjectAccess(
+  projectId: string,
+  authUserId: string
+) {
   const project = prisma.project.findUnique({
     where: {
       id: projectId,
@@ -57,12 +60,19 @@ export async function getProject(projectId: string, authUserId: string) {
     include: {
       owner: true,
       clusters: true,
+      comments: true,
     },
   });
-
-  /*if (!(project.isPublic || authUserId === user.data.user?.id)) {
+  /*
+  if (!(project.isPublic || authUserId === user.data.user?.id)) {
     return;
   }*/
-
   return project;
+}
+export async function getProject(projectId: string, authUserId: string) {
+  const project = await verifyProjectAccess(projectId, authUserId);
+  return project;
+}
+export async function getProjectLikes(projectId: string, authUserId: string) {
+  
 }
