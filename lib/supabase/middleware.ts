@@ -46,7 +46,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (
-    request.nextUrl.pathname !== "/" &&
+    /*request.nextUrl.pathname !== "/" &&*/ //Remove when in prod
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&

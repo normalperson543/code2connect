@@ -2,7 +2,7 @@
 
 import prisma from "./db";
 import moment from "moment";
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server";
 
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
@@ -47,8 +47,32 @@ export async function revokeAllProjectSessions(projectId: string) {
 export async function getProjectFiles(userId: string, id: string) {
   const supabase = await createClient(false);
 
-  return await supabase.storage
-      .from("projects")
-      .list(`${userId}/${id}`);
+  return await supabase.storage.from("projects").list(`${userId}/${id}`);
+}
+export async function verifyProjectAccess(
+  projectId: string,
+  authUserId: string
+) {
+  const project = prisma.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    include: {
+      owner: true,
+      clusters: true,
+      comments: true,
+    },
+  });
+  /*
+  if (!(project.isPublic || authUserId === user.data.user?.id)) {
+    return;
+  }*/
+  return project;
+}
+export async function getProject(projectId: string, authUserId: string) {
+  const project = await verifyProjectAccess(projectId, authUserId);
+  return project;
+}
+export async function getProjectLikes(projectId: string, authUserId: string) {
   
 }

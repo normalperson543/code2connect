@@ -8,7 +8,9 @@ export async function createClient(privileged: boolean = false) {
   console.log();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    privileged ? process.env.SB_BACKEND_KEY! : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    privileged
+      ? process.env.SB_BACKEND_KEY!
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {

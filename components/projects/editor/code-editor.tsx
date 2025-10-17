@@ -30,7 +30,7 @@ import {
 } from "@codemirror/autocomplete";
 import { python } from "@codemirror/lang-python";
 import { lintKeymap } from "@codemirror/lint";
-import { auraInit } from "@uiw/codemirror-theme-aura";
+import { basicLightInit } from "@uiw/codemirror-theme-basic";
 import { tags as t } from "@lezer/highlight";
 import { Roboto_Mono } from "next/font/google";
 import { RefAttributes, useRef } from "react";
@@ -100,12 +100,11 @@ export default function CodeEditor({ ...props }: Props) {
         python(),
       ]}
       height="100%"
-      theme={auraInit({
+      theme={basicLightInit({
         settings: {
           caret: "#c6c6c6",
           fontFamily: "'Roboto Mono', monospace",
         },
-        styles: [{ tag: t.comment, color: "#6272a4" }],
       })}
       className={`${robotoMono.className} overflow-auto w-full h-full`}
     />

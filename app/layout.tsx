@@ -3,6 +3,7 @@ import { Manrope, Public_Sans } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
+import NextTopLoader from "nextjs-toploader";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,6 +40,7 @@ export default function RootLayout({
     >
       <head>
         <ColorSchemeScript />
+        <NextTopLoader />
       </head>
       <body className="w-full h-full">{children}</body>
     </html>

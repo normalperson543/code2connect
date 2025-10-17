@@ -29,19 +29,28 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
-import Comment from "../comment";
 import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
+import { Cluster, Comment as CommentData } from "@prisma/client";
+import Comment from "../comment";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
   creator,
   title,
+  description,
+  comments,
+  clusters,
+  likes
 }: {
   creatorImageSrc?: string;
   creator: string;
   canEditInfo: boolean;
   title: string;
+  description: string;
+  comments: CommentData[];
+  clusters: Cluster[];
+  likes: number
 }) {
   return (
     <div className="flex flex-col ap-2">
@@ -89,7 +98,7 @@ export default function ProjectPreviewPageUI({
             variant="subtle"
           >
             <div className="flex flex-row gap-1">
-              <Text fw={700}>639</Text> <Text>likes</Text>
+              <Text fw={700}>{likes}</Text> <Text>likes</Text>
             </div>
           </Button>
         </div>

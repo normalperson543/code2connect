@@ -1,7 +1,10 @@
+import { getProject } from "@/app/lib/data";
+import prisma from "@/app/lib/db";
 import { FileInfo, Files } from "@/app/lib/files";
 import Editor from "@/components/projects/editor/editor";
 import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
 export default async function EditorPage({
@@ -10,19 +13,27 @@ export default async function EditorPage({
   params: Promise<{ id: string }>;
 }) {
   //https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes
+
   const { id } = await params;
 
-  const supabase = await createClient(false);
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+
+  const project = await getProject(id, user.data.user?.id as string);
+
+  if (!project) notFound();
+
+  const canEditInfo = project.owner?.id === (user.data.user?.id as string);
 
   return (
     <>
       <Editor
-        creator="normalperson543"
-        canEditInfo={true}
-        description="a description"
-        previewUrl="http://localhost:5173"
+        creator={project.owner?.username as string}
+        canEditInfo={canEditInfo}
+        description={project.description as string}
+        previewUrl={process.env.PREVIEW_URL as string}
         id={id}
-        title="Guess the Number"
+        title={project.title as string}
       />
     </>
   );

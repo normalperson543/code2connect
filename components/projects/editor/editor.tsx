@@ -18,6 +18,7 @@ import {
   ThemeIcon,
   Title,
   Tooltip,
+  UnstyledButton,
 } from "@mantine/core";
 import styles from "./editor.module.css";
 import {
@@ -29,6 +30,7 @@ import {
   ArrowUpTrayIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
+  Bars3CenterLeftIcon,
   CheckIcon,
   CloudArrowUpIcon,
   CodeBracketIcon,
@@ -39,6 +41,7 @@ import {
   GlobeAmericasIcon,
   MagnifyingGlassIcon,
   PencilIcon,
+  PencilSquareIcon,
   PlayIcon,
   PlusIcon,
   ShareIcon,
@@ -79,6 +82,8 @@ import {
 } from "@/app/lib/data";
 import moment from "moment";
 import Image from "next/image";
+import RenameProjectModal from "@/components/modals/rename-project-modal";
+import { createProject, renameProject } from "@/app/lib/actions";
 
 function getExtension(filename: string) {
   const splitFn = filename.split(".");
@@ -101,32 +106,30 @@ function SidebarFile({
   onRename?: () => void;
   onDownload?: () => void;
 }) {
+  const [contextMenuShown, setContextMenuShown] = useState(false);
   return (
-    <ButtonGroup>
-      <Button
-        color={selected ? "off-blue" : "light"}
-        leftSection={<CodeBracketIcon width={16} height={16} />}
-        fullWidth
-        justify="left"
-        variant={selected ? "filled" : "subtle"}
-        onClick={onClick}
-      >
-        {desc && (
-          <div className="flex flex-row gap-2">
-            <Text fw={700}>{desc} </Text> <Text>(</Text>
-          </div>
-        )}
-        <Text fw={400}>{name}</Text>
-        {desc && <Text>)</Text>}
-      </Button>
-      <Menu shadow="md" width={200}>
+    <div
+      className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50`}
+      onClick={onClick}
+      onContextMenu={() => setContextMenuShown(true)}
+    >
+      <div className="flex flex-row w-full gap-2 items-center">
+        <CodeBracketIcon width={16} height={16} />
+        <div className="flex flex-row">
+          {desc && (
+            <div className="flex flex-row gap-2">
+              <Text fw={700}>{desc} </Text> <Text>(</Text>
+            </div>
+          )}
+          <Text fw={400}>{name}</Text>
+          {desc && <Text>)</Text>}
+        </div>
+      </div>
+      <Menu>
         <Menu.Target>
-          <Button
-            color={selected ? "off-blue" : "dark"}
-            variant={selected ? "filled" : "subtle"}
-          >
+          <div>
             <EllipsisVerticalIcon width={16} height={16} />
-          </Button>
+          </div>
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Item
@@ -150,7 +153,7 @@ function SidebarFile({
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-    </ButtonGroup>
+    </div>
   );
 }
 export default function Editor({
@@ -184,7 +187,7 @@ export default function Editor({
   const [currThumb, setCurrThumb] = useState<Blob>();
   const [isStopped, setIsStopped] = useState(true);
   const [thumbUrl, setThumbUrl] = useState("");
-  const [filesLoaded, setFilesLoaded] = useState(false);
+  const [filesLoaded, setFilesLoaded] = useState(false); // TODO: fix behavior
   const [opened, { toggle }] = useDisclosure();
   const forceUpdate = useForceUpdate();
   const [activeSession, setActiveSession] = useState<ProjectSessionToken>();
@@ -207,6 +210,7 @@ export default function Editor({
     const { data: projectFiles } = await getProjectFiles(userId as string, id);
 
     console.log(projectFiles);
+    if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true)
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
         console.log(file);
@@ -264,13 +268,21 @@ export default function Editor({
     }
   }
   function saveError(err: string) {
+    popupError(
+      "Your project did not save",
+      "Check your Internet connection, and try again later.",
+      err
+    );
+  }
+  function popupError(title: string, message: string, err: string) {
+    console.error(`${title}: ${message}`);
     console.error(err);
     notifications.show({
       position: "top-center",
       withCloseButton: true,
       autoClose: false,
-      title: "Your project did not save",
-      message: `Check your Internet connection, and try again later. Error info: ${err}`,
+      title: title,
+      message: `${message} | Error info: ${err}`,
       color: "red",
       icon: <XMarkIcon />,
     });
@@ -307,10 +319,18 @@ export default function Editor({
     handleSave();
   }, 2000);
 
-  function handleChangeTitle(newTitle: string) {
+  async function handleChangeTitle(newTitle: string) {
     setIsChanged(true);
     setTitle(newTitle);
-    debounceSave();
+    try {
+      await renameProject(id, newTitle);
+    } catch (error: unknown) {
+      popupError(
+        "Couldn't rename your project",
+        "",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
   }
   function handleChangeDescription(newDesc: string) {
     setIsChanged(true);
@@ -433,27 +453,38 @@ export default function Editor({
       children: <UndoRedoModal />,
     });
   }
+  function renameProjectModal() {
+    modals.open({
+      title: "Rename project",
+      children: (
+        <RenameProjectModal
+          defaultValue={title}
+          onComplete={(newName: string) => {
+            handleChangeTitle(newName);
+          }}
+        />
+      ),
+    });
+  }
   async function refreshPreview() {
     setIsStopped(false);
     setIsStarting(true);
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
     let session = activeSession;
-    if (
-      moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))
-    ) {
+    if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
       //validate session ID
       console.log("Renewing");
       const renewedSession = await renewProjectSession(id);
       setActiveSession(renewedSession);
-      console.log("Renewed!")
-      console.log(renewedSession)
+      console.log("Renewed!");
+      console.log(renewedSession);
       session = renewedSession;
       forceUpdate();
     }
-    console.log("Moving on")
-    console.log(session)
-    frameSrc = `http://localhost:5173/?project=${id}&user=${userId}&session=${session?.id}`;
+    console.log("Moving on");
+    console.log(session);
+    frameSrc = `${previewUrl}/?project=${id}&user=${userId}&session=${session?.id}`;
     console.log(frameSrc);
     if (outputFrame.current) {
       const frame = outputFrame.current as HTMLIFrameElement;
@@ -534,8 +565,12 @@ export default function Editor({
               <Divider orientation="vertical" />
               <Avatar src={creatorImageSrc} size="md" />
               <div className={styles.userInfo}>
-                <Title order={5}>{title}</Title>
-
+                <div className="flex flex-row gap-2">
+                  <Title order={5}>{title}</Title>
+                  <UnstyledButton onClick={renameProjectModal}>
+                    <PencilSquareIcon width={16} height={16} />
+                  </UnstyledButton>
+                </div>
                 <Text>
                   by{" "}
                   <Link href={`/profile/${creator}`} target="_blank">
@@ -628,13 +663,12 @@ export default function Editor({
                   >
                     New file
                   </Menu.Item>
-                  <Link href="/projects/new" target="_blank">
                     <Menu.Item
                       leftSection={<PlusIcon width={16} height={16} />}
+                      onClick={createProject}
                     >
                       New project
                     </Menu.Item>
-                  </Link>
                   <Menu.Item
                     leftSection={<CloudArrowUpIcon width={16} height={16} />}
                     onClick={handleSave}
@@ -724,11 +758,14 @@ export default function Editor({
               </Menu>
             </div>
           </AppShell.Section>
-          <AppShell.Section className="h-1/2 flex flex-col gap-2">
+          <AppShell.Section className="h-3/4 flex flex-col gap-2">
             <div className="w-full flex flex-row justify-between gap-2 items-center">
-              <Text c="dimmed" tt="uppercase">
-                My files
-              </Text>
+              <div className="flex flex-row gap-2 flex-1">
+                <ThemeIcon radius="xl" className="shadow-md">
+                  <DocumentIcon width={16} height={16} />
+                </ThemeIcon>
+                <Text fw={700}>Files</Text>
+              </div>
               <div className="flex flex-row gap-2">
                 <Button variant="outline">
                   <ArrowUpTrayIcon
@@ -742,38 +779,51 @@ export default function Editor({
                 </Button>
               </div>
             </div>
-            <Dropzone
-              onDrop={handleDrop}
-              openRef={dropzoneRef}
-              activateOnClick={false}
-            >
-              <div className="flex flex-col gap-2">
-                {Object.entries(files).map((file) => {
-                  const fileId = file[0];
-                  const fileInfo: FileInfo = file[1] as FileInfo;
-                  return (
-                    <SidebarFile
-                      desc={fileInfo.name === "main.py" ? "Code" : ""}
-                      name={fileInfo.name}
-                      onClick={() => {
-                        handleSwitchFile(fileId);
-                      }}
-                      selected={fileId === currentFile}
-                      key={fileId}
-                      onDeleteConfirm={() => deleteConfirm(fileId)}
-                      onRename={() => renameModal(fileId)}
-                      onDownload={() => saveFile(fileId)}
-                    />
-                  );
-                })}
-              </div>
-            </Dropzone>
+            <div className="h-3/4 overflow-y-auto">
+              <Dropzone
+                onDrop={handleDrop}
+                openRef={dropzoneRef}
+                activateOnClick={false}
+              >
+                <div className="flex flex-col gap-2 flex-1">
+                  {Object.entries(files).length === 0 && (
+                    <div className="flex flex-1 flex-col gap-2 items-center text-center">
+                      <p>
+                        Drag files here, or click the plus button to create a
+                        new file.
+                      </p>
+                    </div>
+                  )}
+                  {Object.entries(files).map((file) => {
+                    const fileId = file[0];
+                    const fileInfo: FileInfo = file[1] as FileInfo;
+                    return (
+                      <SidebarFile
+                        desc={fileInfo.name === "main.py" ? "Code" : ""}
+                        name={fileInfo.name}
+                        onClick={() => {
+                          handleSwitchFile(fileId);
+                        }}
+                        selected={fileId === currentFile}
+                        key={fileId}
+                        onDeleteConfirm={() => deleteConfirm(fileId)}
+                        onRename={() => renameModal(fileId)}
+                        onDownload={() => saveFile(fileId)}
+                      />
+                    );
+                  })}
+                </div>
+              </Dropzone>
+            </div>
           </AppShell.Section>
-          <AppShell.Section className="h-1/2">
+          <AppShell.Section className="h-1/4">
             <div className="flex flex-col gap-2">
-              <Text c="dimmed" tt="uppercase">
-                Description
-              </Text>
+              <div className="flex flex-row gap-2 flex-1">
+                <ThemeIcon radius="xl" className="shadow-md">
+                  <Bars3CenterLeftIcon width={16} height={16} />
+                </ThemeIcon>
+                <Text fw={700}>Description</Text>
+              </div>
               <Textarea
                 rows={6}
                 placeholder="What is your project about? What are the instructions? Any credits?"

@@ -23,10 +23,10 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="flex flex-col gap-2 justify-center">
-      <div className="pt-24 pb-24 pl-12 pr-12 spacing-between gap-4 bg-gradient-to-b from-black to-offblue-950 rounded-b-xl flex flex-row">
+      <div className="pt-24 pb-24 pl-12 pr-12 spacing-between gap-4 bg-radial-[at_50%] from-offblue-200 to-white to-90% rounded-b-xl flex flex-row">
         <div className="flex flex-col gap-4 w-1/2">
-          <Text className="uppercase text-white!">Welcome to Code2Connect</Text>
-          <Title className="text-5xl! font-extrabold text-balance inline text-white">
+          <Text className="uppercase text-black!">Welcome to Code2Connect</Text>
+          <Title className="text-5xl! font-extrabold text-balance inline text-blcak">
             The{" "}
             <Text
               variant="gradient"
@@ -49,16 +49,16 @@ export default function Home() {
               </ThemeIcon>
             }
           >
-            <List.Item c="white">
+            <List.Item c="black">
               Share your creations with other coders
             </List.Item>
-            <List.Item c="white">
+            <List.Item c="black">
               Works in your browser - not in the cloud
             </List.Item>
-            <List.Item c="white">
+            <List.Item c="black">
               Tutorials and education oriented features
             </List.Item>
-            <List.Item c="white">
+            <List.Item c="black">
               <b>100% free</b>
             </List.Item>
           </List>
@@ -122,8 +122,7 @@ export default function Home() {
             can change their code!
           </Text>
           <Text>
-            Want to see what our coders are creating? Check out the top projects
-            below 👇
+            Want to see what you can create? Check out the top projects below 👇
           </Text>
         </div>
       </div>
