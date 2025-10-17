@@ -2,18 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  CheckIcon,
+  Container,
+  Paper,
+  ThemeIcon,
+  Title,
+  Text,
+  TextInput,
+  Button,
+} from "@mantine/core";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 export function UpdatePasswordForm({
   className,
@@ -36,6 +37,9 @@ export function UpdatePasswordForm({
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/protected");
     } catch (error: unknown) {
+      if ((error as Error).message  === "Auth session missing!") {
+        setError("Whoops, looks like you need to authenticate first.")
+      }
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
@@ -43,36 +47,60 @@ export function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
-            Please enter your new password below.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleForgotPassword}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
-                <Input
+    <div
+      className={cn(
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex flex-col h-full w-full">
+        <Container className="w-full" my={40}>
+          <Paper
+            withBorder
+            shadow="md"
+            p={22}
+            mt={30}
+            radius="md"
+            className="flex! flex-col gap-2"
+          >
+            <ThemeIcon className="shadow-md" radius="xl" size="xl">
+              <QuestionMarkCircleIcon width={16} height={16} />
+            </ThemeIcon>
+            <Text className="uppercase font-mono" c="dimmed">
+              Update your account information
+            </Text>
+            <div className="flex flex-col gap-2">
+              <Title>Reset Password</Title>
+              <Text>
+                Please enter your new password below, and make sure you remember
+                it!
+              </Text>
+              {error}
+              <form onSubmit={handleForgotPassword}>
+                <TextInput
                   id="password"
                   type="password"
-                  placeholder="New password"
+                  placeholder="Be sure to set a secure password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
-              </Button>
+                <Button
+                  fullWidth
+                  mt="xl"
+                  radius="sm"
+                  type="submit"
+                  loading={isLoading}
+                  leftSection={<CheckIcon width={16} height={16} />}
+                >
+                  Reset password
+                </Button>
+              </form>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </Paper>
+        </Container>
+      </div>
     </div>
   );
 }
