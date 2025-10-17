@@ -93,7 +93,7 @@ export default function Home() {
           </Title>
           <Text c="white">
             Code2Connect is designed to be easy to get started and start using,
-            even if you don't have programming experience. We simplified the IDE
+            even if you don&apos;t have programming experience. We simplified the IDE
             so we put only the things you need, and nothing you don&apos;t. Just
             pure, blissful coding.
           </Text>

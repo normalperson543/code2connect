@@ -21,7 +21,6 @@ import {
   Bars3CenterLeftIcon,
   CalendarIcon,
   ChatBubbleBottomCenterIcon,
-  ClipboardIcon,
   CodeBracketIcon,
   EllipsisVerticalIcon,
   ExclamationTriangleIcon,

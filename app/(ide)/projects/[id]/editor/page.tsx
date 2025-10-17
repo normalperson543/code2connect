@@ -15,7 +15,7 @@ export default async function EditorPage({
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
-  const project = await getProject(id, user.data.user?.id as string);
+  const project = await getProject(id);
 
   if (!project) notFound();
 

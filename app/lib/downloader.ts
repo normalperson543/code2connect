@@ -6,7 +6,7 @@ export default function download(files: Files, filename: string) {
   const iterableFiles = Object.entries(files);
   const zip = new JSZip();
   iterableFiles.map((file) => {
-    const fileInfo: FileInfo = file[1] as FileInfo;
+    //const fileInfo: FileInfo = file[1] as FileInfo;
     zip.file(file[1].name, file[1].contents);
   });
   zip.generateAsync({ type: "blob" }).then(function (content) {

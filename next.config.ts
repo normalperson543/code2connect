@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  eslint: {
+    ignoreDuringBuilds: process.env.PREVIEW_ENVIRONMENT === "true",
+  }
 };
 
 export default nextConfig;

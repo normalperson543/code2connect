@@ -18,7 +18,6 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import Image from "next/image";
 import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm({
@@ -79,7 +78,7 @@ export function LoginForm({
               </Text>
               <Title>Sign In</Title>
               <Text>
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Anchor href="/auth/sign-up">Create a new account</Anchor>
               </Text>
               {error}
