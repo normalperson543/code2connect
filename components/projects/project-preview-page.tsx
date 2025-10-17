@@ -32,16 +32,23 @@ import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import Comment from "../comment";
 import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
+import { Cluster } from "@prisma/client";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
   creator,
   title,
+  description,
+  comments,
+  clusters,
 }: {
   creatorImageSrc?: string;
   creator: string;
   canEditInfo: boolean;
   title: string;
+  description: string;
+  comments: Comment[];
+  clusters: Cluster[];
 }) {
   return (
     <div className="flex flex-col ap-2">

@@ -19,6 +19,7 @@ import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 export default function EduAppShell({
   children,
@@ -32,21 +33,19 @@ export default function EduAppShell({
       padding={16}
       navbar={{ width: 300, breakpoint: 768, collapsed: { mobile: !opened } }}
     >
-      <AppShell.Header className="bg-[var(--body-bg-color)]!" zIndex={100}>
+      <AppShell.Header className="bg-offblue-700! text-white" zIndex={100}>
         <div className="flex flex-row justify-between items-center h-full p-4">
           <div className="flex flex-row gap-2 w-full h-full items-center">
+            <Image
+              src="/assets/logo-white.svg"
+              width={32}
+              height={32}
+              alt="Code2Connect logo"
+            />
             <ThemeIcon radius="xl" className="shadow-md">
               <AcademicCapIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={3}>
-              <Text
-                variant="gradient"
-                gradient={{ from: "blue", to: "black", deg: 90 }}
-                inherit
-              >
-                Education
-              </Text>
-            </Title>
+            <Title order={3}>Education</Title>
             <Divider orientation="vertical" />
             <Text>Centennial HS</Text>
           </div>

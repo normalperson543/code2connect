@@ -3,13 +3,128 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model ProjectSessionToken {
-  id String @default(uuid()) @unique
+  id        String   @unique @default(uuid())
   projectId String
-  date DateTime @default(now())
+  date      DateTime @default(now())
+}
+
+model Profile {
+  id            String          @id @unique @default(uuid())
+  username      String
+  bio           String          @default("")
+  dateCreated   DateTime        @default(now())
+  projects      Project[]
+  class         EduClass        @relation(fields: [eduClassId], references: [id])
+  eduClassId    String
+  EduAssignment EduAssignment[]
+  isDisabled    Boolean         @default(false)
+  isAdmin       Boolean         @default(false)
+  isTeacher     Boolean         @default(false)
+
+  clusters         Cluster[]
+  managingClusters Cluster[]           @relation(name: "managers")
+  curatingClusters Cluster[]           @relation(name: "curators")
+  comments         Comment[]
+  projectReports   ProjectReportCase[] @relation(name: "reporter")
+  projectReviews   ProjectReportCase[] @relation(name: "reviewer")
+  Reply            Reply[]
+}
+
+model Project {
+  id          String    @id @unique @default(uuid())
+  title       String?
+  description String?
+  thumbnailId String?
+  likes       Int       @default(0)
+  comments    Comment[]
+  isPublic    Boolean @default(false)
+
+  owner     Profile?            @relation(fields: [profileId], references: [id])
+  profileId String?
+  clusters  Cluster?            @relation(fields: [clusterId], references: [id])
+  clusterId String?
+  reports   ProjectReportCase[]
+}
+
+model Cluster {
+  id String @id @unique @default(uuid())
+
+  owner        Profile   @relation(fields: [profileId], references: [id])
+  description  String    @default("")
+  dateCreated  DateTime  @default(now())
+  dateModified DateTime  @default(now())
+  isDisabled   Boolean   @default(false)
+  projects     Project[]
+  profileId    String
+  managers     Profile[] @relation(name: "managers")
+  curators     Profile[] @relation(name: "curators")
+  comments     Comment[]
+}
+
+model Comment {
+  id String @id @unique @default(uuid())
+
+  owner       Profile  @relation(fields: [profileId], references: [id])
+  contents    String   @default("")
+  dateCreated DateTime @default(now())
+  isDisabled  Boolean  @default(false)
+  replies     Reply[]
+  profileId   String
+  Cluster     Cluster? @relation(fields: [clusterId], references: [id])
+  clusterId   String?
+  Project     Project? @relation(fields: [projectId], references: [id])
+  projectId   String?
+}
+
+model Reply {
+  id String @id @unique @default(uuid())
+
+  owner       Profile  @relation(fields: [profileId], references: [id])
+  contents    String   @default("")
+  dateCreated DateTime @default(now())
+  isDisabled  Boolean  @default(false)
+  profileId   String
+  Comment     Comment? @relation(fields: [commentId], references: [id])
+  commentId   String?
+}
+
+model ProjectReportCase {
+  id           String  @id @unique @default(uuid())
+  type         Int
+  reporter     Profile @relation(name: "reporter", fields: [reporterId], references: [id])
+  reviewer     Profile @relation(name: "reviewer", fields: [reviewerId], references: [id])
+  project      Project @relation(fields: [projectId], references: [id])
+  reason       String?
+  isReviewed   Boolean
+  actionTaken  Int
+  actionReason String
+  isClosed     Boolean
+  reporterId   String
+  reviewerId   String
+  projectId    String
+}
+
+model EduClass {
+  id   String @id @unique @default(uuid())
+  name String
+
+  dateCreated   DateTime  @default(now())
+  assocSchoolId String
+  members       Profile[]
+}
+
+model EduAssignment {
+  id          String   @id @unique @default(uuid())
+  name        String
+  description String   @default("")
+  dateCreated DateTime @default(now())
+  owner       Profile  @relation(fields: [profileId], references: [id])
+  status      Int
+  profileId   String
 }

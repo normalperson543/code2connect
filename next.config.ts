@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "http://localhost:5173",
+            value: process.env.PREVIEW_URL as string,
           },
         ],
       },

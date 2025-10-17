@@ -3,7 +3,10 @@ import Link from "next/link";
 import { Avatar, Button } from "@mantine/core";
 import { createClient } from "@/lib/supabase/server";
 import AuthLogoutButton from "./auth-logout-button";
-import { ArrowRightStartOnRectangleIcon, UserPlusIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightStartOnRectangleIcon,
+  UserPlusIcon,
+} from "@heroicons/react/24/outline";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -20,11 +23,18 @@ export default async function AuthButton() {
     </div>
   ) : (
     <div className="flex flex-row gap-2">
-      <Button size="sm" leftSection={<ArrowRightStartOnRectangleIcon width={16} height={16} />}>
+      <Button
+        size="sm"
+        leftSection={<ArrowRightStartOnRectangleIcon width={16} height={16} />}
+      >
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button size="sm" variant="gradient"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }} leftSection={<UserPlusIcon width={16} height={16} />}>
+      <Button
+        size="sm"
+        variant="gradient"
+        gradient={{ from: "blue", to: "cyan", deg: 135 }}
+        leftSection={<UserPlusIcon width={16} height={16} />}
+      >
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>

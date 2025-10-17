@@ -8,6 +8,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/nprogress/styles.css";
 import "@mantine/carousel/styles.css";
+import "@mantine/dates/styles.css";
 import HeaderLoggedIn from "./header-logged-in";
 import { ModalsProvider } from "@mantine/modals";
 import theme from "@/app/lib/theme";
