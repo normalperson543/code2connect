@@ -15,7 +15,7 @@ model ProjectSessionToken {
 }
 
 model Profile {
-  id            String          @id @unique @default(uuid())
+  id            String          @id @unique
   username      String
   bio           String          @default("")
   dateCreated   DateTime        @default(now())

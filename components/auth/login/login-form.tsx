@@ -10,6 +10,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Divider,
   Group,
   Paper,
   PasswordInput,
@@ -17,8 +18,12 @@ import {
   TextInput,
   ThemeIcon,
   Title,
+  UnstyledButton,
 } from "@mantine/core";
 import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import signInWithGoogle from "@/app/lib/oauth";
+import OAuthButtons from "../oauth-buttons";
 
 export function LoginForm({
   className,
@@ -121,6 +126,7 @@ export function LoginForm({
               >
                 Sign in
               </Button>
+              <OAuthButtons />
             </Paper>
           </form>
         </Container>
