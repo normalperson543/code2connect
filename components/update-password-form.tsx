@@ -37,8 +37,8 @@ export function UpdatePasswordForm({
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push("/protected");
     } catch (error: unknown) {
-      if ((error as Error).message  === "Auth session missing!") {
-        setError("Whoops, looks like you need to authenticate first.")
+      if ((error as Error).message === "Auth session missing!") {
+        setError("Whoops, looks like you need to authenticate first.");
       }
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -49,7 +49,7 @@ export function UpdatePasswordForm({
   return (
     <div
       className={cn(
-        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900",
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
         className
       )}
       {...props}
