@@ -41,6 +41,10 @@ model Project {
   commentsDisabled Boolean   @default(false)
   isFeatured       Boolean   @default(false)
   isStarter        Boolean   @default(false)
+  parentId         String?
+  parent           Project?  @relation(name: "forks", fields: [parentId], references: [id])
+  forks            Project[] @relation("forks")
+  
 
   owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?

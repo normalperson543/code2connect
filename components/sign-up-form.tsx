@@ -17,11 +17,12 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, EnvelopeIcon, IdentificationIcon, KeyIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import OAuthButtons from "./auth/oauth-buttons";
 import { PrismaClient, Prisma } from "@prisma/client";
 import prisma from "@/app/lib/db";
 import { createAccount } from "@/app/lib/actions";
+import WarningBanner from "./warning-banner";
 
 export function SignUpForm({
   className,
@@ -96,7 +97,7 @@ export function SignUpForm({
                 Welcome to Code2Connect
               </Text>
               <Title>Register</Title>
-              {error}
+              {error && <WarningBanner>{error}</WarningBanner>}
               <TextInput
                 label="Username"
                 placeholder="Your username"
@@ -106,6 +107,7 @@ export function SignUpForm({
                 type="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                leftSection={<IdentificationIcon width={16} height={16} />}
               />
               <TextInput
                 label="Email"
@@ -117,6 +119,7 @@ export function SignUpForm({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                leftSection={<EnvelopeIcon width={16} height={16} />}
               />
               <PasswordInput
                 label="Password"
@@ -128,6 +131,7 @@ export function SignUpForm({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                leftSection={<KeyIcon width={16} height={16} />}
               />
               <PasswordInput
                 label="Repeat password"
@@ -139,6 +143,7 @@ export function SignUpForm({
                 type="password"
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
+                leftSection={<KeyIcon  width={16} height={16} />}
               />
               <Button
                 fullWidth
@@ -146,6 +151,7 @@ export function SignUpForm({
                 radius="sm"
                 type="submit"
                 loading={isLoading}
+                leftSection={<ArrowRightIcon width={16} height={16} />}
               >
                 Register
               </Button>

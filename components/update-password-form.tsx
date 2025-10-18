@@ -14,7 +14,8 @@ import {
   TextInput,
   Button,
 } from "@mantine/core";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { KeyIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import WarningBanner from "./warning-banner";
 
 export function UpdatePasswordForm({
   className,
@@ -76,7 +77,7 @@ export function UpdatePasswordForm({
                 Please enter your new password below, and make sure you remember
                 it!
               </Text>
-              {error}
+              {error && <WarningBanner>{error}</WarningBanner>}
               <form onSubmit={handleForgotPassword}>
                 <TextInput
                   id="password"
@@ -85,6 +86,7 @@ export function UpdatePasswordForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  leftSection={<KeyIcon width={16} height={16} />}
                 />
                 <Button
                   fullWidth

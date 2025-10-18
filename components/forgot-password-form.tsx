@@ -12,7 +12,8 @@ import {
   Text,
   Button,
 } from "@mantine/core";
-import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, CheckIcon, EnvelopeIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import WarningBanner from "./warning-banner";
 
 export function ForgotPasswordForm({
   className,
@@ -91,7 +92,7 @@ export function ForgotPasswordForm({
                   If you forgot your password, enter your email and we'll try to
                   recover your password.
                 </Text>
-                {error}
+                {error && <WarningBanner>{error}</WarningBanner>}
                 <form onSubmit={handleForgotPassword}>
                   <TextInput
                     id="email"
@@ -100,6 +101,7 @@ export function ForgotPasswordForm({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    leftSection={<EnvelopeIcon width={16} height={16} />}
                   />
                   <Button
                     fullWidth
@@ -107,6 +109,7 @@ export function ForgotPasswordForm({
                     radius="sm"
                     type="submit"
                     loading={isLoading}
+                    leftSection={<ArrowRightIcon width={16} height={16} />}
                   >
                     Send reset email
                   </Button>

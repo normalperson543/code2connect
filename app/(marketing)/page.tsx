@@ -73,7 +73,7 @@ export default function Home() {
         </div>
         <div className="flex flex-row items-center justify-center w-1/2">
           <Image
-            src="/assets/logo-white.svg"
+            src="/assets/logo-black.svg"
             width={384}
             height={384}
             alt="Code2Connect logo"

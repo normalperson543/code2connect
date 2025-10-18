@@ -1,5 +1,6 @@
 "use server";
 
+import { Project } from "@prisma/client";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,8 +49,21 @@ export async function getProjectFiles(userId: string, id: string) {
 
   return await supabase.storage.from("projects").list(`${userId}/${id}`);
 }
-export async function verifyProjectAccess(projectId: string) {
-  const project = prisma.project.findUnique({
+export async function canAccessProject(isPublic: boolean | undefined | null, ownerId: string | undefined | null) {
+  const supabase = await createClient(false);
+  const user = await supabase.auth.getUser()
+  const authUserId = user.data.user?.id
+
+  console.log(isPublic)
+  console.log(ownerId === authUserId)
+  if (isPublic || ownerId === authUserId) {
+    console.log("Can Access")
+    return true;
+  }
+  return false;
+}
+export async function getProject(projectId: string) {
+  const project = await prisma.project.findUnique({
     where: {
       id: projectId,
     },
@@ -59,18 +73,12 @@ export async function verifyProjectAccess(projectId: string) {
       comments: true,
     },
   });
-  /*
-  if (!(project.isPublic || authUserId === user.data.user?.id)) {
-    return;
-  }*/
-  return project;
-}
-export async function getProject(projectId: string) {
-  const project = await verifyProjectAccess(projectId);
+  console.log(project)
+  if (!await canAccessProject(project?.isPublic, project?.profileId)) return;
   return project;
 }
 export async function getProjectLikes(projectId: string) {
-  const likes = await prisma.project.findMany({
+  const project = await prisma.project.findMany({
     where: {
       id: projectId,
     },
@@ -80,5 +88,6 @@ export async function getProjectLikes(projectId: string) {
       },
     },
   });
-  return likes;
+  if (!await canAccessProject(project[0].isPublic, project[0].profileId)) return;
+  return project[0]._count.likers;
 }

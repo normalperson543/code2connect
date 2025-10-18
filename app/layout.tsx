@@ -12,7 +12,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Code2Connect",
-  description: "The free coding community where you belong",
+  description: "The coding community where you belong",
 };
 
 const manrope = Manrope({
@@ -41,6 +41,12 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
         <NextTopLoader />
+        <link
+          rel="icon"
+          href="/icon?<generated>"
+          type="image/<generated>"
+          sizes="<generated>"
+        />
       </head>
       <body className="w-full h-full">{children}</body>
     </html>

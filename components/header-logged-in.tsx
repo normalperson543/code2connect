@@ -38,14 +38,11 @@ export default async function HeaderLoggedIn() {
         <Button leftSection={<FlagIcon width={16} height={16} />}>
           Tutorials
         </Button>
-        <Button leftSection={<LightBulbIcon width={16} height={16} />}>
-          Ideas
-        </Button>
-        <Menu shadow="md" width={200}>
-          <Button leftSection={<AcademicCapIcon width={16} height={16} />}>
-            Education
+        <Link href="/ideas">
+          <Button leftSection={<LightBulbIcon width={16} height={16} />}>
+            Ideas
           </Button>
-        </Menu>
+        </Link>
       </div>
       <div className="text-white">
         <AuthLoginButton />

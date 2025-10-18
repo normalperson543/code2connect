@@ -33,6 +33,8 @@ import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
 import { Cluster, Comment as CommentData } from "@prisma/client";
 import Comment from "../comment";
+import { fork } from "@/app/lib/actions";
+import { useState } from "react";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -54,9 +56,9 @@ export default function ProjectPreviewPageUI({
   likes: number;
   id: string;
 }) {
-  console.log(id);
+  const [isForking, setIsForking] = useState(false);
   return (
-    <div className="flex flex-col ap-2">
+    <div className="flex flex-col gap-2">
       <Heading>
         <div className="flex flex-row gap-2">
           <Avatar src={creatorImageSrc} size="lg" />
@@ -74,7 +76,7 @@ export default function ProjectPreviewPageUI({
         </div>
       </Heading>
       <div className="w-full h-full pl-16 pr-16 pt-4 pb-4 flex-row flex gap-2">
-        <div className="w-full h-full flex flex-col gap-2">
+        <div className="h-full flex flex-col gap-2 w-1/2 stretch">
           <ThumbPreview
             projectId={id}
             thumbnailUrl="/assets/default-image.png"
@@ -83,7 +85,7 @@ export default function ProjectPreviewPageUI({
           />
         </div>
 
-        <div className="flex flex-col h-full w-full gap-2">
+        <div className="flex flex-col h-full w-1/2 gap-2">
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />
@@ -91,7 +93,7 @@ export default function ProjectPreviewPageUI({
             <Title order={4}>Description</Title>
           </div>
 
-          <Textarea className="w-full h-full" w="100%" h="100%"></Textarea>
+          <textarea className="w-full h-full" ></textarea>
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">
@@ -106,11 +108,8 @@ export default function ProjectPreviewPageUI({
           </Button>
         </div>
         <div className="w-full flex flex-row gap-2 justify-end">
-          <Button leftSection={<SparklesIcon width={16} height={16} />}>
+          <Button leftSection={<SparklesIcon width={16} height={16} />} onClick={() => {fork(id); setIsForking(true);}} loading={isForking}>
             Fork
-          </Button>
-          <Button leftSection={<CodeBracketIcon width={16} height={16} />}>
-            Embed
           </Button>
           <Button leftSection={<PlusIcon width={16} height={16} />}>
             Add to cluster
