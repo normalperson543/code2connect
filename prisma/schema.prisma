@@ -44,8 +44,7 @@ model Project {
 
   owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?
-  clusters  Cluster?  @relation(fields: [clusterId], references: [id])
-  clusterId String?
+  clusters  Cluster[] @relation()
   likers    Profile[] @relation(name: "likers")
 }
 

@@ -19,7 +19,7 @@ export default async function ProjectPreviewPage({
 
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
   const projectWithLikes = await getProjectLikes(id);
-  const likes = projectWithLikes[0]._count.likers
+  const likes = projectWithLikes[0]._count.likers;
 
   return (
     <ProjectPreviewPageUI

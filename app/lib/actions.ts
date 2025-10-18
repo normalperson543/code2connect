@@ -23,7 +23,12 @@ export async function createProject() {
       }*/
     },
   });
-  await supabase.storage.from("projects").upload(`/${user.data.user?.id}/${project.id}/main.py`, "print('Hello, World!')")
+  await supabase.storage
+    .from("projects")
+    .upload(
+      `/${user.data.user?.id}/${project.id}/main.py`,
+      "print('Hello, World!')",
+    );
   redirect(`/projects/${project.id}/editor`);
 }
 

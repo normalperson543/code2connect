@@ -23,18 +23,24 @@ export async function GET(
   const session = await getProjectSession(sessionId, projectId);
 
   if (!session)
-    return new Response(JSON.stringify({ response: "Invalid ID" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   if (moment(new Date()).isAfter(moment(session?.date).add("10", "m"))) {
     await prisma.projectSessionToken.delete({
       where: {
         id: sessionId,
       },
     });
-    return new Response(JSON.stringify({ response: "Invalidated ID" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   }
 
   const { data: projectFiles } = await supabase.storage
@@ -44,9 +50,9 @@ export async function GET(
   let pysConfig = {};
 
   if (!projectFiles) {
-    return {
+    return Response.json({
       packages: [],
-    };
+    });
   }
   const fileUrls = projectFiles.map((file) => [
     `http://localhost:3000/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
@@ -59,5 +65,5 @@ export async function GET(
   };
   console.log(projectFiles);
   console.log(pysConfig);
-  return new Response(JSON.stringify(pysConfig));
+  return Response.json(pysConfig);
 }

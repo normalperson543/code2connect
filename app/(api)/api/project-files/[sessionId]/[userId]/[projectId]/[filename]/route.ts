@@ -24,9 +24,12 @@ export async function GET(
   const session = await getProjectSession(sessionId, projectId);
 
   if (!session || session.projectId !== projectId)
-    return new Response(JSON.stringify({ response: "Unauthorized" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   if (moment(new Date()).isAfter(moment(session?.date).add("10", "m"))) {
     console.log("Renewing");
     await prisma.projectSessionToken.delete({
@@ -34,9 +37,12 @@ export async function GET(
         id: sessionId,
       },
     });
-    return new Response(JSON.stringify({ response: "Unauthorized" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   }
 
   const { data: dataUrl } = supabase.storage

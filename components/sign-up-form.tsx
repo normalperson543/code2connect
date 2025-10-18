@@ -57,8 +57,8 @@ export function SignUpForm({
       });
       if (error) throw error;
 
-      if(!data.user) {
-        throw new Error("User ID missing after signup when creating profile.")
+      if (!data.user) {
+        throw new Error("User ID missing after signup when creating profile.");
       }
       await createAccount(username, data.user?.id);
 

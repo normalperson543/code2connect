@@ -49,12 +49,12 @@ export default function ProjectPreviewPageUI({
   canEditInfo: boolean;
   title: string;
   description: string;
-  comments: CommentData[];
-  clusters: Cluster[];
+  comments: CommentData[] | null;
+  clusters: Cluster[] | null;
   likes: number;
   id: string;
 }) {
-  console.log(id)
+  console.log(id);
   return (
     <div className="flex flex-col ap-2">
       <Heading>
