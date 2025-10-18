@@ -18,7 +18,8 @@ export default async function ProjectPreviewPage({
   if (!project) notFound();
 
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
-  const likes = await getProjectLikes(id);
+  const projectWithLikes = await getProjectLikes(id);
+  const likes = projectWithLikes[0]._count.likers
 
   return (
     <ProjectPreviewPageUI
@@ -29,6 +30,7 @@ export default async function ProjectPreviewPage({
       comments={project.comments}
       clusters={project.clusters}
       likes={likes}
+      id={id}
     />
   );
 }

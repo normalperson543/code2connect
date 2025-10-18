@@ -42,6 +42,7 @@ export default function ProjectPreviewPageUI({
   comments,
   clusters,
   likes,
+  id,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -51,7 +52,9 @@ export default function ProjectPreviewPageUI({
   comments: CommentData[];
   clusters: Cluster[];
   likes: number;
+  id: string;
 }) {
+  console.log(id)
   return (
     <div className="flex flex-col ap-2">
       <Heading>
@@ -73,7 +76,7 @@ export default function ProjectPreviewPageUI({
       <div className="w-full h-full pl-16 pr-16 pt-4 pb-4 flex-row flex gap-2">
         <div className="w-full h-full flex flex-col gap-2">
           <ThumbPreview
-            projectId="a"
+            projectId={id}
             thumbnailUrl="/assets/default-image.png"
             maxWidth="100%"
             width="100%"

@@ -43,6 +43,7 @@ import {
   PencilIcon,
   PencilSquareIcon,
   PlayIcon,
+  PlusCircleIcon,
   PlusIcon,
   ShareIcon,
   StopIcon,
@@ -220,7 +221,7 @@ export default function Editor({
         console.log("Fetching...");
         const fileContents = await fetch(
           `${dataUrl.publicUrl}?cache=${Math.random()}`,
-          { cache: "no-store" },
+          { cache: "no-store" }
         );
         console.log("Fetching complete!");
         let tempFileArr = [
@@ -230,7 +231,9 @@ export default function Editor({
         console.log(tempFileArr);
         fileArr.push(tempFileArr);
         setFiles(Object.fromEntries(fileArr));
-        if (fileArr.length === projectFiles.length - 1) {
+        console.log(fileArr.length);
+        console.log(projectFiles.length);
+        if (fileArr.length === projectFiles.length) {
           console.log("Done");
           setFilesLoaded(true);
         }
@@ -240,7 +243,7 @@ export default function Editor({
   async function saveThumbnail() {
     console.log("Saving thumb");
     const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement,
+      cmRef.current?.editor as HTMLElement
     );
     console.log("Done saving");
   }
@@ -271,7 +274,7 @@ export default function Editor({
     popupError(
       "Your project did not save",
       "Check your Internet connection, and try again later.",
-      err,
+      err
     );
   }
   function popupError(title: string, message: string, err: string) {
@@ -328,7 +331,7 @@ export default function Editor({
       popupError(
         "Couldn't rename your project",
         "",
-        error instanceof Error ? error.message : "Unknown error",
+        error instanceof Error ? error.message : "Unknown error"
       );
     }
   }
@@ -783,15 +786,26 @@ export default function Editor({
               <Dropzone
                 onDrop={handleDrop}
                 openRef={dropzoneRef}
-                activateOnClick={false}
+                activateOnClick={Object.entries(files).length === 0}
+                className="h-full"
+                styles={{
+                  inner: {
+                    height: "100%",
+                  },
+                }}
               >
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col gap-2 flex-1 h-full">
                   {Object.entries(files).length === 0 && (
-                    <div className="flex flex-1 flex-col gap-2 items-center text-center">
-                      <p>
-                        Drag files here, or click the plus button to create a
-                        new file.
-                      </p>
+                    <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-2 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full cursor-pointer">
+                      <PlusCircleIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <Text c="dimmed">
+                        Drag files here, click here to upload, or click the plus
+                        button to create a new file.
+                      </Text>
                     </div>
                   )}
                   {Object.entries(files).map((file) => {
