@@ -19,6 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import OAuthButtons from "./auth/oauth-buttons";
+import { PrismaClient, Prisma } from "@prisma/client";
+import prisma from "@/app/lib/db";
 
 export function SignUpForm({
   className,
@@ -29,6 +31,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("")
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -52,6 +55,13 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+
+      const user = await prisma.profile.create({
+        data: {
+          username: username
+        }
+      })
+
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -87,6 +97,16 @@ export function SignUpForm({
               </Text>
               <Title>Register</Title>
               {error}
+              <TextInput
+                label="Username"
+                placeholder="Your username"
+                required
+                radius="md"
+                id="username"
+                type="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
               <TextInput
                 label="Email"
                 description="If you're creating a student account, make sure to enter your school email. Otherwise, you may not be able to enroll into a class!"
