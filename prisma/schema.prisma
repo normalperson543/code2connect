@@ -15,14 +15,15 @@ model ProjectSessionToken {
 }
 
 model Profile {
-  id          String    @id @unique
-  username    String
-  bio         String    @default("")
-  dateCreated DateTime  @default(now())
-  projects    Project[]
-  isDisabled  Boolean   @default(false)
-  isAdmin     Boolean   @default(false)
-
+  id               String    @id @unique
+  username         String    @unique
+  bio              String    @default("")
+  dateCreated      DateTime  @default(now())
+  projects         Project[]
+  isDisabled       Boolean   @default(false)
+  isAdmin          Boolean   @default(false)
+  followers        Profile[] @relation("followers")
+  following        Profile[] @relation("followers")
   clusters         Cluster[]
   managingClusters Cluster[] @relation(name: "managers")
   curatingClusters Cluster[] @relation(name: "curators")
@@ -35,7 +36,7 @@ model Project {
   id               String    @id @unique @default(uuid())
   title            String?
   description      String?
-  thumbnailId      String?
+  thumbnail        String?
   comments         Comment[]
   isPublic         Boolean   @default(false)
   commentsDisabled Boolean   @default(false)
@@ -44,7 +45,6 @@ model Project {
   parentId         String?
   parent           Project?  @relation(name: "forks", fields: [parentId], references: [id])
   forks            Project[] @relation("forks")
-  
 
   owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?
@@ -55,12 +55,14 @@ model Project {
 model Cluster {
   id String @id @unique @default(uuid())
 
+  title        String?
   owner        Profile   @relation(fields: [profileId], references: [id])
   description  String    @default("")
   dateCreated  DateTime  @default(now())
   dateModified DateTime  @default(now())
   isDisabled   Boolean   @default(false)
   isIotm       Boolean   @default(false)
+  thumbnail    String?
   projects     Project[]
   profileId    String
   managers     Profile[] @relation(name: "managers")

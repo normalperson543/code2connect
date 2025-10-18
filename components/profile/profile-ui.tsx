@@ -34,17 +34,43 @@ import { EllipsisVerticalIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import CommentModule from "../comment-module";
 import BHeading from "../heading";
 import { UserPlus } from "lucide-react";
+import { Profile } from "@prisma/client";
+import { editProfileBio } from "@/app/lib/actions";
+import { useDebouncedCallback } from "use-debounce";
 
-export default function ProfileUI() {
+export default function ProfileUI({accessedUserName, accessedProfile, currentUser}: {accessedUserName: string, accessedProfile: Profile, currentUser: Profile}) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
+  const [bio, setBio] = useState(accessedProfile.bio)
+  const [isSavingBio, setIsSavingBio] = useState<boolean>(false);
+
+  async function handleSave() {
+    setIsSavingBio(true)
+    const userId = profileData.id
+    
+    try {
+      editProfileBio(userId, bio)
+    } catch (error) {
+      throw error
+    }
+    setIsSavingBio(false)
+  }
+
+  const debounceSave = useDebouncedCallback(() => {
+    handleSave();
+  }, 2000);
+
+  function handleChangeBio(newBio: string) {
+    setBio(newBio)
+    debounceSave();
+  }
 
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
-        <div className="flex flex-col gap-2 w-1/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
+        <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
           <div className="flex flex-row gap-2">
             <Avatar size="md" />
-            <Title order={2}>normalperson543</Title>
+            <Title order={2}>{accessedUserName}</Title>
           </div>
           <div className="flex flex-row gap-2">
             <Button
@@ -93,7 +119,15 @@ export default function ProfileUI() {
             </ThemeIcon>
             <Title order={4}>Bio</Title>
           </div>
-          <Textarea rows={8}></Textarea>
+          <Textarea 
+            rows={8} 
+            placeholder="Who are you? Wat do you want people to know about you?" 
+            value={bio}
+            onChange={(e) => {
+              const target = e.target as HTMLTextAreaElement;
+              handleChangeBio(target.value)
+            }}
+            ></Textarea>
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <UsersIcon width={16} height={16} />
@@ -143,10 +177,6 @@ export default function ProfileUI() {
             </Avatar.Group>
           </div>
           <Divider />
-          <div className="flex flex-row gap-2 items-center">
-            <CalendarIcon width={16} height={16} />
-            <Text>Last modified {new Date().toLocaleDateString()}</Text>
-          </div>
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
             <Text>58 followers</Text>

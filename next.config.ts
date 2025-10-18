@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: process.env.PREVIEW_ENVIRONMENT === "true",
   },
+  images: {
+    remotePatterns: [new URL('https://www.pexels.com/photo/**')],
+  }
 };
 
 export default nextConfig;

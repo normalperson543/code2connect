@@ -42,6 +42,7 @@ import {
   MagnifyingGlassIcon,
   PencilIcon,
   PencilSquareIcon,
+  PhotoIcon,
   PlayIcon,
   PlusCircleIcon,
   PlusIcon,
@@ -78,6 +79,7 @@ import {
   getFirstProjectSession,
   getProjectFiles,
   getProjectSession,
+  getThumbnailSearchResults,
   newProjectSession,
   renewProjectSession,
 } from "@/app/lib/data";
@@ -85,6 +87,8 @@ import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
 import { createProject, renameProject } from "@/app/lib/actions";
+import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
+import { PhotosWithTotalResults } from "pexels";
 
 function getExtension(filename: string) {
   const splitFn = filename.split(".");
@@ -441,6 +445,19 @@ export default function Editor({
       ),
     });
   }
+  async function thumbnailPickerModal(id: string) {
+    const results = await getThumbnailSearchResults(title)
+    console.log(results);
+    modals.open({
+      title: "Pick a thumbnail",
+      children: (
+        <ThumbnailPickerModal
+          onComplete={(newName: string) => renameFile(id, newName)}
+          searchResults={results as PhotosWithTotalResults}
+        />
+      ),
+    });
+  }
   function newFileModal() {
     modals.open({
       title: "New file",
@@ -620,18 +637,6 @@ export default function Editor({
                 >
                   Publish to the world
                 </Menu.Item>
-                <Menu.Divider />
-                <Menu.Label>Education</Menu.Label>
-                <Menu.Item
-                  leftSection={<UserPlusIcon width={16} height={16} />}
-                >
-                  Add collaborator from your class
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<AcademicCapIcon width={16} height={16} />}
-                >
-                  Send to teacher
-                </Menu.Item>
               </Menu.Dropdown>
             </Menu>
             <Link href={`/projects/${id}`}>
@@ -640,7 +645,7 @@ export default function Editor({
                 autoContrast
                 leftSection={<EyeIcon width={16} height={16} />}
               >
-                Preview Public Page
+                Preview Page
               </Button>
             </Link>
           </div>
@@ -689,6 +694,12 @@ export default function Editor({
                     onClick={() => download(files, title)}
                   >
                     Download project
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<PhotoIcon width={16} height={16} />}
+                    onClick={() => thumbnailPickerModal(title)}
+                  >
+                    Change thumbnail
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

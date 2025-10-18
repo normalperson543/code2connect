@@ -114,3 +114,16 @@ export async function fork(projectId: string) {
   }
   redirect(`/projects/${project.id}/editor`);
 }
+
+export async function editProfileBio(userId: string, newBio: string) {
+  const updateProfileBio = await prisma.profile.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      bio: newBio,
+    },
+  });
+
+  return updateProfileBio
+}

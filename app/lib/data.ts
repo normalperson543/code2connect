@@ -3,7 +3,7 @@
 import { Project } from "@prisma/client";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
-
+import { createClient as createPexelsClient } from 'pexels';
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
     where: {
@@ -49,15 +49,18 @@ export async function getProjectFiles(userId: string, id: string) {
 
   return await supabase.storage.from("projects").list(`${userId}/${id}`);
 }
-export async function canAccessProject(isPublic: boolean | undefined | null, ownerId: string | undefined | null) {
+export async function canAccessProject(
+  isPublic: boolean | undefined | null,
+  ownerId: string | undefined | null
+) {
   const supabase = await createClient(false);
-  const user = await supabase.auth.getUser()
-  const authUserId = user.data.user?.id
+  const user = await supabase.auth.getUser();
+  const authUserId = user.data.user?.id;
 
-  console.log(isPublic)
-  console.log(ownerId === authUserId)
+  console.log(isPublic);
+  console.log(ownerId === authUserId);
   if (isPublic || ownerId === authUserId) {
-    console.log("Can Access")
+    console.log("Can Access");
     return true;
   }
   return false;
@@ -73,8 +76,8 @@ export async function getProject(projectId: string) {
       comments: true,
     },
   });
-  console.log(project)
-  if (!await canAccessProject(project?.isPublic, project?.profileId)) return;
+  console.log(project);
+  if (!(await canAccessProject(project?.isPublic, project?.profileId))) return;
   return project;
 }
 export async function getProjectLikes(projectId: string) {
@@ -88,6 +91,46 @@ export async function getProjectLikes(projectId: string) {
       },
     },
   });
-  if (!await canAccessProject(project[0].isPublic, project[0].profileId)) return;
+  if (!(await canAccessProject(project[0].isPublic, project[0].profileId)))
+    return;
   return project[0]._count.likers;
+}
+
+export async function getProfile(userId: string) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  return profile;
+}
+
+export async function getProfileBio(userId: string, bio: string) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  return profile;
+}
+
+export async function getThumbnailSearchResults(
+  searchQuery: string,
+  page: number = 1
+) {
+  const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
+  const res = await client.photos.search({query: searchQuery})
+  return res;
+}
+
+export async function getProfileWithUsername(userName: string) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      username: userName,
+    },
+  });
+
+  return profile
 }

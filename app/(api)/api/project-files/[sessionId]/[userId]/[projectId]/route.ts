@@ -55,7 +55,7 @@ export async function GET(
     });
   }
   const fileUrls = projectFiles.map((file) => [
-    `http://${process.env.DEPLOY_URL}/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
+    `${process.env.DEPLOY_URL}/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
     `./${file.name}`,
   ]);
 

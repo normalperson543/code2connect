@@ -7,6 +7,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/outline";
+import { getProfile } from "@/app/lib/data";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -15,10 +16,12 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return user ? (
+  const profile = user ? await getProfile(user.id) : null;
+
+  return user && profile ? (
     <div className="flex items-center gap-2">
       <Avatar size="sm" bg="white" />
-      <div className="flex items-center gap-4">{user.email}</div>
+      <div className="flex items-center gap-4">{profile.username}</div>
       <AuthLogoutButton />
     </div>
   ) : (

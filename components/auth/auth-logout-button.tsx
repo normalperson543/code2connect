@@ -1,7 +1,8 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@mantine/core";
+import { AdjustmentsHorizontalIcon, ArrowLeftStartOnRectangleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Button, Menu } from "@mantine/core";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
@@ -13,5 +14,21 @@ export default function LogoutButton() {
     router.push("/auth/login");
   };
 
-  return <Button onClick={logout}>Logout</Button>;
+  return (
+    <Menu>
+      <Menu.Target>
+        <Button>
+          <ChevronDownIcon width={16} height={16} />
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item leftSection={<AdjustmentsHorizontalIcon width={16} height={16} />}>
+          Settings
+        </Menu.Item>
+        <Menu.Item leftSection={<ArrowLeftStartOnRectangleIcon width={16} height={16} />} c="red">
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
 }
