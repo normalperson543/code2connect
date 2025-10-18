@@ -5,8 +5,12 @@ import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createProject() {
-  //const supabase = await createClient();
-  //const user = await supabase.auth.getUser();
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
 
   console.log("Creating");
   const project = await prisma.project.create({
@@ -43,4 +47,13 @@ export async function renameProject(projectId: string, title: string) {
     },
   });
   return updatedProject;
+}
+
+export async function createAccount(username: string, userId: string) {
+  const user = await prisma.profile.create({
+    data: {
+      id: userId,
+      username: username,
+    },
+  });
 }

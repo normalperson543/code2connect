@@ -21,6 +21,7 @@ import { SparklesIcon } from "@heroicons/react/24/outline";
 import OAuthButtons from "./auth/oauth-buttons";
 import { PrismaClient, Prisma } from "@prisma/client";
 import prisma from "@/app/lib/db";
+import { createAccount } from "@/app/lib/actions";
 
 export function SignUpForm({
   className,
@@ -31,7 +32,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState("");
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -56,11 +57,7 @@ export function SignUpForm({
       });
       if (error) throw error;
 
-      const user = await prisma.profile.create({
-        data: {
-          username: username
-        }
-      })
+      await createAccount(username);
 
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {

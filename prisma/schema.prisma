@@ -15,13 +15,13 @@ model ProjectSessionToken {
 }
 
 model Profile {
-  id            String          @id @unique
-  username      String
-  bio           String          @default("")
-  dateCreated   DateTime        @default(now())
-  projects      Project[]
-  isDisabled    Boolean         @default(false)
-  isAdmin       Boolean         @default(false)
+  id          String    @id @unique
+  username    String
+  bio         String    @default("")
+  dateCreated DateTime  @default(now())
+  projects    Project[]
+  isDisabled  Boolean   @default(false)
+  isAdmin     Boolean   @default(false)
 
   clusters         Cluster[]
   managingClusters Cluster[] @relation(name: "managers")

@@ -48,9 +48,7 @@ export async function getProjectFiles(userId: string, id: string) {
 
   return await supabase.storage.from("projects").list(`${userId}/${id}`);
 }
-export async function verifyProjectAccess(
-  projectId: string,
-) {
+export async function verifyProjectAccess(projectId: string) {
   const project = prisma.project.findUnique({
     where: {
       id: projectId,
@@ -74,13 +72,13 @@ export async function getProject(projectId: string) {
 export async function getProjectLikes(projectId: string) {
   const likes = await prisma.project.findMany({
     where: {
-      id: projectId
+      id: projectId,
     },
     include: {
       _count: {
-        select: { likers: true }
-      }
-    }
-  })
-  return likes
+        select: { likers: true },
+      },
+    },
+  });
+  return likes;
 }

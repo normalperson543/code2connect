@@ -93,9 +93,9 @@ export default function Home() {
           </Title>
           <Text c="white">
             Code2Connect is designed to be easy to get started and start using,
-            even if you don&apos;t have programming experience. We simplified the IDE
-            so we put only the things you need, and nothing you don&apos;t. Just
-            pure, blissful coding.
+            even if you don&apos;t have programming experience. We simplified
+            the IDE so we put only the things you need, and nothing you
+            don&apos;t. Just pure, blissful coding.
           </Text>
           <Button leftSection={<BoltIcon width={16} height={16} />}>
             I want an easy IDE, let&apos;s get started
@@ -112,11 +112,11 @@ export default function Home() {
             Explore and share creations with a worldwide community
           </Title>
           <Text>
-            We&apos;re a community of coders and love to see what you create! Publish
-            your projects with just a couple of clicks, so others can play with
-            your code. Explore other Python projects and play around or see
-            their code. If you feel inspired, you can even fork projects so you
-            can change their code!
+            We&apos;re a community of coders and love to see what you create!
+            Publish your projects with just a couple of clicks, so others can
+            play with your code. Explore other Python projects and play around
+            or see their code. If you feel inspired, you can even fork projects
+            so you can change their code!
           </Text>
           <Text>
             Want to see what you can create? Check out the top projects below 👇

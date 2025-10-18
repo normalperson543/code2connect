@@ -110,12 +110,9 @@ export function LoginForm({
               />
               <Group justify="space-between" mt="lg">
                 <Checkbox label="Remember me" />
-                <Link
-                  href="/auth/forgot-password"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  <Anchor size="sm">Forgot password?</Anchor>
-                </Link>
+                <Anchor size="sm" href="/auth/forgot-password">
+                  Forgot password?
+                </Anchor>
               </Group>
               <Button
                 fullWidth

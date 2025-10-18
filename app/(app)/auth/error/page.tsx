@@ -23,7 +23,7 @@ export default async function Page({
   return (
     <div
       className={cn(
-        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700"
+        "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
       )}
     >
       <div className="flex flex-col h-full w-full">

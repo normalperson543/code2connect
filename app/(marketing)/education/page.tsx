@@ -38,9 +38,9 @@ export default function EducationMarketing() {
             </Title>
             <Text c="white">
               Want to integrate Code2Connect with your school, district, or
-              class? Connect with us to get started. We&apos;ll get you set up with
-              your own education account, and provide you resources and support
-              on managing your classes.
+              class? Connect with us to get started. We&apos;ll get you set up
+              with your own education account, and provide you resources and
+              support on managing your classes.
             </Text>
             <Button>Contact us</Button>
           </div>
@@ -55,8 +55,8 @@ export default function EducationMarketing() {
             </Title>
             <Text c="white">
               You can use a Code2Connect personal account to demo your projects
-              and try out the editor. Create an account to get started. It&apos;s
-              100% free.
+              and try out the editor. Create an account to get started.
+              It&apos;s 100% free.
             </Text>
             <Button>Get started</Button>
           </div>

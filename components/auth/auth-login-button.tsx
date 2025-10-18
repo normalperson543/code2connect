@@ -29,14 +29,16 @@ export default async function AuthButton() {
       >
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button
-        size="sm"
-        variant="gradient"
-        gradient={{ from: "blue", to: "cyan", deg: 135 }}
-        leftSection={<UserPlusIcon width={16} height={16} />}
-      >
-        <Link href="/auth/sign-up">Sign up</Link>
-      </Button>
+      <Link href="/auth/sign-up">
+        <Button
+          size="sm"
+          variant="gradient"
+          gradient={{ from: "blue", to: "cyan", deg: 135 }}
+          leftSection={<UserPlusIcon width={16} height={16} />}
+        >
+          Sign up
+        </Button>
+      </Link>
     </div>
   );
 }
