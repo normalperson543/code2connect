@@ -48,7 +48,7 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -57,7 +57,10 @@ export function SignUpForm({
       });
       if (error) throw error;
 
-      await createAccount(username);
+      if(!data.user) {
+        throw new Error("User ID missing after signup when creating profile.")
+      }
+      await createAccount(username, data.user?.id);
 
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
