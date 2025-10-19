@@ -3,6 +3,7 @@
 import { AspectRatio, Button, Center, Flex, Overlay } from "@mantine/core";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ThumbPreview({
   projectId,
@@ -24,17 +25,16 @@ export default function ThumbPreview({
         mx="auto"
         pos="relative"
       >
-        <div
-          className="flex justify-center items-center w-full h-full rounded-sm bg-cover!"
-          style={{
-            background: `url(${thumbnailUrl})`,
-          }}
-        >
-          <div className="flex justify-center items-center w-full h-full backdrop-blur-xs">
-            <Button leftSection={<PlayIcon width={16} height={16} />}>
-              See Inside to Run
-            </Button>
-          </div>
+        <Image
+          src={thumbnailUrl}
+          fill
+          className="object-cover"
+          alt="Project thumbnail"
+        />
+        <div className="flex justify-center items-center w-full h-full backdrop-blur-xs">
+          <Button leftSection={<PlayIcon width={16} height={16} />}>
+            See Inside to Run
+          </Button>
         </div>
       </AspectRatio>
     </Link>

@@ -20,6 +20,7 @@ export default async function ProjectPreviewPage({
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
   const likes = await getProjectLikes(id);
 
+  console.log("asofjdsofjoe" + project.thumbnail);
   return (
     <ProjectPreviewPageUI
       creator={project.owner?.username as string}
@@ -30,6 +31,8 @@ export default async function ProjectPreviewPage({
       clusters={project.clusters}
       likes={likes as number}
       id={id}
+      thumbnail={project.thumbnail ?? "/assets/placeholder-thumb.jpg"}
+      forks={project.forks}
     />
   );
 }

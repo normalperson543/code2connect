@@ -1,8 +1,14 @@
 "use client";
-import { Project } from "@/app/lib/projects";
 import { Carousel } from "@mantine/carousel";
 import ProjectCard from "./project-card";
-export default function ProjectCarousel({ projects }: { projects: Project[] }) {
+import { ProjectWithOwner } from "@/app/lib/projects";
+import Link from "next/link";
+
+export default function ProjectCarousel({
+  projects,
+}: {
+  projects: ProjectWithOwner[];
+}) {
   return (
     <Carousel
       controlsOffset="sm"
@@ -12,7 +18,9 @@ export default function ProjectCarousel({ projects }: { projects: Project[] }) {
     >
       {projects.map((project) => (
         <span className="ml-1 mr-1">
-          <ProjectCard projectInfo={project} />
+          <Link href={`/projects/${project.id}`}>
+            <ProjectCard projectInfo={project} />
+          </Link>
         </span>
       ))}
     </Carousel>

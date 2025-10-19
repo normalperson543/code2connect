@@ -189,14 +189,15 @@ export async function removeProfileFollower(
 }
 
 export async function setThumbnail(projectId: string, thumbUrl: string) {
-  console.log("The thumb being set is " + thumbUrl)
+  console.log("The thumb being set is " + thumbUrl);
+  console.log(projectId);
   const project = await prisma.project.update({
     where: {
-      id: projectId
+      id: projectId,
     },
     data: {
-      thumbnail: thumbUrl
-    }
-  })
+      thumbnail: thumbUrl,
+    },
+  });
   return project;
 }

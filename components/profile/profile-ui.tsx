@@ -276,7 +276,9 @@ export default function ProfileUI({
               <div>
                 <div className="flex flex-row gap-4 flex-wrap mt-3">
                   {displayedProjects.map((project) => (
-                    <ProjectCard projectInfo={project} />
+                    <Link href={`/projects/${project.id}`}>
+                      <ProjectCard projectInfo={project} />
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -303,7 +305,11 @@ export default function ProfileUI({
             <Tabs.Panel value="followers" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
                 {accessedProfileFollowers.map((follower) => {
-                  return <MiniProfile username={follower.username} />;
+                  return (
+                    <Link href={`/profile/${follower.username}`}>
+                      <MiniProfile username={follower.username} />
+                    </Link>
+                  );
                 })}
               </div>
             </Tabs.Panel>
@@ -311,7 +317,11 @@ export default function ProfileUI({
             <Tabs.Panel value="following" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
                 {accessedProfileFollowing.map((following) => {
-                  return <MiniProfile username={following.username} />;
+                  return (
+                    <Link href={`/profile/${following.username}`}>
+                      <MiniProfile username={following.username} />
+                    </Link>
+                  );
                 })}
               </div>
             </Tabs.Panel>

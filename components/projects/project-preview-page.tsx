@@ -24,10 +24,12 @@ import {
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
-import { Cluster, Comment as CommentData } from "@prisma/client";
+import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
 import { fork } from "@/app/lib/actions";
 import { useState } from "react";
+
+import { ProjectWithOwner } from "@/app/lib/projects";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -38,6 +40,8 @@ export default function ProjectPreviewPageUI({
   clusters,
   likes,
   id,
+  thumbnail,
+  forks,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -48,6 +52,8 @@ export default function ProjectPreviewPageUI({
   clusters: Cluster[] | null;
   likes: number;
   id: string;
+  thumbnail: string;
+  forks: Project[];
 }) {
   const [isForking, setIsForking] = useState(false);
   return (
@@ -72,7 +78,7 @@ export default function ProjectPreviewPageUI({
         <div className="h-full flex flex-col gap-2 w-1/2 stretch">
           <ThumbPreview
             projectId={id}
-            thumbnailUrl="/assets/default-image.png"
+            thumbnailUrl={thumbnail}
             maxWidth="100%"
             width="100%"
           />
@@ -167,110 +173,7 @@ export default function ProjectPreviewPageUI({
           </ThemeIcon>
           <Title order={4}>Forks</Title>
         </div>
-        <ProjectCarousel
-          projects={[
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-            {
-              name: "Guess the Number",
-              projectId: "a",
-              owner: {
-                username: "normalperson543",
-              },
-              likes: 69,
-              featured: false,
-              thumbnail: "/assets/default-image.png",
-            },
-          ]}
-        />
+        <ProjectCarousel projects={forks as ProjectWithOwner[]} />
       </div>
 
       <Divider orientation="horizontal" />

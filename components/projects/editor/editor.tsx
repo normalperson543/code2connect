@@ -161,9 +161,7 @@ export default function Editor({
   const dropzoneRef = useRef<() => void>(null);
   const cmRef = useRef<ReactCodeMirrorRef>(null);
   const [outputFullScreened, setOutputFullScreened] = useState(false);
-  const [currThumb, setCurrThumb] = useState<Blob>();
   const [isStopped, setIsStopped] = useState(true);
-  const [thumbUrl, setThumbUrl] = useState("");
   const [filesLoaded, setFilesLoaded] = useState(false); // TODO: fix behavior
   const [opened, { toggle }] = useDisclosure();
   const forceUpdate = useForceUpdate();
@@ -410,14 +408,14 @@ export default function Editor({
       ),
     });
   }
-  async function thumbnailPickerModal(id: string) {
+  async function thumbnailPickerModal() {
     const results = await getThumbnailSearchResults(title);
     console.log(results);
     modals.open({
       title: "Pick a thumbnail",
       children: (
         <ThumbnailPickerModal
-          onComplete={(newUrl: string) => console.log(newUrl)}
+          onComplete={(newUrl: string) => setThumbnail(id, newUrl)}
           searchResults={results as PhotosWithTotalResults}
         />
       ),
@@ -520,10 +518,9 @@ export default function Editor({
     }
   }
   async function saveThumbnail(thumbUrl: string) {
-    console.log("changing...")
-      console.log(thumbUrl)
+    console.log("changing...");
+    console.log(thumbUrl);
     try {
-      
       await setThumbnail(id, thumbUrl);
     } catch (e) {
       popupError(
@@ -677,7 +674,7 @@ export default function Editor({
                   </Menu.Item>
                   <Menu.Item
                     leftSection={<PhotoIcon width={16} height={16} />}
-                    onClick={() => thumbnailPickerModal(title)}
+                    onClick={() => thumbnailPickerModal()}
                   >
                     Change thumbnail
                   </Menu.Item>

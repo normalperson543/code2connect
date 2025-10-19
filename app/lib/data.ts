@@ -75,6 +75,11 @@ export async function getProject(projectId: string) {
       owner: true,
       clusters: true,
       comments: true,
+      forks: {
+        include: {
+          owner: true,
+        },
+      },
     },
   });
   console.log(project);
