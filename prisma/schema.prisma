@@ -45,6 +45,8 @@ model Project {
   parentId         String?
   parent           Project?  @relation(name: "forks", fields: [parentId], references: [id])
   forks            Project[] @relation("forks")
+  datePublished    DateTime?
+  dateCreated      DateTime  @default(now())
 
   owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?

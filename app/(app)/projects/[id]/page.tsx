@@ -33,6 +33,7 @@ export default async function ProjectPreviewPage({
       id={id}
       thumbnail={project.thumbnail ?? "/assets/placeholder-thumb.jpg"}
       forks={project.forks}
+      isPublic={project.isPublic}
     />
   );
 }

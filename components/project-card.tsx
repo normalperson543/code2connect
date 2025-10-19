@@ -2,7 +2,15 @@
 
 import { Prisma } from "@prisma/client";
 import { HandThumbUpIcon } from "@heroicons/react/24/outline";
-import { Avatar, Card, Title, Text, AspectRatio, Anchor } from "@mantine/core";
+import {
+  Avatar,
+  Card,
+  Title,
+  Text,
+  AspectRatio,
+  Anchor,
+  Badge,
+} from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { ProjectWithOwner } from "@/app/lib/projects";
@@ -15,6 +23,11 @@ export default function ProjectCard({
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
+        {!projectInfo.isPublic && (
+          <Badge className="absolute right-1 top-1 z-1" color="orange">
+            Unshared
+          </Badge>
+        )}
         <div className="relative h-[135] w-[240]">
           <Image
             src={projectInfo.thumbnail ?? "/assets/placeholder-thumb.jpg"}

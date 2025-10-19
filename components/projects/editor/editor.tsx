@@ -86,7 +86,7 @@ import {
 import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
-import { createProject, renameProject, setThumbnail } from "@/app/lib/actions";
+import { createProject, renameProject, setThumbnail, shareProject } from "@/app/lib/actions";
 import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
 
@@ -601,7 +601,7 @@ export default function Editor({
             <Menu shadow="md" width={200} position="bottom-end">
               <Menu.Target>
                 <Button
-                  color="orange.3"
+                  color="orange"
                   leftSection={<ShareIcon width={16} height={16} />}
                   autoContrast
                 >
@@ -611,6 +611,7 @@ export default function Editor({
               <Menu.Dropdown>
                 <Menu.Item
                   leftSection={<GlobeAmericasIcon width={16} height={16} />}
+                  onClick={() => shareProject(id)}
                 >
                   Publish to the world
                 </Menu.Item>

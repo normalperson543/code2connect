@@ -52,7 +52,7 @@ export async function getProjectFiles(userId: string, id: string) {
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null,
+  ownerId: string | undefined | null
 ) {
   const supabase = await createClient(false);
   const user = await supabase.auth.getUser();
@@ -124,7 +124,7 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1,
+  page: number = 1
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
@@ -184,7 +184,7 @@ export async function getIsFollower(profileId: string, followerId: string) {
 
 export async function getIsFollowing(
   profileUsername: string,
-  currentUserId: string,
+  currentUserId: string
 ) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -211,7 +211,11 @@ export async function getIsFollowing(
   }
 }
 
-export async function getProfileProjects(profileUsername: string) {
+export async function getProfileProjects(profileId: string) {
+  const supabase = await createClient(false);
+  const user = await supabase.auth.getUser();
+  const authUserId = user.data.user?.id;
+
   /*const projects = await prisma.profile.findUnique({
     where: {
       username: profileUsername
@@ -220,19 +224,40 @@ export async function getProfileProjects(profileUsername: string) {
       projects: true,
     }
   })*/
-
-  const projects = await prisma.project.findMany({
-    where: {
-      owner: {
-        username: profileUsername,
+  if (authUserId === profileId) {
+    const projects = await prisma.project.findMany({
+      where: {
+        owner: {
+          id: profileId,
+        },
       },
-    },
-    include: {
-      owner: true,
-    },
-  });
+      include: {
+        owner: true,
+      },
+    });
+    return projects;
+  } else {
+    const projects = await prisma.project.findMany({
+      where: {
+        AND: [
+          {
+            owner: {
+              id: profileId,
+            },
+          },
+          { isPublic: true },
+        ],
+      },
+      include: {
+        owner: true,
+      },
+      orderBy: {
+        datePublished: "desc",
+      },
+    });
 
-  return projects;
+    return projects;
+  }
 }
 
 export async function getProfileComments(profileId: string) {

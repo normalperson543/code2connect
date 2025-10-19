@@ -9,16 +9,20 @@ import {
   Button,
   Divider,
   ThemeIcon,
+  Menu,
 } from "@mantine/core";
 import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
 import {
   Bars3CenterLeftIcon,
   ChatBubbleOvalLeftIcon,
+  CheckIcon,
   ExclamationTriangleIcon,
+  GlobeAmericasIcon,
   PaperAirplaneIcon,
   PlusIcon,
   RectangleStackIcon,
+  ShareIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
@@ -26,10 +30,11 @@ import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
 import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
-import { fork } from "@/app/lib/actions";
+import { fork, shareProject } from "@/app/lib/actions";
 import { useState } from "react";
 
 import { ProjectWithOwner } from "@/app/lib/projects";
+import { useSearchParams } from "next/navigation";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -42,6 +47,7 @@ export default function ProjectPreviewPageUI({
   id,
   thumbnail,
   forks,
+  isPublic,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -54,8 +60,10 @@ export default function ProjectPreviewPageUI({
   id: string;
   thumbnail: string;
   forks: Project[];
+  isPublic: boolean;
 }) {
   const [isForking, setIsForking] = useState(false);
+  const searchParams = useSearchParams();
   return (
     <div className="flex flex-col gap-2">
       <Heading>
@@ -74,6 +82,42 @@ export default function ProjectPreviewPageUI({
           </div>
         </div>
       </Heading>
+      {!isPublic && (
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-orange-700 border-orange-800 text-white border-1 items-center">
+          <div className="flex flex-row gap-2 flex-1 items-center">
+            <ExclamationTriangleIcon width={16} height={16} />{" "}
+            <p>
+              This project is not public. Click Share so others can access it.
+            </p>
+          </div>
+          <Menu shadow="md" width={200} position="bottom-end">
+            <Menu.Target>
+              <Button
+                color="orange"
+                leftSection={<ShareIcon width={16} height={16} />}
+                autoContrast
+              >
+                Share
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<GlobeAmericasIcon width={16} height={16} />}
+                onClick={() => shareProject(id)}
+              >
+                Publish to the world
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </div>
+      )}
+      {searchParams.get("shared") === "1" && isPublic && (
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center">
+          <CheckIcon width={16} height={16} />{" "}
+          <p>You've successfully shared your project!</p>
+        </div>
+      )}
+
       <div className="w-full h-full pl-16 pr-16 pt-4 pb-4 flex-row flex gap-2">
         <div className="h-full flex flex-col gap-2 w-1/2 stretch">
           <ThumbPreview

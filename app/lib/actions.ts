@@ -5,6 +5,7 @@ import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 import { canAccessProject, getProject } from "./data";
 import { updateSession } from "@/lib/supabase/middleware";
+import { revalidatePath } from "next/cache";
 
 export async function createProject() {
   const supabase = await createClient();
@@ -29,7 +30,7 @@ export async function createProject() {
     .from("projects")
     .upload(
       `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')",
+      "print('Hello, World!')"
     );
   redirect(`/projects/${project.id}/editor`);
 }
@@ -103,13 +104,13 @@ export async function fork(projectId: string) {
       console.log(file);
       console.log(
         `${user.data.user?.id}/${old.id}/${file.name}`,
-        `/${user.data.user?.id}/${project.id}/${file.name}`,
+        `/${user.data.user?.id}/${project.id}/${file.name}`
       );
       await supabase.storage
         .from("projects")
         .copy(
           `${user.data.user?.id}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`,
+          `${user.data.user?.id}/${project.id}/${file.name}`
         );
     }
   }
@@ -159,7 +160,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
 
 export async function removeProfileFollower(
   profileId: string,
-  followerId: string,
+  followerId: string
 ) {
   const updatedFollower = await prisma.profile.update({
     where: {
@@ -202,11 +203,29 @@ export async function setThumbnail(projectId: string, thumbUrl: string) {
   return project;
 }
 
-export async function createComment(ownerId: string, profileId: string, content: string) {
+export async function createComment(
+  ownerId: string,
+  profileId: string,
+  content: string
+) {
   const comment = await prisma.comment.create({
     data: {
-      owner: ownerId,
-      
-    }
-  })
+      profileId: ownerId,
+    },
+  });
+}
+
+export async function shareProject(id: string) {
+  const project = await prisma.project.update({
+    where: {
+      id: id,
+    },
+    data: {
+      isPublic: true,
+      datePublished: new Date(),
+    },
+  });
+  revalidatePath(`/projects/${id}`)
+  redirect(`/projects/${id}?shared=1`)
+  return project;
 }

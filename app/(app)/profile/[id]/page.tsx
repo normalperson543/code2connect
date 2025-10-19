@@ -9,6 +9,7 @@ import {
 import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
 import { addProfileFollower, removeProfileFollower } from "@/app/lib/actions";
+import { notFound } from "next/navigation";
 
 export default async function Profile({
   params,
@@ -22,8 +23,9 @@ export default async function Profile({
     data: { user },
   } = await supabase.auth.getUser();
   const profileAccessed = await getProfileWithUsername(id);
+  if (!profileAccessed) notFound();
   const followInfo = await getProfileFollowInfo(id);
-  const projects = await getProfileProjects(id);
+  const projects = await getProfileProjects(profileAccessed.id);
   const comments = await getProfileComments(id);
   const isFollowing = await getIsFollowing(id, user?.id as string);
 
