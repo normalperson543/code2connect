@@ -17,7 +17,13 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRightIcon, EnvelopeIcon, IdentificationIcon, KeyIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  EnvelopeIcon,
+  IdentificationIcon,
+  KeyIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import OAuthButtons from "./auth/oauth-buttons";
 import { PrismaClient, Prisma } from "@prisma/client";
 import prisma from "@/app/lib/db";
@@ -143,7 +149,7 @@ export function SignUpForm({
                 type="password"
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
-                leftSection={<KeyIcon  width={16} height={16} />}
+                leftSection={<KeyIcon width={16} height={16} />}
               />
               <Button
                 fullWidth

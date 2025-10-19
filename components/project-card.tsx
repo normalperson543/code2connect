@@ -7,6 +7,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function ProjectCard({ projectInfo }: { projectInfo: Project }) {
+  console.log("project card");
+  console.log("project: " + projectInfo);
+  console.log("project owener: " + projectInfo.owner);
+  console.log("project name: " + projectInfo.name);
+  console.log(projectInfo.thumbnail);
+
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
@@ -20,9 +26,9 @@ export default function ProjectCard({ projectInfo }: { projectInfo: Project }) {
         </AspectRatio>
       </Card.Section>
       <div className="flex flex-col gap-2 mt-4">
-        <Title order={5}>{projectInfo.name}</Title>
+        <Title order={5}>{projectInfo.title}</Title>
         <div className="flex flex-row gap-2 items-center">
-          <Avatar size="sm" />
+          <Avatar name={projectInfo.owner?.username} size="sm" />
           <Link href={`/profile/${projectInfo.owner.username}`}>
             <Anchor component="button">{projectInfo.owner.username}</Anchor>
           </Link>

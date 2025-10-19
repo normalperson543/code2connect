@@ -35,8 +35,8 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: process.env.PREVIEW_ENVIRONMENT === "true",
   },
   images: {
-    domains: ["images.pexels.com"]
-  }
+    domains: ["images.pexels.com", "www.pexels.com"],
+  },
 };
 
 export default nextConfig;

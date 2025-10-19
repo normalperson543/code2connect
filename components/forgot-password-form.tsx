@@ -12,7 +12,12 @@ import {
   Text,
   Button,
 } from "@mantine/core";
-import { ArrowRightIcon, CheckIcon, EnvelopeIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  EnvelopeIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/24/outline";
 import WarningBanner from "./warning-banner";
 
 export function ForgotPasswordForm({

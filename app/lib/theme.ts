@@ -1,13 +1,17 @@
 "use client";
 
-import { Button, createTheme } from "@mantine/core";
+import { Avatar, Button, createTheme } from "@mantine/core";
 
 const theme = createTheme({
   components: {
     Button: Button.extend({
       defaultProps: {
         color: "off-blue",
-        autoContrast: true,
+      },
+    }),
+    Avatar: Avatar.extend({
+      defaultProps: {
+        color: "initials",
       },
     }),
   },

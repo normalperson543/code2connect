@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 export default function ClusterCard(
   clusterInfo: Cluster,
-  clusterMembers: number
+  clusterMembers: number,
 ) {
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
@@ -29,7 +29,7 @@ export default function ClusterCard(
       <div className="flex flex-col gap-2 mt-4">
         <Title order={5}>{clusterInfo.title}</Title>
         <div className="flex flex-row gap-2 items-center">
-          <Avatar size="sm" />
+          <Avatar name={clusterInfo.owner?.username} size="sm" />
           <Link href={`/profile/${clusterInfo.owner.username}`}>
             <Anchor component="button">{clusterInfo.owner.username}</Anchor>
           </Link>

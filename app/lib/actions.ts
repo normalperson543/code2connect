@@ -29,7 +29,7 @@ export async function createProject() {
     .from("projects")
     .upload(
       `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')"
+      "print('Hello, World!')",
     );
   redirect(`/projects/${project.id}/editor`);
 }
@@ -96,20 +96,20 @@ export async function fork(projectId: string) {
   const { data: projectFiles } = await supabase.storage
     .from("projects")
     .list(`${user.data.user?.id}/${old.id}`);
-  console.log("about to copy!!!")
+  console.log("about to copy!!!");
   if (projectFiles) {
-    console.log("Copying")
+    console.log("Copying");
     for (const file of projectFiles) {
       console.log(file);
       console.log(
         `${user.data.user?.id}/${old.id}/${file.name}`,
-        `/${user.data.user?.id}/${project.id}/${file.name}`
+        `/${user.data.user?.id}/${project.id}/${file.name}`,
       );
       await supabase.storage
         .from("projects")
         .copy(
           `${user.data.user?.id}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`
+          `${user.data.user?.id}/${project.id}/${file.name}`,
         );
     }
   }
@@ -126,73 +126,77 @@ export async function editProfileBio(userId: string, newBio: string) {
     },
   });
 
-  return updateProfileBio
+  return updateProfileBio;
 }
 
 export async function addProfileFollower(targetId: string, followerId: string) {
-  const updated = await prisma.profile.update({
+  const updatedFollower = await prisma.profile.update({
     where: {
       id: targetId,
     },
     data: {
       followers: {
         connect: {
-          id: followerId
-        }
-      }
+          id: followerId,
+        },
+      },
     },
   });
 
-  return updated
-}
-
-export async function addProfileFollowing(targetId: string, followingId: string) {
-  const updated = await prisma.profile.update({
+  const updatedFollowing = await prisma.profile.update({
     where: {
-      id: targetId,
+      id: followerId,
     },
     data: {
       following: {
         connect: {
-          id: followingId
-        }
-      }
+          id: targetId,
+        },
+      },
     },
   });
-
-  return updated
 }
 
-export async function removeProfileFollower(profileId: string, followerId: string) {
-  const updated = await prisma.profile.update({
-    where: { 
-      id: profileId 
+export async function removeProfileFollower(
+  profileId: string,
+  followerId: string,
+) {
+  const updatedFollower = await prisma.profile.update({
+    where: {
+      id: profileId,
     },
     data: {
       followers: {
-        disconnect: { 
-          id: followerId 
+        disconnect: {
+          id: followerId,
         },
       },
     },
-});
+  });
 
-  return updated;
-}
-
-export async function removeProfileFollowing(profileId: string, followingId: string) {
-  const updated = await prisma.profile.update({
-    where: { 
-      id: profileId 
+  const updatedFollowing = await prisma.profile.update({
+    where: {
+      id: followerId,
     },
     data: {
       following: {
-        disconnect: { 
-          id: followingId 
+        disconnect: {
+          id: profileId,
         },
       },
     },
-});
+  });
+}
 
-  return updated;
+export async function setThumbnail(projectId: string, thumbUrl: string) {
+  console.log("The thumb being set is " + thumbUrl)
+  const project = await prisma.project.update({
+    where: {
+      id: projectId
+    },
+    data: {
+      thumbnail: thumbUrl
+    }
+  })
+  return project;
 }

@@ -20,7 +20,12 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
-import { ArrowRightIcon, ArrowRightStartOnRectangleIcon, EnvelopeIcon, KeyIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  ArrowRightStartOnRectangleIcon,
+  EnvelopeIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import signInWithGoogle from "@/app/lib/oauth";
 import OAuthButtons from "../oauth-buttons";
@@ -61,7 +66,7 @@ export function LoginForm({
     <div
       className={cn(
         "flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700",
-        className
+        className,
       )}
       {...props}
     >

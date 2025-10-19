@@ -3,7 +3,7 @@
 import { Project } from "@prisma/client";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createPexelsClient } from 'pexels';
+import { createClient as createPexelsClient } from "pexels";
 import { userInfo } from "os";
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
@@ -52,7 +52,7 @@ export async function getProjectFiles(userId: string, id: string) {
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null
+  ownerId: string | undefined | null,
 ) {
   const supabase = await createClient(false);
   const user = await supabase.auth.getUser();
@@ -119,10 +119,10 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1
+  page: number = 1,
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
-  const res = await client.photos.search({query: searchQuery})
+  const res = await client.photos.search({ query: searchQuery });
   return res;
 }
 
@@ -133,67 +133,27 @@ export async function getProfileWithUsername(userName: string) {
     },
   });
 
-  return profile
+  return profile;
 }
 
-export async function getProfileFollowers(userId: string) {
-  const followers = await prisma.profile.findUnique({
+export async function getProfileFollowInfo(username: string) {
+  const followInfo = await prisma.profile.findUnique({
     where: {
-      id: userId,
+      username: username,
     },
     select: {
-      followers: true
-    },
-  });
-
-  return followers?.followers
-}
-
-export async function getProfileFollowersCount(userId: string) {
-  const followers = await prisma.profile.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
+      followers: true,
+      following: true,
       _count: {
         select: {
           followers: true,
-        },
-      },
-    },
-  });
-
-  return followers?._count.followers
-}
-
-export async function getProfileFollowing(userId: string) {
-  const following = await prisma.profile.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      following: true
-    },
-  });
-
-  return following?.following
-}
-
-export async function getProfileFollowingsCount(userId: string) {
-  const followings = await prisma.profile.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      _count: {
-        select: {
           following: true,
         },
       },
     },
   });
 
-  return followings?._count.following
+  return followInfo;
 }
 
 export async function getIsFollower(profileId: string, followerId: string) {
@@ -210,45 +170,64 @@ export async function getIsFollower(profileId: string, followerId: string) {
     },
   });
 
-  if(profile && profile?.followers.length > 0) {
-    return true
+  if (profile && profile?.followers.length > 0) {
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
-export async function getIsFollowing(profileId: string, followingId: string) {
+export async function getIsFollowing(
+  profileUsername: string,
+  currentUserId: string,
+) {
   const profile = await prisma.profile.findUnique({
     where: {
-      id: profileId,
+      username: profileUsername,
     },
-    include: {
-      following: {
+    select: {
+      followers: {
         where: {
-          id: followingId,
+          id: currentUserId,
         },
       },
     },
   });
 
-  if(profile && profile?.following.length > 0) {
-    return true
+  if (
+    profile &&
+    profile.followers &&
+    profile.followers.length > 0 &&
+    profile.followers[0].id === currentUserId
+  ) {
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
-export async function getProfileProjects(profileId: string) {
-  const projects = await prisma.profile.findUnique({
+export async function getProfileProjects(profileUsername: string) {
+  /*const projects = await prisma.profile.findUnique({
     where: {
-      id: profileId,
+      username: profileUsername
     },
-    select: {
-      projects: true
+    include: {
+      projects: true,
+    }
+  })*/
+
+  const projects = await prisma.project.findMany({
+    where: {
+      owner: {
+        username: profileUsername,
+      },
+    },
+    include: {
+      owner: true,
     },
   });
 
-  return projects?.projects
+  return projects;
 }
 
 export async function getProfileComments(profileId: string) {
@@ -261,5 +240,5 @@ export async function getProfileComments(profileId: string) {
     },
   });
 
-  return comments?.comments
+  return comments?.comments;
 }

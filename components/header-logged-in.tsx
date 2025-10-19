@@ -43,7 +43,7 @@ export default async function HeaderLoggedIn() {
         </Link>
       </div>
       <div className="text-white">
-        <AuthLoginButton/>
+        <AuthLoginButton />
       </div>
     </div>
   );

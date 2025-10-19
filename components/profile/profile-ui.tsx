@@ -29,140 +29,130 @@ import {
   ShareIcon,
   StarIcon,
   UsersIcon,
+  UserPlusIcon,
+  EllipsisVerticalIcon,
+  XMarkIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
-import { EllipsisVerticalIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import CommentModule from "../comment-module";
 import BHeading from "../heading";
-import { UserPlus } from "lucide-react";
 import { Comment, Profile, Project } from "@prisma/client";
-import { addProfileFollower, addProfileFollowing, editProfileBio, removeProfileFollower, removeProfileFollowing } from "@/app/lib/actions";
+import {
+  addProfileFollower,
+  editProfileBio,
+  removeProfileFollower,
+} from "@/app/lib/actions";
 import { useDebouncedCallback } from "use-debounce";
 import { getIsFollower, getIsFollowing } from "@/app/lib/data";
+import Link from "next/link";
+import { notifications } from "@mantine/notifications";
+import MiniProfile from "../mini-profile";
 
-export default function ProfileUI({accessedUserName, 
-    accessedProfile, 
-    currentUser, 
-    accessedProfileFollowers, 
-    accessedProfileFollowersCount, 
-    accessedProfileFollowing, 
-    accessedProfileFollowingCount,
-    accessedProfileProjects,
-    accessedProfileComments,
-  }: {
-    accessedUserName: string, 
-    accessedProfile: Profile, 
-    currentUser: Profile, 
-    accessedProfileFollowers: Profile[], 
-    accessedProfileFollowersCount: number, 
-    accessedProfileFollowing: Profile[], 
-    accessedProfileFollowingCount: number,
-    accessedProfileProjects: Project[],
-    accessedProfileComments: Comment[]
-  }) {
-
+export default function ProfileUI({
+  accessedUserName,
+  accessedProfile,
+  currentUser,
+  accessedProfileFollowers,
+  accessedProfileFollowersCount,
+  accessedProfileFollowing,
+  accessedProfileFollowingCount,
+  accessedProfileProjects,
+  accessedProfileComments,
+  isFollowingDb,
+}: {
+  accessedUserName: string;
+  accessedProfile: Profile;
+  currentUser: string;
+  accessedProfileFollowers: Profile[];
+  accessedProfileFollowersCount: number;
+  accessedProfileFollowing: Profile[];
+  accessedProfileFollowingCount: number;
+  accessedProfileProjects: Project[];
+  accessedProfileComments: Comment[];
+  isFollowingDb: boolean;
+}) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
-  const [bio, setBio] = useState(accessedProfile.bio)
+  const [bio, setBio] = useState(accessedProfile.bio);
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const [isFollowing, setIsFollowing] = useState(isFollowingDb);
+  const [activePage, setPage] = useState(1);
 
-  if(currentUser.id !== accessedProfile.id) {
-    useEffect(() => {
-      let active = true;
-
-      async function checkFollowStatus() {
-        try {
-          const result = await getIsFollowing(currentUser.id, accessedProfile.id)
-          console.log("redult: " + result)
-          if(active) setIsFollowing(result)
-        } catch (error) {
-          throw error
-        }
-      }
-
-      checkFollowStatus()
-      console.log(isFollowing)
-
-      return () => {
-        active = false;
-      };
-    }, [currentUser, accessedProfile])
-  }
+  const startIndex = (activePage - 1) * 9;
+  const endIndex = startIndex + 9;
+  const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
 
   async function handleSaveBio() {
-    setIsSaving(true)
-    const userId = currentUser.id
-    
+    setIsSaving(true);
+    const userId = currentUser;
+
     try {
-      editProfileBio(userId, bio)
+      editProfileBio(userId, bio);
     } catch (error) {
-      throw error
+      throw error;
     }
-    setIsSaving(false)
+    setIsSaving(false);
   }
 
-  const debounceSave = useDebouncedCallback(() => {
-    handleSaveBio();
+  const debounceSave = useDebouncedCallback(async () => {
+    try {
+      await handleSaveBio();
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: true,
+        title: "Bio saved successfully!",
+        message: "Your bio has been saved.",
+        color: "green",
+        icon: <CheckIcon />,
+      });
+    } catch (e) {
+      notifications.show({
+        position: "top-center",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem saving your bio",
+        message: `Your bio didn't save properly. Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+    }
   }, 2000);
 
   function handleChangeBio(newBio: string) {
-    setBio(newBio)
+    setBio(newBio);
     debounceSave();
   }
 
-  async function followProfile() {
-    addProfileFollower(accessedProfile.id, currentUser.id)
-    addProfileFollowing(currentUser.id, accessedProfile.id)
-  }
+  async function handleFollowingToggle(newStatus: boolean) {
+    console.log("in profileui: " + isFollowing);
 
-  const debounceFollow = useDebouncedCallback(() => {
-    followProfile();
-  }, 2000)
-
-  async function unfollowProfile() {
-    removeProfileFollower(accessedProfile.id, currentUser.id)
-    removeProfileFollowing(currentUser.id, accessedProfile.id)
-  }
-
-  const debounceUnfollow = useDebouncedCallback(() => {
-    unfollowProfile();
-  }, 2000)
-
-  function handleFollowToggle() {
-    console.log("following status2: " + isFollowing)
-
-    if(isFollowing) {
-      setIsFollowing(false)
-      debounceUnfollow()
+    if (!newStatus) {
+      removeProfileFollower(accessedProfile.id, currentUser);
     } else {
-      setIsFollowing(true)
-      debounceFollow()
+      addProfileFollower(accessedProfile.id, currentUser);
     }
-
-    console.log("following status3: " + isFollowing)
+    setIsFollowing(!isFollowing);
   }
-
-  
-
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
         <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
           <div className="flex flex-row gap-2">
-            <Avatar size="md" />
+            <Avatar name={accessedUserName} size="md" />
             <Title order={2}>{accessedUserName}</Title>
-            
           </div>
           <div className="flex flex-row gap-2">
-            {accessedProfile.id === currentUser.id ? (
+            {accessedProfile.id === currentUser || !currentUser ? (
               <div></div>
-            ): (
+            ) : (
               <Button
                 fullWidth
-                leftSection={<UserPlus width={16} height={16} />}
-                variant="gradient"
+                leftSection={<UserPlusIcon width={16} height={16} />}
+                variant={isFollowing ? "" : "gradient"}
+                color="red"
                 gradient={{ from: "blue", to: "cyan", deg: 135 }}
                 className="shadow-md"
-                onClick={(e) => handleFollowToggle()}
+                onClick={(e) => handleFollowingToggle(!isFollowing)}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
               </Button>
@@ -174,65 +164,73 @@ export default function ProfileUI({accessedUserName,
             </ThemeIcon>
             <Title order={4}>Bio</Title>
           </div>
-          {accessedProfile.id === currentUser.id ? (
-            <Textarea 
-            rows={8} 
-            placeholder="Who are you? Wat do you want people to know about you?" 
-            value={bio}
-            onChange={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              handleChangeBio(target.value)
-            }}
+          {accessedProfile.id === currentUser ? (
+            <Textarea
+              rows={8}
+              placeholder="Who are you? What do you want people to know about you?"
+              value={bio}
+              onChange={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                handleChangeBio(target.value);
+              }}
             ></Textarea>
           ) : (
-            <Textarea
-              value={bio}
-              readOnly
-              rows={8}
-              variant="filled"
-            />
+            <Textarea value={bio} readOnly rows={8} variant="filled" />
           )}
-          
-          <div className="flex-1 flex flex-row items-center gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <UsersIcon width={16} height={16} />
-            </ThemeIcon>
-            <Title order={4}>Followers</Title>
-            <Avatar.Group>
-              {accessedProfileFollowers.map(follower => {
-                return (
-                  <Tooltip label={follower.username} withArrow>
-                    <Avatar size="md" />
-                  </Tooltip>
-                )
-              })}
-              {/*{!accessedProfileFollowersCount || accessedProfileFollowersCount < 6 ? (
+          {accessedProfileFollowers.length > 0 && (
+            <div className="flex-1 flex flex-row items-center gap-2">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <UsersIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={4}>Followers</Title>
+              <Avatar.Group>
+                {accessedProfileFollowers.map((follower) => {
+                  return (
+                    <Tooltip label={follower.username} withArrow>
+                      <Avatar
+                        name={follower.username}
+                        size="md"
+                        component="a"
+                        href={"./" + follower.username}
+                      />
+                    </Tooltip>
+                  );
+                })}
+                {/*{!accessedProfileFollowersCount || accessedProfileFollowersCount < 6 ? (
                 <div></div>
               ): (
                 <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
               )}*/}
-            </Avatar.Group>
-          </div>
-          <div className="flex-1 flex flex-row items-center gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <UserPlusIcon width={16} height={16} />
-            </ThemeIcon>
-            <Title order={4}>Following</Title>
-            <Avatar.Group>
-              {accessedProfileFollowing.map(following => {
-                return (
-                  <Tooltip label={following.username} withArrow>
-                    <Avatar size="md" />
-                  </Tooltip>
-                )
-              })}
-              {/*{!accessedProfileFollowingCount || accessedProfileFollowingCount < 6 ? (
+              </Avatar.Group>
+            </div>
+          )}
+          {accessedProfileFollowing.length > 0 && (
+            <div className="flex-1 flex flex-row items-center gap-2">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <UserPlusIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={4}>Following</Title>
+              <Avatar.Group>
+                {accessedProfileFollowing.map((following) => {
+                  return (
+                    <Tooltip label={following.username} withArrow>
+                      <Avatar
+                        name={following.username}
+                        size="md"
+                        component="a"
+                        href={"./" + following.username}
+                      />
+                    </Tooltip>
+                  );
+                })}
+                {/*{!accessedProfileFollowingCount || accessedProfileFollowingCount < 6 ? (
                 <div></div>
               ): (
                 <Avatar size="md">+{accessedProfileFollowingCount - 5}</Avatar>
               )}*/}
-            </Avatar.Group>
-          </div>
+              </Avatar.Group>
+            </div>
+          )}
           <Divider />
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
@@ -274,12 +272,48 @@ export default function ProfileUI({accessedUserName,
               </Tabs.Tab>
             </Tabs.List>
 
-            <Tabs.Panel value="projects">
-              {accessedProfileProjects.map(project => <ProjectCard projectInfo={project}/>)}
+            <Tabs.Panel value="projects" mt="md">
+              <div>
+                <div className="flex flex-row gap-4 flex-wrap mt-3">
+                  {displayedProjects.map((project) => (
+                    <ProjectCard projectInfo={project} />
+                  ))}
+                </div>
+              </div>
+              {accessedProfileProjects.length <= 9 ? (
+                <div></div>
+              ) : (
+                <Pagination
+                  total={Math.trunc(accessedProfileProjects.length / 9) + 1}
+                  value={activePage}
+                  onChange={setPage}
+                  mt="lg"
+                />
+              )}
             </Tabs.Panel>
 
-            <Tabs.Panel value="comments">
-              <CommentModule comments={accessedProfileComments}/>
+            <Tabs.Panel value="comments" mt="sm">
+              <CommentModule
+                comments={accessedProfileComments}
+                currentUser={currentUser}
+                accessedProfile={accessedProfile}
+              />
+            </Tabs.Panel>
+
+            <Tabs.Panel value="followers" mt="sm">
+              <div className="flex flex-row flex-wrap gap-2">
+                {accessedProfileFollowers.map((follower) => {
+                  return <MiniProfile username={follower.username} />;
+                })}
+              </div>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="following" mt="sm">
+              <div className="flex flex-row flex-wrap gap-2">
+                {accessedProfileFollowing.map((following) => {
+                  return <MiniProfile username={following.username} />;
+                })}
+              </div>
             </Tabs.Panel>
           </Tabs>
         </div>

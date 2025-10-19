@@ -1,27 +1,20 @@
 "use client";
 
 import {
-  TextInput,
   Title,
   Text,
   Anchor,
-  Flex,
-  Stack,
   Textarea,
-  Group,
   Avatar,
   Button,
   Divider,
   ThemeIcon,
 } from "@mantine/core";
-import styles from "./project-preview-page.module.css";
 import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
 import {
   Bars3CenterLeftIcon,
   ChatBubbleOvalLeftIcon,
-  CodeBracketIcon,
-  DocumentIcon,
   ExclamationTriangleIcon,
   PaperAirplaneIcon,
   PlusIcon,
@@ -61,8 +54,8 @@ export default function ProjectPreviewPageUI({
     <div className="flex flex-col gap-2">
       <Heading>
         <div className="flex flex-row gap-2">
-          <Avatar src={creatorImageSrc} size="lg" />
-          <div className={styles.userInfo}>
+          <Avatar name={creator} src={creatorImageSrc} size="lg" />
+          <div className="flex flex-col gap-2 justify-center">
             <Title order={2}>{title}</Title>
             <Text>
               by{" "}
@@ -93,7 +86,7 @@ export default function ProjectPreviewPageUI({
             <Title order={4}>Description</Title>
           </div>
 
-          <textarea className="w-full h-full" ></textarea>
+          <textarea className="w-full h-full"></textarea>
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">
@@ -108,7 +101,14 @@ export default function ProjectPreviewPageUI({
           </Button>
         </div>
         <div className="w-full flex flex-row gap-2 justify-end">
-          <Button leftSection={<SparklesIcon width={16} height={16} />} onClick={() => {fork(id); setIsForking(true);}} loading={isForking}>
+          <Button
+            leftSection={<SparklesIcon width={16} height={16} />}
+            onClick={() => {
+              fork(id);
+              setIsForking(true);
+            }}
+            loading={isForking}
+          >
             Fork
           </Button>
           <Button leftSection={<PlusIcon width={16} height={16} />}>

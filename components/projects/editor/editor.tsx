@@ -86,7 +86,7 @@ import {
 import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
-import { createProject, renameProject } from "@/app/lib/actions";
+import { createProject, renameProject, setThumbnail } from "@/app/lib/actions";
 import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
 
@@ -130,34 +130,6 @@ function SidebarFile({
           {desc && <Text>)</Text>}
         </div>
       </div>
-      <Menu>
-        <Menu.Target>
-          <div>
-            <EllipsisVerticalIcon width={16} height={16} />
-          </div>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item
-            leftSection={<PencilIcon width={16} height={16} />}
-            onClick={onRename}
-          >
-            Rename
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<ArrowDownTrayIcon width={16} height={16} />}
-            onClick={onDownload}
-          >
-            Download
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<TrashIcon width={16} height={16} />}
-            color="red"
-            onClick={onDeleteConfirm}
-          >
-            Delete
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
     </div>
   );
 }
@@ -243,13 +215,6 @@ export default function Editor({
         }
       }
     });
-  }
-  async function saveThumbnail() {
-    console.log("Saving thumb");
-    const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement,
-    );
-    console.log("Done saving");
   }
   async function handleDelete(file: FileInfo) {
     const userId = (await supabase.auth.getUser()).data.user?.id;
@@ -446,17 +411,17 @@ export default function Editor({
     });
   }
   async function thumbnailPickerModal(id: string) {
-    const results = await getThumbnailSearchResults(title)
+    const results = await getThumbnailSearchResults(title);
     console.log(results);
     modals.open({
       title: "Pick a thumbnail",
       children: (
         <ThumbnailPickerModal
-          onComplete={(newName: string) => renameFile(id, newName)}
+          onComplete={(newUrl: string) => console.log(newUrl)}
           searchResults={results as PhotosWithTotalResults}
         />
       ),
-      size: "75%"
+      size: "auto",
     });
   }
   function newFileModal() {
@@ -554,6 +519,20 @@ export default function Editor({
       setActiveSession(newSession);
     }
   }
+  async function saveThumbnail(thumbUrl: string) {
+    console.log("changing...")
+      console.log(thumbUrl)
+    try {
+      
+      await setThumbnail(id, thumbUrl);
+    } catch (e) {
+      popupError(
+        "Error saving thumbnail",
+        "There was a problem saving your thumbnail. Please try again later.",
+        e instanceof Error ? e.message : "Unknown error",
+      );
+    }
+  }
 
   useEffect(() => {
     syncSession();
@@ -584,7 +563,7 @@ export default function Editor({
                 alt="Code2Connect logo"
               />
               <Divider orientation="vertical" />
-              <Avatar src={creatorImageSrc} size="md" />
+              <Avatar name={creator} src={creatorImageSrc} size="md" />
               <div className={styles.userInfo}>
                 <div className="flex flex-row gap-2">
                   <Title order={5}>{title}</Title>
@@ -867,13 +846,46 @@ export default function Editor({
       <AppShell.Main>
         <div className={styles.workspace}>
           <div className="flex flex-row gap-2 items-center">
-            <div className="flex flex-row gap-2 flex-1">
+            <div className="flex flex-row gap-2 flex-1 items-center">
               <ThemeIcon radius="xl" className="shadow-md">
                 <CodeBracketIcon width={16} height={16} />
               </ThemeIcon>
               <Text fw={700}>Code</Text>
               {files[currentFile] && (
-                <Text fw={400}>({files[currentFile].name})</Text>
+                <>
+                  <Text fw={400}>({files[currentFile].name})</Text>
+
+                  <Menu>
+                    <Menu.Target>
+                      <UnstyledButton>
+                        <EllipsisVerticalIcon width={16} height={16} />
+                      </UnstyledButton>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={<PencilIcon width={16} height={16} />}
+                        onClick={() => renameModal(currentFile)}
+                      >
+                        Rename
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={
+                          <ArrowDownTrayIcon width={16} height={16} />
+                        }
+                        onClick={() => saveFile(currentFile)}
+                      >
+                        Download
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<TrashIcon width={16} height={16} />}
+                        color="red"
+                        onClick={() => deleteConfirm(currentFile)}
+                      >
+                        Delete
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </>
               )}
             </div>
 
