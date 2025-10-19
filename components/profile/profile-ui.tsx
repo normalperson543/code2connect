@@ -241,7 +241,7 @@ export default function ProfileUI({
             <Text>{accessedProfileFollowingCount} following</Text>
           </div>
         </div>
-        <div className="flex flex-col gap-2 w-4/5 pr-16">
+        <div className="flex flex-col gap-2 w-4/5 pr-16 pl-3">
           <Tabs defaultValue="projects" onChange={setActiveTab}>
             <Tabs.List>
               <Tabs.Tab
@@ -274,7 +274,7 @@ export default function ProfileUI({
 
             <Tabs.Panel value="projects" mt="md">
               <div>
-                <div className="flex flex-row gap-4 flex-wrap mt-3">
+                <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
                   {displayedProjects.map((project) => (
                     <Link href={`/projects/${project.id}`}>
                       <ProjectCard projectInfo={project} />
