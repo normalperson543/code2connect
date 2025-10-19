@@ -25,7 +25,7 @@ export default function LogoutButton() {
         <Menu.Item leftSection={<AdjustmentsHorizontalIcon width={16} height={16} />}>
           Settings
         </Menu.Item>
-        <Menu.Item leftSection={<ArrowLeftStartOnRectangleIcon width={16} height={16} />} c="red">
+        <Menu.Item leftSection={<ArrowLeftStartOnRectangleIcon width={16} height={16} />} c="red" onClick={logout}>
           Logout
         </Menu.Item>
       </Menu.Dropdown>

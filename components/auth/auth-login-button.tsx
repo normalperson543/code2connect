@@ -20,8 +20,10 @@ export default async function AuthButton() {
 
   return user && profile ? (
     <div className="flex items-center gap-2">
-      <Avatar size="sm" bg="white" />
-      <div className="flex items-center gap-4">{profile.username}</div>
+      <Link href={`/profile/${profile.username}`} className="flex items-center gap-2">
+        <Avatar size="sm" bg="white" />
+        <div className="flex items-center gap-4">{profile.username}</div>
+      </Link>
       <AuthLogoutButton />
     </div>
   ) : (

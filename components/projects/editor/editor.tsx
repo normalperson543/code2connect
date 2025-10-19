@@ -456,6 +456,7 @@ export default function Editor({
           searchResults={results as PhotosWithTotalResults}
         />
       ),
+      size: "75%"
     });
   }
   function newFileModal() {

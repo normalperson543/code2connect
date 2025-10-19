@@ -105,11 +105,6 @@ export default function ProfileUI({accessedUserName, accessedProfile, currentUse
                 >
                   Report
                 </Menu.Item>
-                <Menu.Divider />
-                <Menu.Label>Education</Menu.Label>
-                <Menu.Item>Open in Education</Menu.Item>
-                <Menu.Label>Admin</Menu.Label>
-                <Menu.Item>Open admin view</Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </div>

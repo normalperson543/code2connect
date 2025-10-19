@@ -2,7 +2,8 @@
 import { Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { PhotosWithTotalResults } from "pexels";
-import Image from "next/image"
+import NextImage from "next/image"
+import { Image } from "@mantine/core";
 
 export default function ThumbnailPickerModal({
   onComplete,
@@ -14,7 +15,7 @@ export default function ThumbnailPickerModal({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-2 flex-wrap max-h-96 overflow-y-scroll">
-        {searchResults.photos.map(photo => <Image src={photo.url} width={384} height={216} alt={photo.alt ? photo.alt : `Photo by ${photo.photographer}`} key={photo.id} />)}
+        {searchResults.photos.map(photo => <Image component={NextImage} src={photo.src.small} width={384} height={216} alt={photo.alt ? photo.alt : `Photo by ${photo.photographer}`} key={photo.id} />)}
       </div>
       <Button
         fullWidth

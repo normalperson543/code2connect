@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: process.env.PREVIEW_ENVIRONMENT === "true",
   },
   images: {
-    remotePatterns: [new URL('https://www.pexels.com/photo/**')],
+    domains: ["images.pexels.com"]
   }
 };
 
