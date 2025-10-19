@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 import { canAccessProject, getProject } from "./data";
+import { updateSession } from "@/lib/supabase/middleware";
 
 export async function createProject() {
   const supabase = await createClient();
@@ -126,4 +127,72 @@ export async function editProfileBio(userId: string, newBio: string) {
   });
 
   return updateProfileBio
+}
+
+export async function addProfileFollower(targetId: string, followerId: string) {
+  const updated = await prisma.profile.update({
+    where: {
+      id: targetId,
+    },
+    data: {
+      followers: {
+        connect: {
+          id: followerId
+        }
+      }
+    },
+  });
+
+  return updated
+}
+
+export async function addProfileFollowing(targetId: string, followingId: string) {
+  const updated = await prisma.profile.update({
+    where: {
+      id: targetId,
+    },
+    data: {
+      following: {
+        connect: {
+          id: followingId
+        }
+      }
+    },
+  });
+
+  return updated
+}
+
+export async function removeProfileFollower(profileId: string, followerId: string) {
+  const updated = await prisma.profile.update({
+    where: { 
+      id: profileId 
+    },
+    data: {
+      followers: {
+        disconnect: { 
+          id: followerId 
+        },
+      },
+    },
+});
+
+  return updated;
+}
+
+export async function removeProfileFollowing(profileId: string, followingId: string) {
+  const updated = await prisma.profile.update({
+    where: { 
+      id: profileId 
+    },
+    data: {
+      following: {
+        disconnect: { 
+          id: followingId 
+        },
+      },
+    },
+});
+
+  return updated;
 }

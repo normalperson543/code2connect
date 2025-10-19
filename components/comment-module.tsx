@@ -1,8 +1,9 @@
 import { Avatar, Button, Textarea, Title } from "@mantine/core";
-import Comment from "./comment";
+import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { Comment, Profile } from "@prisma/client";
 
-export default function CommentModule() {
+export default function CommentModule({comments, currentUser, accessedProfile} : {comments: Comment[], currentUser: Profile, accessedProfile: Profile}) {
   return (
     <div>
       <Title order={4}>Add a comment</Title>
@@ -17,7 +18,7 @@ export default function CommentModule() {
           </div>
         </div>
       </div>
-      <Comment
+      <CommentComponent
         id="570abbc9-b1e1-456f-9fbf-559c584faf73"
         username="normalperson543"
         profilePicture=""
@@ -29,6 +30,7 @@ export default function CommentModule() {
         handleReport={() => {}}
         handleTogglePin={() => {}}
       />
+      {}
     </div>
   );
 }

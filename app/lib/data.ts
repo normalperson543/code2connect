@@ -4,6 +4,7 @@ import { Project } from "@prisma/client";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createPexelsClient } from 'pexels';
+import { userInfo } from "os";
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
     where: {
@@ -133,4 +134,132 @@ export async function getProfileWithUsername(userName: string) {
   });
 
   return profile
+}
+
+export async function getProfileFollowers(userId: string) {
+  const followers = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      followers: true
+    },
+  });
+
+  return followers?.followers
+}
+
+export async function getProfileFollowersCount(userId: string) {
+  const followers = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  });
+
+  return followers?._count.followers
+}
+
+export async function getProfileFollowing(userId: string) {
+  const following = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      following: true
+    },
+  });
+
+  return following?.following
+}
+
+export async function getProfileFollowingsCount(userId: string) {
+  const followings = await prisma.profile.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      _count: {
+        select: {
+          following: true,
+        },
+      },
+    },
+  });
+
+  return followings?._count.following
+}
+
+export async function getIsFollower(profileId: string, followerId: string) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      id: profileId,
+    },
+    include: {
+      followers: {
+        where: {
+          id: followerId,
+        },
+      },
+    },
+  });
+
+  if(profile && profile?.followers.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export async function getIsFollowing(profileId: string, followingId: string) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      id: profileId,
+    },
+    include: {
+      following: {
+        where: {
+          id: followingId,
+        },
+      },
+    },
+  });
+
+  if(profile && profile?.following.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export async function getProfileProjects(profileId: string) {
+  const projects = await prisma.profile.findUnique({
+    where: {
+      id: profileId,
+    },
+    select: {
+      projects: true
+    },
+  });
+
+  return projects?.projects
+}
+
+export async function getProfileComments(profileId: string) {
+  const comments = await prisma.profile.findUnique({
+    where: {
+      id: profileId,
+    },
+    select: {
+      comments: true,
+    },
+  });
+
+  return comments?.comments
 }
