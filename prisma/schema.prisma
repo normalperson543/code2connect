@@ -27,9 +27,11 @@ model Profile {
   clusters         Cluster[]
   managingClusters Cluster[] @relation(name: "managers")
   curatingClusters Cluster[] @relation(name: "curators")
-  comments         Comment[]
   replies          Reply[]
   likedProjects    Project[] @relation(name: "likers")
+
+  writtenComments  Comment[] @relation("CommentOwner")
+  receivedComments Comment[] @relation("CommentTarget")
 }
 
 model Project {
@@ -75,16 +77,21 @@ model Cluster {
 model Comment {
   id String @id @unique @default(uuid())
 
-  owner       Profile  @relation(fields: [profileId], references: [id])
+  owner       Profile  @relation("CommentOwner", fields: [profileId], references: [id])
   contents    String   @default("")
   dateCreated DateTime @default(now())
   isDisabled  Boolean  @default(false)
   replies     Reply[]
   profileId   String
+
+  targetId    String?
+  targetProf  Profile? @relation("CommentTarget", fields: [targetId], references: [id])
+
   Cluster     Cluster? @relation(fields: [clusterId], references: [id])
   clusterId   String?
   Project     Project? @relation(fields: [projectId], references: [id])
   projectId   String?
+
 }
 
 model Reply {
