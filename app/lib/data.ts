@@ -260,15 +260,22 @@ export async function getProfileProjects(profileId: string) {
   }
 }
 
-export async function getProfileComments(profileId: string) {
+export async function getProfileReceivedComments(profileUsername: string) {
   const comments = await prisma.profile.findUnique({
     where: {
-      id: profileId,
+      username: profileUsername,
     },
     select: {
-      comments: true,
-    },
-  });
+      receivedComments: {
+        include: {
+          owner: true
+        },
+        orderBy: {
+          dateCreated: 'desc'
+        }
+      }
+    }
+  })
 
-  return comments?.comments;
+  return comments?.receivedComments
 }
