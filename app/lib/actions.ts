@@ -200,3 +200,12 @@ export async function setThumbnail(projectId: string, thumbUrl: string) {
   })
   return project;
 }
+
+export async function createComment(ownerId: string, profileId: string, content: string) {
+  const comment = await prisma.comment.create({
+    data: {
+      owner: ownerId,
+      
+    }
+  })
+}
