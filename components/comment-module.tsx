@@ -27,6 +27,10 @@ export default function CommentModule({
     setComment("")
   }
 
+  function handleDeleteComment(id: string) {
+    
+  }
+
   return (
     <div>
       <Title order={4}>Add a comment</Title>

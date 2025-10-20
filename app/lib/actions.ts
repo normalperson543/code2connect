@@ -289,3 +289,16 @@ export async function changeDescription(id: string, desc: string) {
     },
   });
 }
+
+export async function deleteProfileComment(id: string) {
+  const comment = await prisma.comment.delete({
+    where: {
+      id: id
+    },
+    include: {
+      targetProf: true
+    }
+  })
+
+  revalidatePath(`/profile/${comment.targetProf?.username}`)
+}
