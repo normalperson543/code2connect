@@ -1,10 +1,9 @@
 "use server";
-
-import { Project } from "@prisma/client";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server-admin";
+import { Project } from "@prisma/client";
 import { createClient as createPexelsClient } from "pexels";
-import { userInfo } from "os";
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
     where: {
@@ -45,16 +44,31 @@ export async function revokeAllProjectSessions(projectId: string) {
   });
   return session;
 }
-export async function getProjectFiles(userId: string, id: string) {
-  const supabase = await createClient(false);
+export async function getProjectFiles(
+  userId: string,
+  id: string,
+  isPublic: boolean
+) {
+  const supabaseAdmin = await createAdminClient();
+  const supabase = await createClient()
+  const user = await supabase.auth.getUser();
+  const authUserId = user.data.user?.id;
 
-  return await supabase.storage.from("projects").list(`${userId}/${id}`);
+  console.log(authUserId);
+  console.log(userId);
+  if (userId === authUserId || isPublic) {
+    console.log("Good")
+    const list = await supabaseAdmin.storage.from("projects").list(`${userId}/${id}`);
+    console.log(list)
+    return list;
+  }
+  return;
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null,
+  ownerId: string | undefined | null
 ) {
-  const supabase = await createClient(false);
+  const supabase = await createClient();
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
@@ -125,7 +139,7 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1,
+  page: number = 1
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
@@ -185,7 +199,7 @@ export async function getIsFollower(profileId: string, followerId: string) {
 
 export async function getIsFollowing(
   profileUsername: string,
-  currentUserId: string,
+  currentUserId: string
 ) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -213,7 +227,7 @@ export async function getIsFollowing(
 }
 
 export async function getProfileProjects(profileId: string) {
-  const supabase = await createClient(false);
+  const supabase = await createClient();
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
@@ -282,4 +296,52 @@ export async function getProfileReceivedComments(profileUsername: string) {
   return comments?.receivedComments;
 }
 
-export async function searchProjects(query: string, page: number) {}
+export async function searchProjects(query: string, page: number) {
+  const results = await prisma.project.findMany({
+    where: {
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
+      isPublic: true,
+    },
+
+    skip: (page - 1) * 10,
+    take: 10,
+  });
+  return results;
+}
+
+export async function countSearchProjects(query: string) {
+  const count = await prisma.project.count({
+    where: {
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
+      isPublic: true,
+    },
+  });
+  return count;
+}
+export async function getFileUrl(
+  userId: string,
+  projectId: string,
+  fileName: string,
+  isPublic: boolean
+) {
+  const supabase = await createAdminClient();
+  const user = await supabase.auth.getUser();
+  const authUserId = user.data.user?.id;
+
+  console.log(authUserId);
+  console.log(userId);
+  if (userId === authUserId || isPublic) {
+    console.log("good, authorizing");
+    const { data: dataUrl } = supabase.storage
+      .from("projects")
+      .getPublicUrl(`/${userId}/${projectId}/${fileName}`);
+    return dataUrl;
+  }
+  return;
+}

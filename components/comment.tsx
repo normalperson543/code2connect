@@ -49,7 +49,7 @@ export default function Comment({
       title: `Delete ${username}'s comment?`,
       children: (
         <Text size="sm">
-          Are you sure you would like to delete {username}'s comment? This
+          Are you sure you would like to delete {username}&apos;s comment? This
           cannot be undone.
         </Text>
       ),
@@ -63,7 +63,7 @@ export default function Comment({
       title: `Report ${username}'s comment?`,
       children: (
         <Text size="sm">
-          Are you sure you would like to report {username}'s comment?
+          Are you sure you would like to report {username}&apos;s comment?
         </Text>
       ),
       labels: { confirm: "Yes, report", cancel: "Cancel" },

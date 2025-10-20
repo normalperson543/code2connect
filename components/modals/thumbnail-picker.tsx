@@ -1,5 +1,5 @@
 "use client";
-import { Anchor, Button } from "@mantine/core";
+import { Anchor } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { PhotosWithTotalResults } from "pexels";
 import NextImage from "next/image";

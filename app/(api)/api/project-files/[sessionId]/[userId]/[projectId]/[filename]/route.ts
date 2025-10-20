@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
 import moment from "moment";
+import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function GET(
   request: Request,
@@ -16,7 +16,7 @@ export async function GET(
     }>;
   },
 ) {
-  const supabase = await createClient(true);
+  const supabase = await createAdminClient();
 
   const { sessionId, userId, projectId, filename } = await params;
 

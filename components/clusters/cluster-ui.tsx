@@ -43,7 +43,7 @@ export default function ClusterUI() {
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
-        <div className="flex flex-col gap-2 w-1/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
+        <div className="flex flex-col gap-2 w-1/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <AspectRatio ratio={16 / 9}>
             <Image
               src="/assets/default-image.png"

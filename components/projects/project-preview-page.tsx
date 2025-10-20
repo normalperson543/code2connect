@@ -24,7 +24,6 @@ import {
   RectangleStackIcon,
   ShareIcon,
   SparklesIcon,
-  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import ProjectCarousel from "../project-carousel";
@@ -37,7 +36,6 @@ import { useState } from "react";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import { notifications } from "@mantine/notifications";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -67,7 +65,7 @@ export default function ProjectPreviewPageUI({
   thumbnail: string;
   forks: Project[];
   isPublic: boolean;
-  parent: Project | null;
+  parent: ProjectWithOwner| null;
   saveDescription: (newDesc: string) => void;
   canEdit: boolean;
 }) {

@@ -3,13 +3,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createClient(privileged: boolean = false) {
+export async function createClient() {
   const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    privileged
-      ? process.env.SB_BACKEND_KEY!
-      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SB_BACKEND_KEY!,
     {
       cookies: {
         getAll() {

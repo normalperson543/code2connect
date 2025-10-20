@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 import { canAccessProject, getProject } from "./data";
-import { updateSession } from "@/lib/supabase/middleware";
 import { revalidatePath } from "next/cache";
 import { words } from "./words";
 
@@ -58,10 +57,6 @@ export async function createCluster() {
   redirect(`/clusters/${cluster.id}`);
 }
 export async function renameProject(projectId: string, title: string) {
-  const supabase = await createClient();
-
-  const user = await supabase.auth.getUser();
-  const userId = user.data.user?.id as string;
 
   const project = await getProject(projectId);
 
@@ -144,7 +139,7 @@ export async function editProfileBio(userId: string, newBio: string) {
 }
 
 export async function addProfileFollower(targetId: string, followerId: string) {
-  const updatedFollower = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: targetId,
     },
@@ -157,7 +152,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
     },
   });
 
-  const updatedFollowing = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: followerId,
     },
@@ -178,7 +173,7 @@ export async function removeProfileFollower(
   profileId: string,
   followerId: string,
 ) {
-  const updatedFollower = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: profileId,
     },
@@ -191,7 +186,7 @@ export async function removeProfileFollower(
     },
   });
 
-  const updatedFollowing = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: followerId,
     },

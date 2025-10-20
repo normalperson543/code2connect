@@ -17,7 +17,9 @@ export default async function EditorPage({
 
   const project = await getProject(id);
 
-  if (!project) notFound();
+  if (!project) notFound(); 
+  
+  // now we know that the user is themselves/the project is public!
 
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
 
@@ -31,6 +33,7 @@ export default async function EditorPage({
         id={id}
         title={project.title as string}
         isPublic={project.isPublic}
+        creatorId={project.owner?.id as string}
       />
     </>
   );

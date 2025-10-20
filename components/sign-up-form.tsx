@@ -8,13 +8,10 @@ import {
   Title,
   Text,
   Paper,
-  Input,
-  Anchor,
   TextInput,
   PasswordInput,
   ThemeIcon,
 } from "@mantine/core";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -25,8 +22,6 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import OAuthButtons from "./auth/oauth-buttons";
-import { PrismaClient, Prisma } from "@prisma/client";
-import prisma from "@/app/lib/db";
 import { createAccount } from "@/app/lib/actions";
 import WarningBanner from "./warning-banner";
 
