@@ -30,6 +30,7 @@ export default async function EditorPage({
         previewUrl={process.env.PREVIEW_URL as string}
         id={id}
         title={project.title as string}
+        isPublic={project.isPublic}
       />
     </>
   );

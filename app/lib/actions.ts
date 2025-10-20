@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { canAccessProject, getProject } from "./data";
 import { updateSession } from "@/lib/supabase/middleware";
 import { revalidatePath } from "next/cache";
+import { words } from "./words";
 
 export async function createProject() {
   const supabase = await createClient();
@@ -16,9 +17,10 @@ export async function createProject() {
   }
 
   console.log("Creating");
+  const title = `${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]}`;
   const project = await prisma.project.create({
     data: {
-      title: "Your amazing project",
+      title: title,
       owner: {
         connect: {
           id: user.data.user?.id,
@@ -30,11 +32,33 @@ export async function createProject() {
     .from("projects")
     .upload(
       `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')"
+      "print('Hello, World!')",
     );
   redirect(`/projects/${project.id}/editor`);
 }
+export async function createCluster() {
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  console.log("Creating");
+  const title = `${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]}`;
+  const cluster = await prisma.cluster.create({
+    data: {
+      title: title,
+      owner: {
+        connect: {
+          id: user.data.user?.id,
+        },
+      },
+    },
+  });
+  revalidatePath(`/clusters/${cluster.id}`);
+  redirect(`/clusters/${cluster.id}`);
+}
 export async function renameProject(projectId: string, title: string) {
   const supabase = await createClient();
 
@@ -104,13 +128,13 @@ export async function fork(projectId: string) {
       console.log(file);
       console.log(
         `${user.data.user?.id}/${old.id}/${file.name}`,
-        `/${user.data.user?.id}/${project.id}/${file.name}`
+        `/${user.data.user?.id}/${project.id}/${file.name}`,
       );
       await supabase.storage
         .from("projects")
         .copy(
           `${user.data.user?.id}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`
+          `${user.data.user?.id}/${project.id}/${file.name}`,
         );
     }
   }
@@ -160,7 +184,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
 
 export async function removeProfileFollower(
   profileId: string,
-  followerId: string
+  followerId: string,
 ) {
   const updatedFollower = await prisma.profile.update({
     where: {
@@ -206,7 +230,7 @@ export async function setThumbnail(projectId: string, thumbUrl: string) {
 export async function createComment(
   ownerId: string,
   profileId: string,
-  content: string
+  content: string,
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -216,7 +240,7 @@ export async function createComment(
 }
 
 export async function shareProject(id: string) {
-  const project = await prisma.project.update({
+  await prisma.project.update({
     where: {
       id: id,
     },
@@ -225,7 +249,29 @@ export async function shareProject(id: string) {
       datePublished: new Date(),
     },
   });
-  revalidatePath(`/projects/${id}`)
-  redirect(`/projects/${id}?shared=1`)
-  return project;
+  revalidatePath(`/projects/${id}`);
+  redirect(`/projects/${id}?shared=1`);
+}
+
+export async function unshareProject(id: string) {
+  await prisma.project.update({
+    where: {
+      id: id,
+    },
+    data: {
+      isPublic: false,
+    },
+  });
+  revalidatePath(`/projects/${id}`);
+  redirect(`/projects/${id}`);
+}
+
+export async function deleteProject(id: string, profileName: string) {
+  await prisma.project.delete({
+    where: {
+      id: id,
+    },
+  });
+  revalidatePath(`/profile/${profileName}`);
+  redirect(`/profile/${profileName}`);
 }

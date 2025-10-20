@@ -67,8 +67,8 @@ export default function ProjectPreviewPageUI({
   return (
     <div className="flex flex-col gap-2">
       <Heading>
-        <div className="flex flex-row gap-2">
-          <Avatar name={creator} src={creatorImageSrc} size="lg" />
+        <div className="flex flex-row gap-4 items-center">
+          <Avatar name={creator} src={creatorImageSrc} size="lg" bg="white" />
           <div className="flex flex-col gap-2 justify-center">
             <Title order={2}>{title}</Title>
             <Text>
@@ -136,7 +136,11 @@ export default function ProjectPreviewPageUI({
             <Title order={4}>Description</Title>
           </div>
 
-          <textarea className="w-full h-full"></textarea>
+          <Textarea
+            className="w-full h-full"
+            label="Add instructions to your game, any credits, or acknowledgements."
+            rows={8}
+          />
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">
@@ -167,6 +171,7 @@ export default function ProjectPreviewPageUI({
           <Button
             leftSection={<ExclamationTriangleIcon width={16} height={16} />}
             color="orange"
+            autoContrast
           >
             Report
           </Button>
@@ -207,19 +212,21 @@ export default function ProjectPreviewPageUI({
           handleTogglePin={() => {}}
         />
       </div>
+      {forks.length > 0 && (
+        <>
+          <Divider orientation="horizontal" className="mt-4 mb-4" />
 
-      <Divider orientation="horizontal" className="mt-4 mb-4" />
-
-      <div className="w-full pl-16 pr-16 flex flex-col gap-2">
-        <div className="flex-1 flex flex-row items-center gap-2">
-          <ThemeIcon radius="xl" className="shadow-md">
-            <SparklesIcon width={16} height={16} />
-          </ThemeIcon>
-          <Title order={4}>Forks</Title>
-        </div>
-        <ProjectCarousel projects={forks as ProjectWithOwner[]} />
-      </div>
-
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2">
+            <div className="flex-1 flex flex-row items-center gap-2">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <SparklesIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={4}>Forks</Title>
+            </div>
+            <ProjectCarousel projects={forks as ProjectWithOwner[]} />
+          </div>
+        </>
+      )}
       <Divider orientation="horizontal" />
 
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">

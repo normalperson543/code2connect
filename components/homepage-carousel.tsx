@@ -58,7 +58,7 @@ export default function HomepageCarousel({
       onMouseLeave={() => autoplay.current.play()}
     >
       {projects.map((project) => (
-        <ProjectCard projectInfo={project} />
+        <ProjectCard projectInfo={project} key={project.id} />
       ))}
     </Carousel>
   );

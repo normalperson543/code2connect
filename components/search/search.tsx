@@ -5,6 +5,7 @@ import ProjectCard from "../project-card";
 import { useState } from "react";
 import Heading from "../heading";
 import SearchBar from "../search-bar";
+import { useSearchParams } from "next/navigation";
 
 export default function SearchUI() {
   const [activePage, setActivePage] = useState(1);

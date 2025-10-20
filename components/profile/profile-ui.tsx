@@ -1,5 +1,4 @@
 "use client";
-import { placeholder } from "@/app/lib/constants";
 import ProjectCard from "../project-card";
 import {
   Avatar,
@@ -15,27 +14,17 @@ import {
   Textarea,
   Tabs,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { Carousel } from "@mantine/carousel";
-import ProjectCarousel from "../project-carousel";
+import { useState } from "react";
 import {
-  Bars3CenterLeftIcon,
-  CalendarIcon,
   ChatBubbleBottomCenterIcon,
-  ChatBubbleOvalLeftIcon,
-  ChevronDownIcon,
   CodeBracketIcon,
-  ExclamationTriangleIcon,
-  ShareIcon,
   StarIcon,
   UsersIcon,
   UserPlusIcon,
-  EllipsisVerticalIcon,
   XMarkIcon,
   CheckIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import BHeading from "../heading";
 import { Comment, Profile, Project } from "@prisma/client";
 import {
   addProfileFollower,
@@ -138,7 +127,7 @@ export default function ProfileUI({
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
         <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
           <div className="flex flex-row gap-2">
-            <Avatar name={accessedUserName} size="md" />
+            <Avatar name={accessedUserName} size="md" bg="white" />
             <Title order={2}>{accessedUserName}</Title>
           </div>
           <div className="flex flex-row gap-2">
@@ -186,7 +175,11 @@ export default function ProfileUI({
               <Avatar.Group>
                 {accessedProfileFollowers.map((follower) => {
                   return (
-                    <Tooltip label={follower.username} withArrow>
+                    <Tooltip
+                      label={follower.username}
+                      withArrow
+                      key={follower.id}
+                    >
                       <Avatar
                         name={follower.username}
                         size="md"
@@ -213,7 +206,11 @@ export default function ProfileUI({
               <Avatar.Group>
                 {accessedProfileFollowing.map((following) => {
                   return (
-                    <Tooltip label={following.username} withArrow>
+                    <Tooltip
+                      label={following.username}
+                      withArrow
+                      key={following.id}
+                    >
                       <Avatar
                         name={following.username}
                         size="md"
@@ -273,12 +270,23 @@ export default function ProfileUI({
             </Tabs.List>
 
             <Tabs.Panel value="projects" mt="md">
+              {displayedProjects.length === 0 && (
+                <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                  <CodeBracketIcon
+                    width={64}
+                    height={64}
+                    className="opacity-50"
+                  />
+                  <p>This user doesn't have any projects.</p>
+                </div>
+              )}
               <div>
                 <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
                   {displayedProjects.map((project) => (
-                    <Link href={`/projects/${project.id}`}>
-                      <ProjectCard projectInfo={project} />
-                    </Link>
+                    <ProjectCard
+                      projectInfo={project}
+                      isOwner={accessedProfile.id === currentUser}
+                    />
                   ))}
                 </div>
               </div>
@@ -304,11 +312,18 @@ export default function ProfileUI({
 
             <Tabs.Panel value="followers" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
+                {accessedProfileFollowers.length === 0 && (
+                  <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                    <UsersIcon width={64} height={64} className="opacity-50" />
+                    <p>This user doesn't have any followers.</p>
+                  </div>
+                )}
                 {accessedProfileFollowers.map((follower) => {
                   return (
-                    <Link href={`/profile/${follower.username}`}>
-                      <MiniProfile username={follower.username} />
-                    </Link>
+                    <MiniProfile
+                      username={follower.username}
+                      key={follower.id}
+                    />
                   );
                 })}
               </div>
@@ -316,11 +331,22 @@ export default function ProfileUI({
 
             <Tabs.Panel value="following" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
+                {accessedProfileFollowing.length === 0 && (
+                  <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                    <UserPlusIcon
+                      width={64}
+                      height={64}
+                      className="opacity-50"
+                    />
+                    <p>This user isn't following anyone.</p>
+                  </div>
+                )}
                 {accessedProfileFollowing.map((following) => {
                   return (
-                    <Link href={`/profile/${following.username}`}>
-                      <MiniProfile username={following.username} />
-                    </Link>
+                    <MiniProfile
+                      username={following.username}
+                      key={following.id}
+                    />
                   );
                 })}
               </div>

@@ -4,10 +4,8 @@ import {
   Anchor,
   AppShell,
   Avatar,
-  Badge,
   Burger,
   Button,
-  ButtonGroup,
   Divider,
   Kbd,
   LoadingOverlay,
@@ -22,7 +20,6 @@ import {
 } from "@mantine/core";
 import styles from "./editor.module.css";
 import {
-  AcademicCapIcon,
   ArrowDownTrayIcon,
   ArrowsPointingInIcon,
   ArrowsPointingOutIcon,
@@ -31,13 +28,11 @@ import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   Bars3CenterLeftIcon,
-  CheckIcon,
   CloudArrowUpIcon,
   CodeBracketIcon,
   DocumentIcon,
   EllipsisVerticalIcon,
   EyeIcon,
-  FaceSmileIcon,
   GlobeAmericasIcon,
   MagnifyingGlassIcon,
   PencilIcon,
@@ -65,12 +60,10 @@ import FileSaver from "file-saver";
 import NewFileModal from "../../modals/new-file-modal";
 import download from "@/app/lib/downloader";
 import { Dropzone, FileWithPath } from "@mantine/dropzone";
-import { UserPlusIcon } from "lucide-react";
 import { EditorView, ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import UndoRedoModal from "../../modals/undo-redo-modal";
 import CtrlCmd from "../../ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
-import domtoimage from "dom-to-image";
 import StoppedProject from "../../stopped-project";
 import { useDisclosure, useForceUpdate } from "@mantine/hooks";
 import { createClient } from "@/lib/supabase/client";
@@ -78,7 +71,6 @@ import { ProjectSessionToken } from "@prisma/client";
 import {
   getFirstProjectSession,
   getProjectFiles,
-  getProjectSession,
   getThumbnailSearchResults,
   newProjectSession,
   renewProjectSession,
@@ -86,41 +78,35 @@ import {
 import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
-import { createProject, renameProject, setThumbnail, shareProject } from "@/app/lib/actions";
+import {
+  createProject,
+  renameProject,
+  setThumbnail,
+  shareProject,
+  unshareProject,
+} from "@/app/lib/actions";
 import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
 
-function getExtension(filename: string) {
-  const splitFn = filename.split(".");
-  return splitFn[splitFn.length - 1];
-}
 function SidebarFile({
   desc,
   name,
   selected,
   onClick,
-  onDeleteConfirm,
-  onRename,
-  onDownload,
 }: {
   desc?: string;
   name: string;
   selected?: boolean;
   onClick?: () => void;
-  onDeleteConfirm?: () => void;
-  onRename?: () => void;
-  onDownload?: () => void;
 }) {
-  const [contextMenuShown, setContextMenuShown] = useState(false);
   return (
     <div
       className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50`}
       onClick={onClick}
-      onContextMenu={() => setContextMenuShown(true)}
     >
       <div className="flex flex-row w-full gap-2 items-center">
-        <CodeBracketIcon width={16} height={16} />
-        <div className="flex flex-row">
+        <CodeBracketIcon width={16} height={16} className="flex-shrink-0" />
+        <div className="flex flex-row w-max">
           {desc && (
             <div className="flex flex-row gap-2">
               <Text fw={700}>{desc} </Text> <Text>(</Text>
@@ -141,6 +127,7 @@ export default function Editor({
   previewUrl,
   id,
   title: dbTitle,
+  isPublic,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -149,6 +136,7 @@ export default function Editor({
   previewUrl: string;
   id: string;
   title: string;
+  isPublic: boolean;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
   const [description, setDescription] = useState(dbDesc);
@@ -560,7 +548,12 @@ export default function Editor({
                 alt="Code2Connect logo"
               />
               <Divider orientation="vertical" />
-              <Avatar name={creator} src={creatorImageSrc} size="md" />
+              <Avatar
+                name={creator}
+                src={creatorImageSrc}
+                size="md"
+                bg="white"
+              />
               <div className={styles.userInfo}>
                 <div className="flex flex-row gap-2">
                   <Title order={5}>{title}</Title>
@@ -598,25 +591,47 @@ export default function Editor({
                 Save
               </Button>
             </Tooltip>
-            <Menu shadow="md" width={200} position="bottom-end">
-              <Menu.Target>
-                <Button
-                  color="orange"
-                  leftSection={<ShareIcon width={16} height={16} />}
-                  autoContrast
-                >
-                  Share
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<GlobeAmericasIcon width={16} height={16} />}
-                  onClick={() => shareProject(id)}
-                >
-                  Publish to the world
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            {!isPublic ? (
+              <Menu shadow="md" width={200} position="bottom-end">
+                <Menu.Target>
+                  <Button
+                    color="orange"
+                    leftSection={<ShareIcon width={16} height={16} />}
+                    autoContrast
+                  >
+                    Share
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<GlobeAmericasIcon width={16} height={16} />}
+                    onClick={() => shareProject(id)}
+                  >
+                    Publish to the world
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <Menu shadow="md" width={200} position="bottom-end">
+                <Menu.Target>
+                  <Button
+                    color="orange"
+                    leftSection={<ShareIcon width={16} height={16} />}
+                    autoContrast
+                  >
+                    Unshare
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<GlobeAmericasIcon width={16} height={16} />}
+                    onClick={() => unshareProject(id)}
+                  >
+                    Unpublish this project
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            )}
             <Link href={`/projects/${id}`}>
               <Button
                 variant="white"
@@ -783,7 +798,7 @@ export default function Editor({
                   },
                 }}
               >
-                <div className="flex flex-col gap-2 flex-1 h-full">
+                <div className="flex flex-col gap-2 flex-1 h-full w-full">
                   {Object.entries(files).length === 0 && (
                     <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-2 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full cursor-pointer">
                       <PlusCircleIcon
@@ -809,9 +824,6 @@ export default function Editor({
                         }}
                         selected={fileId === currentFile}
                         key={fileId}
-                        onDeleteConfirm={() => deleteConfirm(fileId)}
-                        onRename={() => renameModal(fileId)}
-                        onDownload={() => saveFile(fileId)}
                       />
                     );
                   })}

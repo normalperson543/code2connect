@@ -52,7 +52,7 @@ export async function getProjectFiles(userId: string, id: string) {
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null
+  ownerId: string | undefined | null,
 ) {
   const supabase = await createClient(false);
   const user = await supabase.auth.getUser();
@@ -124,7 +124,7 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1
+  page: number = 1,
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
@@ -184,7 +184,7 @@ export async function getIsFollower(profileId: string, followerId: string) {
 
 export async function getIsFollowing(
   profileUsername: string,
-  currentUserId: string
+  currentUserId: string,
 ) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -272,3 +272,5 @@ export async function getProfileComments(profileId: string) {
 
   return comments?.comments;
 }
+
+export async function searchProjects(query: string, page: number) {}

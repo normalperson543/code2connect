@@ -13,6 +13,9 @@ import {
   Text,
   Avatar,
   Tooltip,
+  Checkbox,
+  Input,
+  TextInput,
 } from "@mantine/core";
 import CommentModule from "../comment-module";
 import {
@@ -35,63 +38,6 @@ import ProjectCard from "../project-card";
 import MiniProfile from "../mini-profile";
 import Image from "next/image";
 
-function MiniProfileManagerWrapper({ username }: { username: string }) {
-  return (
-    <MiniProfile
-      username={username}
-      topRightComponent={
-        <Menu position="bottom-end">
-          <Menu.Target>
-            <Button variant="subtle">
-              <EllipsisVerticalIcon width={16} height={16} />
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<ArrowDownIcon width={16} height={16} />}
-              c="red"
-            >
-              Demote
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<XMarkIcon width={16} height={16} />}
-              c="red"
-            >
-              Remove from cluster
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      }
-    />
-  );
-}
-function MiniProfileMemberWrapper({ username }: { username: string }) {
-  return (
-    <MiniProfile
-      username={username}
-      topRightComponent={
-        <Menu position="bottom-end">
-          <Menu.Target>
-            <Button variant="subtle">
-              <EllipsisVerticalIcon width={16} height={16} />
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item leftSection={<ArrowUpIcon width={16} height={16} />}>
-              Promote
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<XMarkIcon width={16} height={16} />}
-              c="red"
-            >
-              Remove from cluster
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      }
-    />
-  );
-}
 export default function ClusterUI() {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   return (
@@ -133,6 +79,7 @@ export default function ClusterUI() {
             <Title order={4}>Description</Title>
           </div>
           <Textarea rows={8}></Textarea>
+          <Checkbox label="Anyone can add projects" color="green" />
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <UsersIcon width={16} height={16} />
@@ -184,16 +131,20 @@ export default function ClusterUI() {
               >
                 Comments
               </Tabs.Tab>
-              <Tabs.Tab
-                leftSection={<UserIcon width={16} height={16} />}
-                value="members"
-              >
-                Members
-              </Tabs.Tab>
             </Tabs.List>
           </Tabs>
           {activeTab === "projects" && (
-            <div>
+            <div className="flex flex-col gap-2">
+              <Title order={3}>Add a project</Title>
+              <p>
+                Enter a project ID (e.g. 85d9e8ee-d63d-4898-80d3-ed18491cbd27)
+              </p>
+              <div className="flex flex-row gap-2">
+                <TextInput type="text" className="w-full" />
+                <Button>
+                  <PlusIcon width={16} height={16} />
+                </Button>
+              </div>
               <div className="flex flex-row gap-4 flex-wrap">
                 {placeholder.map((project) => (
                   <ProjectCard projectInfo={project} />
@@ -204,40 +155,6 @@ export default function ClusterUI() {
             </div>
           )}
           {activeTab === "comments" && <CommentModule />}
-          {activeTab === "members" && (
-            <div className="flex flex-col gap-2">
-              <Title order={4} className="flex flex-row gap-2 items-center">
-                Owners <Badge>10</Badge>
-              </Title>
-              <div className="flex flex-row flex-wrap gap-2">
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-              </div>
-              <Title order={4} className="flex flex-row gap-2 items-center">
-                Members <Badge>10</Badge>
-              </Title>
-              <div className="flex flex-row flex-wrap gap-2">
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

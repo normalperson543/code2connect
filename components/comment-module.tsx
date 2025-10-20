@@ -14,7 +14,7 @@ export default function CommentModule({
   accessedProfile: Profile;
 }) {
   const [comment, setComment] = useState("");
-  const [savingComment, setSavingComment] = useState(false)
+  const [savingComment, setSavingComment] = useState(false);
 
   async function createComment() {}
 
@@ -33,7 +33,15 @@ export default function CommentModule({
             onChange={(e) => setComment(e.currentTarget.value)}
           />
           <div className="flex flex-row gap-2 w-full">
-            <Button leftSection={<PaperAirplaneIcon width={16} height={16} onClick={(e) => handleSubmitComment()}/>}>
+            <Button
+              leftSection={
+                <PaperAirplaneIcon
+                  width={16}
+                  height={16}
+                  onClick={(e) => handleSubmitComment()}
+                />
+              }
+            >
               Send
             </Button>
           </div>

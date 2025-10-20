@@ -31,7 +31,6 @@ import {
 import { python } from "@codemirror/lang-python";
 import { lintKeymap } from "@codemirror/lint";
 import { basicLightInit } from "@uiw/codemirror-theme-basic";
-import { tags as t } from "@lezer/highlight";
 import { Roboto_Mono } from "next/font/google";
 import { RefAttributes, useRef } from "react";
 
@@ -44,7 +43,6 @@ const robotoMono = Roboto_Mono({
 });
 
 export default function CodeEditor({ ...props }: Props) {
-  const cmRef = useRef(null);
   return (
     <CodeMirror
       {...props}

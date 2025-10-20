@@ -17,7 +17,7 @@ export default function ProjectCarousel({
       className="flex flex-row gap-2 w-full"
     >
       {projects.map((project) => (
-        <span className="ml-1 mr-1">
+        <span className="ml-1 mr-1" key={project.id}>
           <Link href={`/projects/${project.id}`}>
             <ProjectCard projectInfo={project} />
           </Link>
