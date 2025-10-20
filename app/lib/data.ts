@@ -284,6 +284,7 @@ export async function getProfileReceivedComments(profileUsername: string) {
       receivedComments: {
         include: {
           owner: true,
+          targetProf: true
         },
         orderBy: {
           dateCreated: "desc",

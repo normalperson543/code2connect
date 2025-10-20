@@ -10,55 +10,60 @@ export default function CommentModule({
   comments,
   currentUser,
   accessedProfile,
+  accessedUsername
 }: {
   comments: CommentWithOwner[];
   currentUser: string;
   accessedProfile: Profile;
+  accessedUsername: string
 }) {
   const [comment, setComment] = useState("");
   const [savingComment, setSavingComment] = useState(false);
 
   function handleSubmitComment() {
-    createProfileComment(currentUser, accessedProfile.id, comment);
+    console.log("current user: " + currentUser)
+    console.log("accessedprofile id: " + accessedProfile.id)
+    createProfileComment(currentUser, accessedProfile.id, comment, accessedUsername);
+    setComment("")
   }
 
   return (
     <div>
-      {currentUser !== accessedProfile.id && (
-        <Title order={4}>Add a comment</Title>
-      )}
-      {currentUser !== accessedProfile.id ? (
-        <div className="flex flex-row gap-2 w-full mt-2">
-          <Avatar src="" size="md" />
-          <div className="flex flex-col gap-2 w-full">
-            <Textarea
-              w="100%"
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.currentTarget.value)}
-            />
-            <div className="flex flex-row gap-2 w-full">
-              <Button
-                leftSection={<PaperAirplaneIcon width={16} height={16} />}
-                onClick={(e) => handleSubmitComment()}
-              >
-                Send
-              </Button>
-            </div>
+      <Title order={4}>Add a comment</Title>
+      <div className="flex flex-row gap-2 w-full mt-2">
+        <Avatar src="" size="md" />
+        <div className="flex flex-col gap-2 w-full">
+          <Textarea
+            w="100%"
+            rows={3}
+            value={comment}
+            onChange={(e) => setComment(e.currentTarget.value)}
+          />
+          <div className="flex flex-row gap-2 w-full">
+            <Button
+              leftSection={<PaperAirplaneIcon width={16} height={16} />}
+              onClick={(e) => handleSubmitComment()}
+            >
+              Send
+            </Button>
           </div>
         </div>
-      ) : (
-        <div></div>
-      )}
+      </div>
+      <div></div>
 
       {comments.map((comment) => {
+        console.log(`currentuser: ${currentUser}`)
+        console.log(`${comment.owner.username}'s comment owner: ${comment.profileId}`)
+        console.log(`${comment.owner.username}'s comment target: ${comment.targetId}`)
+        console.log(`${comment.owner.username}'s comment's content: ${comment.contents}`)
         return (
           <CommentComponent
             id={comment.id}
             username={comment.owner.username}
             content={comment.contents}
             dateCreated={comment.dateCreated}
-            isCreator={currentUser === comment.owner.id}
+            isCreator={currentUser === comment.targetId}
+            isWriter={currentUser === comment.profileId}
           />
         );
       })}

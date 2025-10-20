@@ -302,6 +302,7 @@ export default function ProfileUI({
                 comments={accessedProfileComments}
                 currentUser={currentUser}
                 accessedProfile={accessedProfile}
+                accessedUsername={accessedUserName}
               />
             </Tabs.Panel>
 

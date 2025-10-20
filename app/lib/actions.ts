@@ -164,6 +164,9 @@ export async function addProfileFollower(targetId: string, followerId: string) {
       },
     },
   });
+
+  revalidatePath(`/profile/${updatedFollower.username}`)
+  redirect(`/profile/${updatedFollower.username}`)
 }
 
 export async function removeProfileFollower(
@@ -195,6 +198,9 @@ export async function removeProfileFollower(
       },
     },
   });
+
+  revalidatePath(`/profile/${updatedFollower.username}`)
+  redirect(`/profile/${updatedFollower.username}`)
 }
 
 export async function setThumbnail(projectId: string, thumbUrl: string) {
@@ -213,6 +219,7 @@ export async function createProfileComment(
   ownerId: string,
   targetId: string,
   content: string,
+  targetUsername: string
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -222,7 +229,12 @@ export async function createProfileComment(
     },
   });
 
+  revalidatePath(`/profile/${targetUsername}`)
+  redirect(`/profile/${targetUsername}`)
+
   return comment;
+
+
 }
 
 export async function shareProject(id: string) {
