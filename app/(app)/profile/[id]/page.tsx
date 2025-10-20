@@ -2,13 +2,11 @@ import ProfileUI from "@/components/profile/profile-ui";
 import { createClient } from "@/lib/supabase/server";
 import {
   getIsFollowing,
-  getProfile,
   getProfileReceivedComments,
   getProfileProjects,
 } from "@/app/lib/data";
 import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
-import { addProfileFollower, removeProfileFollower } from "@/app/lib/actions";
 import { notFound } from "next/navigation";
 
 export default async function Profile({

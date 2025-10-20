@@ -4,10 +4,8 @@ import {
   Avatar,
   Text,
   Pagination,
-  Paper,
   Title,
   Button,
-  Menu,
   ThemeIcon,
   Divider,
   Tooltip,
@@ -32,7 +30,6 @@ import {
   removeProfileFollower,
 } from "@/app/lib/actions";
 import { useDebouncedCallback } from "use-debounce";
-import { getIsFollower, getIsFollowing } from "@/app/lib/data";
 import Link from "next/link";
 import { notifications } from "@mantine/notifications";
 import MiniProfile from "../mini-profile";
@@ -123,7 +120,7 @@ export default function ProfileUI({
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
-        <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
+        <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <div className="flex flex-row gap-2">
             <Avatar name={accessedUserName} size="md" bg="white" />
             <Title order={2}>{accessedUserName}</Title>
@@ -139,7 +136,7 @@ export default function ProfileUI({
                 color="red"
                 gradient={{ from: "blue", to: "cyan", deg: 135 }}
                 className="shadow-md"
-                onClick={(e) => handleFollowingToggle(!isFollowing)}
+                onClick={() => handleFollowingToggle(!isFollowing)}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
               </Button>
@@ -275,7 +272,7 @@ export default function ProfileUI({
                     height={64}
                     className="opacity-50"
                   />
-                  <p>This user doesn't have any projects.</p>
+                  <p>This user doesn&apos;t have any projects.</p>
                 </div>
               )}
               <div>
@@ -313,7 +310,7 @@ export default function ProfileUI({
                 {accessedProfileFollowers.length === 0 && (
                   <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
                     <UsersIcon width={64} height={64} className="opacity-50" />
-                    <p>This user doesn't have any followers.</p>
+                    <p>This user doesn&apos;t have any followers.</p>
                   </div>
                 )}
                 {accessedProfileFollowers.map((follower) => {
@@ -336,7 +333,7 @@ export default function ProfileUI({
                       height={64}
                       className="opacity-50"
                     />
-                    <p>This user isn't following anyone.</p>
+                    <p>This user isn&apos;t following anyone.</p>
                   </div>
                 )}
                 {accessedProfileFollowing.map((following) => {

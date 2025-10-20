@@ -2,24 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import {
-  CheckIcon,
   Container,
   Paper,
   ThemeIcon,
   Title,
   Text,
-  TextInput,
   Button,
 } from "@mantine/core";
 import { ArrowLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
-  const params = await searchParams;
+export default function Page() {
+  const params = useSearchParams();
   return (
     <div
       className={cn(
@@ -46,9 +41,9 @@ export default async function Page({
                 again.
               </Text>
               <p>
-                {params?.error ? (
+                {params.get("error") ? (
                   <p className="text-sm text-muted-foreground">
-                    Code error: {params.error}
+                    Error: {params.get("error")}
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">

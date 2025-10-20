@@ -69,6 +69,7 @@ import { useDisclosure, useForceUpdate } from "@mantine/hooks";
 import { createClient } from "@/lib/supabase/client";
 import { ProjectSessionToken } from "@prisma/client";
 import {
+  getFileUrl,
   getFirstProjectSession,
   getProjectFiles,
   getThumbnailSearchResults,
@@ -101,7 +102,7 @@ function SidebarFile({
 }) {
   return (
     <div
-      className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50`}
+      className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50 ${selected && "bg-offblue-100"}`}
       onClick={onClick}
     >
       <div className="flex flex-row w-full gap-2 items-center">
@@ -162,6 +163,14 @@ export default function Editor({
 
   async function loadFiles() {
     const userId = (await supabase.auth.getUser()).data.user?.id;
+
+    let session = activeSession;
+    if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
+      //validate session ID
+      const renewedSession = await renewProjectSession(id);
+      setActiveSession(renewedSession);
+      session = renewedSession;
+    }
     let fileArr: (
       | string
       | {
@@ -170,17 +179,31 @@ export default function Editor({
         }
     )[][] = [];
 
-    const { data: projectFiles } = await getProjectFiles(userId as string, id);
-
+    const pf = await getProjectFiles(userId as string, id, isPublic);
+    console.log(pf);
+    let projectFiles;
+    if (pf) {
+      console.log("Found some data!");
+      projectFiles = pf.data;
+    } else {
+      return;
+    }
     if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
+    console.log("Proceeding");
+    console.log(pf);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
-        const { data: dataUrl } = supabase.storage
-          .from("projects")
-          .getPublicUrl(`/${userId}/${id}/${file.name}`);
+        console.log("Getting the files...");
+        const dataUrl = await getFileUrl(
+          userId as string,
+          id,
+          file.name,
+          isPublic
+        );
+        if (!dataUrl) return;
         const fileContents = await fetch(
           `${dataUrl.publicUrl}?cache=${Math.random()}`,
-          { cache: "no-store" },
+          { cache: "no-store" }
         );
         let tempFileArr = [
           file.id,
@@ -195,6 +218,7 @@ export default function Editor({
     });
   }
   async function handleDelete(file: FileInfo) {
+    if (!canEditInfo) return;
     const userId = (await supabase.auth.getUser()).data.user?.id;
     try {
       const supabase = await createClient();
@@ -218,7 +242,7 @@ export default function Editor({
     popupError(
       "Your project did not save",
       "Check your Internet connection, and try again later.",
-      err,
+      err
     );
   }
   function popupError(title: string, message: string, err?: string) {
@@ -235,6 +259,7 @@ export default function Editor({
     });
   }
   async function handleSave() {
+    if (!canEditInfo) return;
     setIsSaving(true);
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
@@ -267,6 +292,7 @@ export default function Editor({
   }, 2000);
 
   async function handleChangeTitle(newTitle: string) {
+    if (!canEditInfo) return;
     setIsChanged(true);
     setTitle(newTitle);
     try {
@@ -275,16 +301,18 @@ export default function Editor({
       popupError(
         "Couldn't rename your project",
         "",
-        error instanceof Error ? error.message : "Unknown error",
+        error instanceof Error ? error.message : "Unknown error"
       );
     }
   }
   function handleChangeDescription(newDesc: string) {
+    if (!canEditInfo) return;
     setIsChanged(true);
     setDescription(newDesc);
     debounceSave();
   }
   function handleChangeCurrentFile(newContent: string) {
+    if (!canEditInfo) return;
     let newFiles = files;
     newFiles[currentFile].contents = newContent;
     setFiles(newFiles);
@@ -295,6 +323,7 @@ export default function Editor({
     setCurrentFile(id);
   }
   function deleteFile(id: string) {
+    if (!canEditInfo) return;
     let newFiles = files;
     handleDelete(files[id]);
     delete newFiles[id];
@@ -312,6 +341,7 @@ export default function Editor({
     return isDuplicate;
   }
   function renameFile(id: string, newName: string) {
+    if (!canEditInfo) return;
     let unduplicatedName = newName;
     if (unduplicatedName.replace(/\s/g, "").length === 0) {
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
@@ -329,6 +359,7 @@ export default function Editor({
     debounceSave();
   }
   function createFile(filename: string, contents: string = "") {
+    if (!canEditInfo) return;
     let unduplicatedName = filename;
     if (unduplicatedName.replace(/\s/g, "").length === 0) {
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
@@ -440,13 +471,14 @@ export default function Editor({
     FileSaver.saveAs(file);
   }
   function handleDrop(dropped: FileWithPath[]) {
+    if (!canEditInfo) return;
     dropped.forEach((file) => {
       const reader = new FileReader(); //https://react-dropzone.js.org/
 
       reader.onerror = () =>
         popupError(
           "There was a problem uploading your file",
-          "Please try uploading again.",
+          "Please try uploading again."
         );
       reader.onload = () => {
         // Do whatever you want with the file contents
@@ -474,17 +506,6 @@ export default function Editor({
     } else {
       const newSession = await newProjectSession(id);
       setActiveSession(newSession);
-    }
-  }
-  async function saveThumbnail(thumbUrl: string) {
-    try {
-      await setThumbnail(id, thumbUrl);
-    } catch (e) {
-      popupError(
-        "Error saving thumbnail",
-        "There was a problem saving your thumbnail. Please try again later.",
-        e instanceof Error ? e.message : "Unknown error",
-      );
     }
   }
 
@@ -526,9 +547,11 @@ export default function Editor({
               <div className={styles.userInfo}>
                 <div className="flex flex-row gap-2">
                   <Title order={5}>{title}</Title>
-                  <UnstyledButton onClick={renameProjectModal}>
-                    <PencilSquareIcon width={16} height={16} />
-                  </UnstyledButton>
+                  {canEditInfo && (
+                    <UnstyledButton onClick={renameProjectModal}>
+                      <PencilSquareIcon width={16} height={16} />
+                    </UnstyledButton>
+                  )}
                 </div>
                 <Text>
                   by{" "}
@@ -542,64 +565,72 @@ export default function Editor({
             </div>
           </div>
           <div className={styles.headerRight}>
-            <Tooltip
-              label={
-                lastSave
-                  ? `Last saved ${lastSave.toLocaleTimeString()}`
-                  : "Last saved never"
-              }
-            >
-              <Button
-                leftSection={<CloudArrowUpIcon width={16} height={16} />}
-                loading={isSaving}
-                onClick={handleSave}
-                disabled={isSaving}
-                variant={isChanged ? "white" : "outline"}
-                color={isChanged ? "" : "white"}
-              >
-                Save
-              </Button>
-            </Tooltip>
-            {!isPublic ? (
-              <Menu shadow="md" width={200} position="bottom-end">
-                <Menu.Target>
+            {canEditInfo && (
+              <>
+                <Tooltip
+                  label={
+                    lastSave
+                      ? `Last saved ${lastSave.toLocaleTimeString()}`
+                      : "Last saved never"
+                  }
+                >
                   <Button
-                    color="orange"
-                    leftSection={<ShareIcon width={16} height={16} />}
-                    autoContrast
+                    leftSection={<CloudArrowUpIcon width={16} height={16} />}
+                    loading={isSaving}
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    variant={isChanged ? "white" : "outline"}
+                    color={isChanged ? "" : "white"}
                   >
-                    Share
+                    Save
                   </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<GlobeAmericasIcon width={16} height={16} />}
-                    onClick={() => shareProject(id)}
-                  >
-                    Publish to the world
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            ) : (
-              <Menu shadow="md" width={200} position="bottom-end">
-                <Menu.Target>
-                  <Button
-                    color="orange"
-                    leftSection={<ShareIcon width={16} height={16} />}
-                    autoContrast
-                  >
-                    Unshare
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<GlobeAmericasIcon width={16} height={16} />}
-                    onClick={() => unshareProject(id)}
-                  >
-                    Unpublish this project
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+                </Tooltip>
+                {!isPublic ? (
+                  <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                      <Button
+                        color="orange"
+                        leftSection={<ShareIcon width={16} height={16} />}
+                        autoContrast
+                      >
+                        Share
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={
+                          <GlobeAmericasIcon width={16} height={16} />
+                        }
+                        onClick={() => shareProject(id)}
+                      >
+                        Publish to the world
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                ) : (
+                  <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                      <Button
+                        color="orange"
+                        leftSection={<ShareIcon width={16} height={16} />}
+                        autoContrast
+                      >
+                        Unshare
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={
+                          <GlobeAmericasIcon width={16} height={16} />
+                        }
+                        onClick={() => unshareProject(id)}
+                      >
+                        Unpublish this project
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </>
             )}
             <Link href={`/projects/${id}`}>
               <Button
@@ -627,42 +658,52 @@ export default function Editor({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<PlusIcon width={16} height={16} />}
-                    onClick={newFileModal}
-                  >
-                    New file
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <Menu.Item
+                      leftSection={<PlusIcon width={16} height={16} />}
+                      onClick={newFileModal}
+                    >
+                      New file
+                    </Menu.Item>
+                  )}
                   <Menu.Item
                     leftSection={<PlusIcon width={16} height={16} />}
                     onClick={createProject}
                   >
                     New project
                   </Menu.Item>
-                  <Menu.Item
-                    leftSection={<CloudArrowUpIcon width={16} height={16} />}
-                    onClick={handleSave}
-                  >
-                    Save to the cloud
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<ArrowUpTrayIcon width={16} height={16} />}
-                    onClick={() => dropzoneRef.current?.()}
-                  >
-                    Upload file
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <>
+                      <Menu.Item
+                        leftSection={
+                          <CloudArrowUpIcon width={16} height={16} />
+                        }
+                        onClick={handleSave}
+                      >
+                        Save to the cloud
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<ArrowUpTrayIcon width={16} height={16} />}
+                        onClick={() => dropzoneRef.current?.()}
+                      >
+                        Upload file
+                      </Menu.Item>
+                    </>
+                  )}
                   <Menu.Item
                     leftSection={<ArrowDownTrayIcon width={16} height={16} />}
                     onClick={() => download(files, title)}
                   >
                     Download project
                   </Menu.Item>
-                  <Menu.Item
-                    leftSection={<PhotoIcon width={16} height={16} />}
-                    onClick={() => thumbnailPickerModal()}
-                  >
-                    Change thumbnail
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <Menu.Item
+                      leftSection={<PhotoIcon width={16} height={16} />}
+                      onClick={() => thumbnailPickerModal()}
+                    >
+                      Change thumbnail
+                    </Menu.Item>
+                  )}
                 </Menu.Dropdown>
               </Menu>
               <Menu shadow="md" position="bottom-start">

@@ -15,7 +15,7 @@ export default function FakeLoadingTerminal() {
     setTimeout(() => setCaret(!caret), 500);
   });
   return (
-    <div className="p-2 rounded-md bg-gray-900 h-1/3 w-2/3 font-mono text-lg text-green-500">
+    <div className="p-2 rounded-md bg-gray-900 h-1/3 w-2/3 font-mono text-lg text-green-500 shadow-md shadow-black">
       <p>$ curl -O {pathname}</p>
       <p>
         Loading... {loader[loaderStatus % 4]}

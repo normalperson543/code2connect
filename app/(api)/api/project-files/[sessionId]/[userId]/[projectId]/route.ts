@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
 import moment from "moment";
+import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function GET(
   request: Request,
@@ -15,7 +16,7 @@ export async function GET(
   // loaded with the Code2Connect runner.
   // PyScript handles all of the downloading of the files.
 
-  const supabase = await createClient(true);
+  const supabase = await createAdminClient();
 
   const { sessionId, userId, projectId } = await params;
   const session = await getProjectSession(sessionId, projectId);
