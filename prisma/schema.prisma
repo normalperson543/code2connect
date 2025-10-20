@@ -87,6 +87,8 @@ model Comment {
   clusterId String?
   Project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
+
+  isPinned  Boolean?
 }
 
 model Reply {
