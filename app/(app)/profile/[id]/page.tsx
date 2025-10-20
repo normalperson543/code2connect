@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   getIsFollowing,
   getProfile,
-  getProfileComments,
+  getProfileReceivedComments,
   getProfileProjects,
 } from "@/app/lib/data";
 import { getProfileWithUsername } from "@/app/lib/data";
@@ -26,7 +26,7 @@ export default async function Profile({
   if (!profileAccessed) notFound();
   const followInfo = await getProfileFollowInfo(id);
   const projects = await getProfileProjects(profileAccessed.id);
-  const comments = await getProfileComments(id);
+  const receivedComments = await getProfileReceivedComments(id);
   const isFollowing = await getIsFollowing(id, user?.id as string);
 
   console.log("projects: " + projects);
@@ -50,7 +50,7 @@ export default async function Profile({
           followInfo?._count.following ? followInfo._count.following : 0
         }
         accessedProfileProjects={projects ? projects : []}
-        accessedProfileComments={comments ? comments : []}
+        accessedProfileComments={receivedComments ? receivedComments : []}
         isFollowingDb={isFollowing}
       />
     );

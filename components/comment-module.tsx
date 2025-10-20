@@ -2,51 +2,64 @@ import { Avatar, Button, Textarea, Title } from "@mantine/core";
 import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { Comment, Profile } from "@prisma/client";
+import { Comment, Prisma, Profile } from "@prisma/client";
+import { createProfileComment } from "@/app/lib/actions";
+type CommentWithOwner = Prisma.CommentGetPayload<{include: {owner: true}}>;
 
 export default function CommentModule({
   comments,
   currentUser,
   accessedProfile,
+
 }: {
-  comments: Comment[];
+  comments: CommentWithOwner[];
   currentUser: string;
   accessedProfile: Profile;
 }) {
   const [comment, setComment] = useState("");
   const [savingComment, setSavingComment] = useState(false);
 
-  async function createComment() {}
-
-  function handleSubmitComment() {}
+  function handleSubmitComment() {
+    console.log("creatim comment")
+    createProfileComment(currentUser, accessedProfile.id, comment)
+  }
 
   return (
     <div>
-      <Title order={4}>Add a comment</Title>
-      <div className="flex flex-row gap-2 w-full mt-2">
-        <Avatar src="" size="md" />
-        <div className="flex flex-col gap-2 w-full">
-          <Textarea
-            w="100%"
-            rows={3}
-            value={comment}
-            onChange={(e) => setComment(e.currentTarget.value)}
-          />
-          <div className="flex flex-row gap-2 w-full">
-            <Button
-              leftSection={
-                <PaperAirplaneIcon
-                  width={16}
-                  height={16}
-                  onClick={(e) => handleSubmitComment()}
-                />
-              }
-            >
-              Send
-            </Button>
+      {currentUser !== accessedProfile.id && <Title order={4}>Add a comment</Title>}
+      {currentUser !== accessedProfile.id ? (
+          <div className="flex flex-row gap-2 w-full mt-2">
+          <Avatar src="" size="md" />
+          <div className="flex flex-col gap-2 w-full">
+            <Textarea
+              w="100%"
+              rows={3}
+              value={comment}
+              onChange={(e) => setComment(e.currentTarget.value)}
+            />
+            <div className="flex flex-row gap-2 w-full">
+              <Button leftSection={<PaperAirplaneIcon width={16} height={16}/>} onClick={(e) => handleSubmitComment()}>
+                Send
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      ): (
+        <div></div>
+      )}
+
+      {comments.map((comment) => {
+        return (
+          <CommentComponent
+            id={comment.id}
+            username={comment.owner.username}
+            content={comment.contents}
+            dateCreated={comment.dateCreated}
+            isCreator={currentUser === comment.owner.id}
+          />
+        )
+      })}
+      
       <CommentComponent
         id="570abbc9-b1e1-456f-9fbf-559c584faf73"
         username="normalperson543"

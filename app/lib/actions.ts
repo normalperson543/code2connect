@@ -227,16 +227,20 @@ export async function setThumbnail(projectId: string, thumbUrl: string) {
   return project;
 }
 
-export async function createComment(
+export async function createProfileComment(
   ownerId: string,
-  profileId: string,
+  targetId: string,
   content: string,
 ) {
   const comment = await prisma.comment.create({
     data: {
       profileId: ownerId,
+      targetId: targetId,
+      contents: content
     },
   });
+
+  return comment
 }
 
 export async function shareProject(id: string) {
