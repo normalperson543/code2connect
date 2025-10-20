@@ -113,8 +113,6 @@ export default function ProfileUI({
   }
 
   async function handleFollowingToggle(newStatus: boolean) {
-    console.log("in profileui: " + isFollowing);
-
     if (!newStatus) {
       removeProfileFollower(accessedProfile.id, currentUser);
     } else {

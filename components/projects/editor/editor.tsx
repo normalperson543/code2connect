@@ -172,31 +172,23 @@ export default function Editor({
 
     const { data: projectFiles } = await getProjectFiles(userId as string, id);
 
-    console.log(projectFiles);
     if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
-        console.log(file);
         const { data: dataUrl } = supabase.storage
           .from("projects")
           .getPublicUrl(`/${userId}/${id}/${file.name}`);
-        console.log("Fetching...");
         const fileContents = await fetch(
           `${dataUrl.publicUrl}?cache=${Math.random()}`,
           { cache: "no-store" },
         );
-        console.log("Fetching complete!");
         let tempFileArr = [
           file.id,
           { name: file.name, contents: await fileContents.text() },
         ];
-        console.log(tempFileArr);
         fileArr.push(tempFileArr);
         setFiles(Object.fromEntries(fileArr));
-        console.log(fileArr.length);
-        console.log(projectFiles.length);
         if (fileArr.length === projectFiles.length) {
-          console.log("Done");
           setFilesLoaded(true);
         }
       }
@@ -204,8 +196,6 @@ export default function Editor({
   }
   async function handleDelete(file: FileInfo) {
     const userId = (await supabase.auth.getUser()).data.user?.id;
-    console.log("Deleting");
-    console.log(file);
     try {
       const supabase = await createClient();
       const err = await supabase.storage
@@ -215,7 +205,6 @@ export default function Editor({
         console.error(err);
         saveError(err.error?.message as string);
       }
-      console.log("Deleted.");
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
@@ -232,7 +221,7 @@ export default function Editor({
       err,
     );
   }
-  function popupError(title: string, message: string, err: string) {
+  function popupError(title: string, message: string, err?: string) {
     console.error(`${title}: ${message}`);
     console.error(err);
     notifications.show({
@@ -240,7 +229,7 @@ export default function Editor({
       withCloseButton: true,
       autoClose: false,
       title: title,
-      message: `${message} | Error info: ${err}`,
+      message: `${message}${err && ` | Error info: ${err}`}`,
       color: "red",
       icon: <XMarkIcon />,
     });
@@ -309,21 +298,17 @@ export default function Editor({
     let newFiles = files;
     handleDelete(files[id]);
     delete newFiles[id];
-    console.log("okay I deleted it from the new dataset");
     setFiles(newFiles);
-    console.log(files);
     setCurrentFile("");
     forceUpdate();
   }
   function checkDuplicateNames(id: string, name: string) {
-    console.log("checking");
     let isDuplicate = false;
     Object.entries(files).forEach((file) => {
       if (file[1].name.toLowerCase() == name.toLowerCase() && file[0] !== id) {
         isDuplicate = true;
       }
     });
-    console.log("I'm returning FALSE");
     return isDuplicate;
   }
   function renameFile(id: string, newName: string) {
@@ -332,15 +317,10 @@ export default function Editor({
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
       unduplicatedName = "file";
     }
-    console.log("r");
-    console.log(checkDuplicateNames(id, unduplicatedName));
     while (checkDuplicateNames(id, unduplicatedName)) {
-      console.log("b");
       let splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
-      console.log("beep");
-      console.log(splitName.join("."));
     }
     let newFiles = files;
     newFiles[id].name = unduplicatedName;
@@ -354,15 +334,10 @@ export default function Editor({
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
       unduplicatedName = "file";
     }
-    console.log("r");
-    console.log(checkDuplicateNames(id, unduplicatedName));
     while (checkDuplicateNames(id, unduplicatedName)) {
-      console.log("b");
       let splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
-      console.log("beep");
-      console.log(splitName.join("."));
     }
     let newFiles = files;
     const uuid = crypto.randomUUID();
@@ -398,7 +373,6 @@ export default function Editor({
   }
   async function thumbnailPickerModal() {
     const results = await getThumbnailSearchResults(title);
-    console.log(results);
     modals.open({
       title: "Pick a thumbnail",
       children: (
@@ -446,18 +420,12 @@ export default function Editor({
     let session = activeSession;
     if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
       //validate session ID
-      console.log("Renewing");
       const renewedSession = await renewProjectSession(id);
       setActiveSession(renewedSession);
-      console.log("Renewed!");
-      console.log(renewedSession);
       session = renewedSession;
       forceUpdate();
     }
-    console.log("Moving on");
-    console.log(session);
     frameSrc = `${previewUrl}/?project=${id}&user=${userId}&session=${session?.id}`;
-    console.log(frameSrc);
     if (outputFrame.current) {
       const frame = outputFrame.current as HTMLIFrameElement;
       frame.src = frameSrc;
@@ -475,8 +443,11 @@ export default function Editor({
     dropped.forEach((file) => {
       const reader = new FileReader(); //https://react-dropzone.js.org/
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
+      reader.onerror = () =>
+        popupError(
+          "There was a problem uploading your file",
+          "Please try uploading again.",
+        );
       reader.onload = () => {
         // Do whatever you want with the file contents
         const data = reader.result;
@@ -506,8 +477,6 @@ export default function Editor({
     }
   }
   async function saveThumbnail(thumbUrl: string) {
-    console.log("changing...");
-    console.log(thumbUrl);
     try {
       await setThumbnail(id, thumbUrl);
     } catch (e) {
@@ -842,7 +811,7 @@ export default function Editor({
               <Textarea
                 rows={6}
                 placeholder="What is your project about? What are the instructions? Any credits?"
-                value={description}
+                value={description ?? ""}
                 onChange={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   handleChangeDescription(target.value);

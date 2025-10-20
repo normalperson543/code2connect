@@ -4,13 +4,12 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Comment, Prisma, Profile } from "@prisma/client";
 import { createProfileComment } from "@/app/lib/actions";
-type CommentWithOwner = Prisma.CommentGetPayload<{include: {owner: true}}>;
+type CommentWithOwner = Prisma.CommentGetPayload<{ include: { owner: true } }>;
 
 export default function CommentModule({
   comments,
   currentUser,
   accessedProfile,
-
 }: {
   comments: CommentWithOwner[];
   currentUser: string;
@@ -20,15 +19,16 @@ export default function CommentModule({
   const [savingComment, setSavingComment] = useState(false);
 
   function handleSubmitComment() {
-    console.log("creatim comment")
-    createProfileComment(currentUser, accessedProfile.id, comment)
+    createProfileComment(currentUser, accessedProfile.id, comment);
   }
 
   return (
     <div>
-      {currentUser !== accessedProfile.id && <Title order={4}>Add a comment</Title>}
+      {currentUser !== accessedProfile.id && (
+        <Title order={4}>Add a comment</Title>
+      )}
       {currentUser !== accessedProfile.id ? (
-          <div className="flex flex-row gap-2 w-full mt-2">
+        <div className="flex flex-row gap-2 w-full mt-2">
           <Avatar src="" size="md" />
           <div className="flex flex-col gap-2 w-full">
             <Textarea
@@ -38,13 +38,16 @@ export default function CommentModule({
               onChange={(e) => setComment(e.currentTarget.value)}
             />
             <div className="flex flex-row gap-2 w-full">
-              <Button leftSection={<PaperAirplaneIcon width={16} height={16}/>} onClick={(e) => handleSubmitComment()}>
+              <Button
+                leftSection={<PaperAirplaneIcon width={16} height={16} />}
+                onClick={(e) => handleSubmitComment()}
+              >
                 Send
               </Button>
             </div>
           </div>
         </div>
-      ): (
+      ) : (
         <div></div>
       )}
 
@@ -57,9 +60,9 @@ export default function CommentModule({
             dateCreated={comment.dateCreated}
             isCreator={currentUser === comment.owner.id}
           />
-        )
+        );
       })}
-      
+
       <CommentComponent
         id="570abbc9-b1e1-456f-9fbf-559c584faf73"
         username="normalperson543"

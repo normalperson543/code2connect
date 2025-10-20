@@ -58,10 +58,7 @@ export async function canAccessProject(
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
-  console.log(isPublic);
-  console.log(ownerId === authUserId);
   if (isPublic || ownerId === authUserId) {
-    console.log("Can Access");
     return true;
   }
   return false;
@@ -80,9 +77,13 @@ export async function getProject(projectId: string) {
           owner: true,
         },
       },
+      parent: {
+        include: {
+          owner: true,
+        },
+      },
     },
   });
-  console.log(project);
   if (!(await canAccessProject(project?.isPublic, project?.profileId))) return;
   return project;
 }
@@ -268,16 +269,16 @@ export async function getProfileReceivedComments(profileUsername: string) {
     select: {
       receivedComments: {
         include: {
-          owner: true
+          owner: true,
         },
         orderBy: {
-          dateCreated: 'desc'
-        }
-      }
-    }
-  })
+          dateCreated: "desc",
+        },
+      },
+    },
+  });
 
-  return comments?.receivedComments
+  return comments?.receivedComments;
 }
 
 export async function searchProjects(query: string, page: number) {}

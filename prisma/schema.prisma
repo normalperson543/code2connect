@@ -15,18 +15,18 @@ model ProjectSessionToken {
 }
 
 model Profile {
-  id               String    @id @unique
-  username         String    @unique
-  bio              String    @default("")
-  dateCreated      DateTime  @default(now())
-  projects         Project[]
-  isDisabled       Boolean   @default(false)
-  isAdmin          Boolean   @default(false)
-  followers        Profile[] @relation("followers")
-  following        Profile[] @relation("followers")
-  clusters         Cluster[]
-  replies          Reply[]
-  likedProjects    Project[] @relation(name: "likers")
+  id            String    @id @unique
+  username      String    @unique
+  bio           String    @default("")
+  dateCreated   DateTime  @default(now())
+  projects      Project[]
+  isDisabled    Boolean   @default(false)
+  isAdmin       Boolean   @default(false)
+  followers     Profile[] @relation("followers")
+  following     Profile[] @relation("followers")
+  clusters      Cluster[]
+  replies       Reply[]
+  likedProjects Project[] @relation(name: "likers")
 
   writtenComments  Comment[] @relation("CommentOwner")
   receivedComments Comment[] @relation("CommentTarget")
@@ -80,14 +80,13 @@ model Comment {
   replies     Reply[]
   profileId   String
 
-  targetId    String?
-  targetProf  Profile? @relation("CommentTarget", fields: [targetId], references: [id])
+  targetId   String?
+  targetProf Profile? @relation("CommentTarget", fields: [targetId], references: [id])
 
-  Cluster     Cluster? @relation(fields: [clusterId], references: [id])
-  clusterId   String?
-  Project     Project? @relation(fields: [projectId], references: [id])
-  projectId   String?
-
+  Cluster   Cluster? @relation(fields: [clusterId], references: [id])
+  clusterId String?
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
 }
 
 model Reply {

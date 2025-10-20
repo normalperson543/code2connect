@@ -18,8 +18,6 @@ export async function GET(
   const supabase = await createClient(true);
 
   const { sessionId, userId, projectId } = await params;
-  console.log("Info");
-  console.log(await params);
   const session = await getProjectSession(sessionId, projectId);
 
   if (!session)
@@ -63,7 +61,5 @@ export async function GET(
     packages: [],
     files: Object.fromEntries(fileUrls),
   };
-  console.log(projectFiles);
-  console.log(pysConfig);
   return Response.json(pysConfig);
 }

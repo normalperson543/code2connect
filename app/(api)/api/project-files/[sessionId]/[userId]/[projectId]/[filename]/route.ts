@@ -18,7 +18,6 @@ export async function GET(
 ) {
   const supabase = await createClient(true);
 
-  console.log(params);
   const { sessionId, userId, projectId, filename } = await params;
 
   const session = await getProjectSession(sessionId, projectId);
@@ -31,7 +30,6 @@ export async function GET(
       },
     );
   if (moment(new Date()).isAfter(moment(session?.date).add("10", "m"))) {
-    console.log("Renewing");
     await prisma.projectSessionToken.delete({
       where: {
         id: sessionId,

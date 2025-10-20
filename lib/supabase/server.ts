@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 
 export async function createClient(privileged: boolean = false) {
   const cookieStore = await cookies();
-  console.log();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     privileged

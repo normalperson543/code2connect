@@ -16,7 +16,6 @@ export async function createProject() {
     redirect("/auth/login");
   }
 
-  console.log("Creating");
   const title = `${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]}`;
   const project = await prisma.project.create({
     data: {
@@ -44,7 +43,6 @@ export async function createCluster() {
     redirect("/auth/login");
   }
 
-  console.log("Creating");
   const title = `${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]} ${words[Math.floor(Math.random() * 5459)]}`;
   const cluster = await prisma.cluster.create({
     data: {
@@ -98,8 +96,6 @@ export async function fork(projectId: string) {
     redirect("/auth/login");
   }
 
-  console.log("Creating");
-
   const old = await getProject(projectId);
 
   if (!old) throw new Error("Cannot find old project");
@@ -121,15 +117,8 @@ export async function fork(projectId: string) {
   const { data: projectFiles } = await supabase.storage
     .from("projects")
     .list(`${user.data.user?.id}/${old.id}`);
-  console.log("about to copy!!!");
   if (projectFiles) {
-    console.log("Copying");
     for (const file of projectFiles) {
-      console.log(file);
-      console.log(
-        `${user.data.user?.id}/${old.id}/${file.name}`,
-        `/${user.data.user?.id}/${project.id}/${file.name}`,
-      );
       await supabase.storage
         .from("projects")
         .copy(
@@ -214,8 +203,6 @@ export async function removeProfileFollower(
 }
 
 export async function setThumbnail(projectId: string, thumbUrl: string) {
-  console.log("The thumb being set is " + thumbUrl);
-  console.log(projectId);
   const project = await prisma.project.update({
     where: {
       id: projectId,
@@ -236,11 +223,11 @@ export async function createProfileComment(
     data: {
       profileId: ownerId,
       targetId: targetId,
-      contents: content
+      contents: content,
     },
   });
 
-  return comment
+  return comment;
 }
 
 export async function shareProject(id: string) {
@@ -278,4 +265,15 @@ export async function deleteProject(id: string, profileName: string) {
   });
   revalidatePath(`/profile/${profileName}`);
   redirect(`/profile/${profileName}`);
+}
+
+export async function changeDescription(id: string, desc: string) {
+  return await prisma.project.update({
+    where: {
+      id: id,
+    },
+    data: {
+      description: desc,
+    },
+  });
 }

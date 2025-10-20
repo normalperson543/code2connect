@@ -24,6 +24,7 @@ import {
   RectangleStackIcon,
   ShareIcon,
   SparklesIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import ProjectCarousel from "../project-carousel";
@@ -35,6 +36,8 @@ import { useState } from "react";
 
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
+import { notifications } from "@mantine/notifications";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -48,6 +51,9 @@ export default function ProjectPreviewPageUI({
   thumbnail,
   forks,
   isPublic,
+  parent,
+  saveDescription,
+  canEdit,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -61,9 +67,18 @@ export default function ProjectPreviewPageUI({
   thumbnail: string;
   forks: Project[];
   isPublic: boolean;
+  parent: Project | null;
+  saveDescription: (newDesc: string) => void;
+  canEdit: boolean;
 }) {
   const [isForking, setIsForking] = useState(false);
+  const [sessionDesc, setSessionDesc] = useState(description);
+
   const searchParams = useSearchParams();
+
+  const debounceSave = useDebouncedCallback(() => {
+    saveDescription(sessionDesc);
+  }, 2000);
   return (
     <div className="flex flex-col gap-2">
       <Heading>
@@ -129,18 +144,49 @@ export default function ProjectPreviewPageUI({
         </div>
 
         <div className="flex flex-col h-full w-1/2 gap-2">
+          {parent && (
+            <div className="p-2 rounded-sm border-2 border-offblue-200 bg-offblue-50">
+              This project was forked from{" "}
+              <Anchor component={Link} href={`/projects/${parent.id}`}>
+                {parent.title}
+              </Anchor>{" "}
+              by{" "}
+              <Anchor
+                component={Link}
+                href={`/profile/${parent.owner?.username}`}
+              >
+                {parent.owner?.username}
+              </Anchor>
+              .
+            </div>
+          )}
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />
             </ThemeIcon>
             <Title order={4}>Description</Title>
           </div>
-
-          <Textarea
-            className="w-full h-full"
-            label="Add instructions to your game, any credits, or acknowledgements."
-            rows={8}
-          />
+          {canEdit ? (
+            <Textarea
+              className="w-full h-full"
+              label="Add instructions to your project, any credits, or acknowledgements."
+              rows={8}
+              value={sessionDesc ?? ""}
+              onChange={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                setSessionDesc(target.value);
+                debounceSave();
+              }}
+            />
+          ) : (
+            <Textarea
+              className="w-full h-full"
+              placeholder="No description provided"
+              rows={8}
+              value={description ?? ""}
+              readOnly
+            />
+          )}
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">

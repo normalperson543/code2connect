@@ -18,10 +18,10 @@ import { useState } from "react";
 
 export default function ProjectCard({
   projectInfo,
-  isOwner,
+  isOwner = false,
 }: {
   projectInfo: ProjectWithOwner;
-  isOwner: boolean;
+  isOwner?: boolean;
 }) {
   const [deleting, setDeleting] = useState(false);
   return (

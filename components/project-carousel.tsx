@@ -18,9 +18,7 @@ export default function ProjectCarousel({
     >
       {projects.map((project) => (
         <span className="ml-1 mr-1" key={project.id}>
-          <Link href={`/projects/${project.id}`}>
-            <ProjectCard projectInfo={project} />
-          </Link>
+          <ProjectCard projectInfo={project} />
         </span>
       ))}
     </Carousel>
