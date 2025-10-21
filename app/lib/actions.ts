@@ -312,6 +312,30 @@ export async function deleteProfileComment(id: string) {
 }
 
 export async function togglePinProfileComment(id: string, currentPinStatus: boolean) {
+  const selectedComment = await prisma.comment.findUnique({
+    where: {
+      id: id
+    },
+    include: {
+      targetProf: true
+    }
+  })
+
+  if(!currentPinStatus) {
+    await prisma.comment.updateMany({
+      where: {
+        targetId: selectedComment?.targetId,
+        NOT: {
+          id: id
+        }
+      },
+      data: {
+        isPinned: false
+      }
+    })
+  }
+
+
   const comment = await prisma.comment.update({
     where: {
       id: id,
@@ -326,4 +350,26 @@ export async function togglePinProfileComment(id: string, currentPinStatus: bool
 
   revalidatePath(`/profile/${comment.targetProf?.username}`)
   redirect(`/profile/${comment.targetProf?.username}`)
+}
+
+export async function createProfileCommentReply(commentId: string, replierId: string, content: string ) {
+  const reply = await prisma.reply.create({
+    data: {
+      profileId: replierId,
+      commentId: commentId,
+      contents: content
+    }
+  })
+
+  const comment = await prisma.comment.findUnique({
+    where: {
+      id: commentId
+    },
+    include: {
+      targetProf: true
+    }
+  })
+
+  revalidatePath(`/profile/${comment?.targetProf?.username}`)
+  redirect(`/profile/${comment?.targetProf?.username}`)
 }

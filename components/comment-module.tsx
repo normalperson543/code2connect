@@ -20,6 +20,18 @@ export default function CommentModule({
 }) {
   const [comment, setComment] = useState("");
   const [savingComment, setSavingComment] = useState(false);
+  let commentsToDisplay = []
+  const pinnedCommentIndex = comments.findIndex(comment => comment.isPinned)
+  const pinnedComment = comments[pinnedCommentIndex]
+  if(pinnedCommentIndex >= 0) {
+    commentsToDisplay = [
+      comments[pinnedCommentIndex],
+      ...comments.slice(0, pinnedCommentIndex),
+      ...comments.slice(pinnedCommentIndex + 1)
+    ]
+  } else {
+    commentsToDisplay = [...comments];
+  }
 
   function handleSubmitComment() {
     console.log("current user: " + currentUser);
@@ -59,7 +71,7 @@ export default function CommentModule({
       </div>
       <div></div>
 
-      {comments.map((comment) => {
+      {commentsToDisplay.map((comment) => {
         return (
           <CommentComponent
             id={comment.id}
@@ -68,25 +80,12 @@ export default function CommentModule({
             dateCreated={comment.dateCreated}
             isCreator={currentUser === comment.targetId}
             isWriter={currentUser === comment.profileId}
+            pinned={comment.isPinned}
             handleDelete={() => deleteProfileComment(comment.id)}
             handleTogglePin={() => togglePinProfileComment(comment.id, comment.isPinned)}
           />
         );
       })}
-
-      <CommentComponent
-        id="570abbc9-b1e1-456f-9fbf-559c584faf73"
-        username="normalperson543"
-        profilePicture=""
-        content="This is a comment."
-        dateCreated={new Date()}
-        pinned
-        isCreator
-        handleDelete={() => {}}
-        handleReport={() => {}}
-        handleTogglePin={() => {}}
-      />
-      {}
     </div>
   );
 }

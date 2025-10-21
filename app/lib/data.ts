@@ -374,3 +374,14 @@ export async function getHomeProfileInfo(authUserId: string) {
     },
   });
 }
+export async function getCommentReplies(commentId: string) {
+  const replies = prisma.reply.findMany({
+    where: {
+      commentId: commentId
+    },
+    include: {
+      owner: true,
+      Comment: true
+    }
+  })
+}

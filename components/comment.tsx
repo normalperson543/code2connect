@@ -19,6 +19,7 @@ import {
 import { modals } from "@mantine/modals";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Comment({
   id,
@@ -32,6 +33,7 @@ export default function Comment({
   handleDelete,
   handleReport,
   handleTogglePin,
+  handleReply
 }: {
   id: string;
   username: string;
@@ -44,7 +46,10 @@ export default function Comment({
   handleDelete: (id: string) => void;
   handleReport: (id: string) => void;
   handleTogglePin: (id: string) => void;
+  handleReply: (id: string) => void;
 }) {
+  const [replying, setReplying] = useState(false);
+
   function deleteModal() {
     modals.openConfirmModal({
       title: `Delete ${username}'s comment?`,
@@ -125,6 +130,7 @@ export default function Comment({
                 <Menu.Dropdown>
                   <Menu.Item
                     leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                    onClick={() => handleReply(id)}
                   >
                     Reply
                   </Menu.Item>
