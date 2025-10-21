@@ -386,3 +386,12 @@ export async function getUserLikedProjects(userId: string) {
   })
   return projects
 }
+export async function isLiked(projectId: string, userId: string) {
+  const isLiked = await prisma.like.count({
+    where: {
+        projectId: projectId,
+        profileId: userId
+    }
+  })
+  return isLiked > 0;
+}

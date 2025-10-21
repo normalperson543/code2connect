@@ -52,6 +52,8 @@ export default function ProjectPreviewPageUI({
   parent,
   saveDescription,
   canEdit,
+  isLiked,
+  handleLike,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -68,6 +70,8 @@ export default function ProjectPreviewPageUI({
   parent: ProjectWithOwner | null;
   saveDescription: (newDesc: string) => void;
   canEdit: boolean;
+  isLiked: boolean;
+  handleLike: () => void;
 }) {
   const [isForking, setIsForking] = useState(false);
   const [sessionDesc, setSessionDesc] = useState(description);
@@ -191,7 +195,8 @@ export default function ProjectPreviewPageUI({
         <div className="w-full flex flex-row gap-2">
           <Button
             leftSection={<SolidHandThumbUpIcon width={16} height={16} />}
-            variant="subtle"
+            variant={isLiked ? "filled" : "subtle"}
+            onClick={handleLike}
           >
             <div className="flex flex-row gap-1">
               <Text fw={700}>{likes}</Text> <Text>likes</Text>
