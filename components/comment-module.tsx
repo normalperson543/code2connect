@@ -3,7 +3,7 @@ import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Comment, Prisma, Profile } from "@prisma/client";
-import { createProfileComment } from "@/app/lib/actions";
+import { createProfileComment, togglePinProfileComment } from "@/app/lib/actions";
 type CommentWithOwner = Prisma.CommentGetPayload<{ include: { owner: true } }>;
 import { deleteProfileComment } from "@/app/lib/actions";
 
@@ -60,16 +60,6 @@ export default function CommentModule({
       <div></div>
 
       {comments.map((comment) => {
-        console.log(`currentuser: ${currentUser}`);
-        console.log(
-          `${comment.owner.username}'s comment owner: ${comment.profileId}`,
-        );
-        console.log(
-          `${comment.owner.username}'s comment target: ${comment.targetId}`,
-        );
-        console.log(
-          `${comment.owner.username}'s comment's content: ${comment.contents}`,
-        );
         return (
           <CommentComponent
             id={comment.id}
@@ -79,6 +69,7 @@ export default function CommentModule({
             isCreator={currentUser === comment.targetId}
             isWriter={currentUser === comment.profileId}
             handleDelete={() => deleteProfileComment(comment.id)}
+            handleTogglePin={() => togglePinProfileComment(comment.id, comment.isPinned)}
           />
         );
       })}

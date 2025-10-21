@@ -66,6 +66,9 @@ export default function ProfileUI({
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
   const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
+  const followersToShow = accessedProfileFollowers.slice(0, 5)
+  const followingToShow = accessedProfileFollowing.slice(0, 5)
+
 
   async function handleSaveBio() {
     setIsSaving(true);
@@ -168,7 +171,7 @@ export default function ProfileUI({
               </ThemeIcon>
               <Title order={4}>Followers</Title>
               <Avatar.Group>
-                {accessedProfileFollowers.map((follower) => {
+                {followersToShow.map((follower) => {
                   return (
                     <Tooltip
                       label={follower.username}
@@ -184,11 +187,9 @@ export default function ProfileUI({
                     </Tooltip>
                   );
                 })}
-                {/*{!accessedProfileFollowersCount || accessedProfileFollowersCount < 6 ? (
-                <div></div>
-              ): (
-                <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
-              )}*/}
+                {accessedProfileFollowers.length >= 5 && (
+                  <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
+                )}
               </Avatar.Group>
             </div>
           )}
@@ -199,7 +200,7 @@ export default function ProfileUI({
               </ThemeIcon>
               <Title order={4}>Following</Title>
               <Avatar.Group>
-                {accessedProfileFollowing.map((following) => {
+                {followingToShow.map((following) => {
                   return (
                     <Tooltip
                       label={following.username}
@@ -215,11 +216,9 @@ export default function ProfileUI({
                     </Tooltip>
                   );
                 })}
-                {/*{!accessedProfileFollowingCount || accessedProfileFollowingCount < 6 ? (
-                <div></div>
-              ): (
-                <Avatar size="md">+{accessedProfileFollowingCount - 5}</Avatar>
-              )}*/}
+                {accessedProfileFollowing.length >= 5 && (
+                  <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
+                )}
               </Avatar.Group>
             </div>
           )}
