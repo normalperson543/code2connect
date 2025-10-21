@@ -34,7 +34,7 @@ export default function Comment({
   handleDelete,
   handleReport,
   handleTogglePin,
-  handleReply
+  handleReply,
   children,
 }: {
   id: string;
