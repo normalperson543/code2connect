@@ -24,8 +24,8 @@ export default function ProjectCard({
   isOwner?: boolean;
 }) {
   const [deleting, setDeleting] = useState(false);
-  console.log("from pc")
-  console.log(projectInfo)
+  console.log("from pc");
+  console.log(projectInfo);
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>

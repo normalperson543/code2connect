@@ -86,16 +86,16 @@ export function ForgotPasswordForm({
               <div className="flex flex-col gap-2">
                 <Title>Email Sent</Title>
                 <Text>
-                  If this email address is associated with an account, you&apos;ll
-                  receive an email to reset your password.
+                  If this email address is associated with an account,
+                  you&apos;ll receive an email to reset your password.
                 </Text>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
                 <Title>Reset Password</Title>
                 <Text>
-                  If you forgot your password, enter your email and we&apos;ll try to
-                  recover your password.
+                  If you forgot your password, enter your email and we&apos;ll
+                  try to recover your password.
                 </Text>
                 {error && <WarningBanner>{error}</WarningBanner>}
                 <form onSubmit={handleForgotPassword}>

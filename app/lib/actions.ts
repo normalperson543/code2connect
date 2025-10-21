@@ -58,7 +58,6 @@ export async function createCluster() {
   redirect(`/clusters/${cluster.id}`);
 }
 export async function renameProject(projectId: string, title: string) {
-
   const project = await getProject(projectId);
 
   if (!(await canAccessProject(project?.isPublic, project?.profileId))) {
@@ -70,6 +69,7 @@ export async function renameProject(projectId: string, title: string) {
     },
     data: {
       title: title,
+      dateModified: new Date(),
     },
   });
   return updatedProject;
@@ -86,7 +86,7 @@ export async function createAccount(username: string, userId: string) {
 }
 export async function fork(projectId: string) {
   const supabaseAdmin = await createAdminClient();
-  const supabase = await createClient()
+  const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
   if (!user) {
@@ -99,6 +99,7 @@ export async function fork(projectId: string) {
   const project = await prisma.project.create({
     data: {
       title: `Fork of ${old.title}`,
+      dateModified: new Date(),
       parent: {
         connect: {
           id: old.id,
@@ -114,7 +115,7 @@ export async function fork(projectId: string) {
   const { data: projectFiles } = await supabaseAdmin.storage
     .from("projects")
     .list(`${old.owner?.id}/${old.id}`);
-  console.log(projectFiles)
+  console.log(projectFiles);
   if (projectFiles) {
     for (const file of projectFiles) {
       await supabaseAdmin.storage
@@ -168,8 +169,8 @@ export async function addProfileFollower(targetId: string, followerId: string) {
     },
   });
 
-  revalidatePath(`/profile/${updatedFollower.username}`)
-  redirect(`/profile/${updatedFollower.username}`)
+  revalidatePath(`/profile/${updatedFollower.username}`);
+  redirect(`/profile/${updatedFollower.username}`);
 }
 
 export async function removeProfileFollower(
@@ -202,8 +203,8 @@ export async function removeProfileFollower(
     },
   });
 
-  revalidatePath(`/profile/${updatedFollower.username}`)
-  redirect(`/profile/${updatedFollower.username}`)
+  revalidatePath(`/profile/${updatedFollower.username}`);
+  redirect(`/profile/${updatedFollower.username}`);
 }
 
 export async function setThumbnail(projectId: string, thumbUrl: string) {
@@ -213,6 +214,7 @@ export async function setThumbnail(projectId: string, thumbUrl: string) {
     },
     data: {
       thumbnail: thumbUrl,
+      dateModified: new Date(),
     },
   });
   return project;
@@ -222,7 +224,7 @@ export async function createProfileComment(
   ownerId: string,
   targetId: string,
   content: string,
-  targetUsername: string
+  targetUsername: string,
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -232,12 +234,10 @@ export async function createProfileComment(
     },
   });
 
-  revalidatePath(`/profile/${targetUsername}`)
-  redirect(`/profile/${targetUsername}`)
+  revalidatePath(`/profile/${targetUsername}`);
+  redirect(`/profile/${targetUsername}`);
 
   return comment;
-
-
 }
 
 export async function shareProject(id: string) {
@@ -248,6 +248,7 @@ export async function shareProject(id: string) {
     data: {
       isPublic: true,
       datePublished: new Date(),
+      dateModified: new Date(),
     },
   });
   revalidatePath(`/projects/${id}`);
@@ -261,13 +262,15 @@ export async function unshareProject(id: string) {
     },
     data: {
       isPublic: false,
+      dateModified: new Date(),
     },
   });
-  await prisma.projectSessionToken.deleteMany({ //invalidate all session tokens
+  await prisma.projectSessionToken.deleteMany({
+    //invalidate all session tokens
     where: {
-      projectId: id
-    }
-  })
+      projectId: id,
+    },
+  });
   revalidatePath(`/projects/${id}`);
   redirect(`/projects/${id}`);
 }
@@ -289,6 +292,7 @@ export async function changeDescription(id: string, desc: string) {
     },
     data: {
       description: desc,
+      dateModified: new Date(),
     },
   });
 }
@@ -296,12 +300,12 @@ export async function changeDescription(id: string, desc: string) {
 export async function deleteProfileComment(id: string) {
   const comment = await prisma.comment.delete({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      targetProf: true
-    }
-  })
+      targetProf: true,
+    },
+  });
 
-  revalidatePath(`/profile/${comment.targetProf?.username}`)
+  revalidatePath(`/profile/${comment.targetProf?.username}`);
 }

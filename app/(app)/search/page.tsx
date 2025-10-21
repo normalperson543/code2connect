@@ -13,13 +13,13 @@ export default async function Search(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-console.log(query)
-console.log(currentPage)
+  console.log(query);
+  console.log(currentPage);
   const projects = await searchProjects(query, currentPage);
-  console.log(projects)
+  console.log(projects);
   const count = await countSearchProjects(query);
 
-  projects.map((project) => console.log(project as ProjectWithOwner))
+  projects.map((project) => console.log(project as ProjectWithOwner));
   return (
     <SearchUI
       searchTerm={query}

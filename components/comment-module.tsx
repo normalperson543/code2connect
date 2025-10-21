@@ -10,26 +10,29 @@ export default function CommentModule({
   comments,
   currentUser,
   accessedProfile,
-  accessedUsername
+  accessedUsername,
 }: {
   comments: CommentWithOwner[];
   currentUser: string;
   accessedProfile: Profile;
-  accessedUsername: string
+  accessedUsername: string;
 }) {
   const [comment, setComment] = useState("");
   const [savingComment, setSavingComment] = useState(false);
 
   function handleSubmitComment() {
-    console.log("current user: " + currentUser)
-    console.log("accessedprofile id: " + accessedProfile.id)
-    createProfileComment(currentUser, accessedProfile.id, comment, accessedUsername);
-    setComment("")
+    console.log("current user: " + currentUser);
+    console.log("accessedprofile id: " + accessedProfile.id);
+    createProfileComment(
+      currentUser,
+      accessedProfile.id,
+      comment,
+      accessedUsername,
+    );
+    setComment("");
   }
 
-  function handleDeleteComment(id: string) {
-    
-  }
+  function handleDeleteComment(id: string) {}
 
   return (
     <div>
@@ -56,10 +59,16 @@ export default function CommentModule({
       <div></div>
 
       {comments.map((comment) => {
-        console.log(`currentuser: ${currentUser}`)
-        console.log(`${comment.owner.username}'s comment owner: ${comment.profileId}`)
-        console.log(`${comment.owner.username}'s comment target: ${comment.targetId}`)
-        console.log(`${comment.owner.username}'s comment's content: ${comment.contents}`)
+        console.log(`currentuser: ${currentUser}`);
+        console.log(
+          `${comment.owner.username}'s comment owner: ${comment.profileId}`,
+        );
+        console.log(
+          `${comment.owner.username}'s comment target: ${comment.targetId}`,
+        );
+        console.log(
+          `${comment.owner.username}'s comment's content: ${comment.contents}`,
+        );
         return (
           <CommentComponent
             id={comment.id}

@@ -166,7 +166,7 @@ export default function Editor({
 
   async function loadFiles() {
     const session = await syncSession();
-    console.log(session)
+    console.log(session);
     console.log("Done syncing");
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
@@ -200,7 +200,7 @@ export default function Editor({
           file.name,
           isPublic
         );
-        console.log(dataUrl)
+        console.log(dataUrl);
         if (!dataUrl) return;
         const fileContents = await fetch(
           `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
@@ -293,8 +293,8 @@ export default function Editor({
   }, 2000);
 
   const debounceSaveDescription = useDebouncedCallback(() => {
-    changeDescription(id, description)
-  }, 2000)
+    changeDescription(id, description);
+  }, 2000);
 
   async function handleChangeTitle(newTitle: string) {
     if (!canEditInfo) return;
@@ -554,12 +554,14 @@ export default function Editor({
               size="sm"
             />
             <div className="hidden items-center flex-row gap-2 md:flex">
-              <Image
-                src="/assets/logo-white.svg"
-                width={48}
-                height={48}
-                alt="Code2Connect logo"
-              />
+              <Link href="/">
+                <Image
+                  src="/assets/logo-white.svg"
+                  width={48}
+                  height={48}
+                  alt="Code2Connect logo"
+                />
+              </Link>
               <Divider orientation="vertical" />
               <Avatar
                 name={creator}

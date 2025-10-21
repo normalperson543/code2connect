@@ -12,6 +12,6 @@ export async function createAdminClient() {
         persistSession: false,
         detectSessionInUrl: false,
       },
-    }
+    },
   );
 }

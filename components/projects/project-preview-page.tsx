@@ -65,7 +65,7 @@ export default function ProjectPreviewPageUI({
   thumbnail: string;
   forks: Project[];
   isPublic: boolean;
-  parent: ProjectWithOwner| null;
+  parent: ProjectWithOwner | null;
   saveDescription: (newDesc: string) => void;
   canEdit: boolean;
 }) {
