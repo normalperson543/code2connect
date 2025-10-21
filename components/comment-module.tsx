@@ -3,7 +3,10 @@ import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Comment, Prisma, Profile } from "@prisma/client";
-import { createProfileComment, togglePinProfileComment } from "@/app/lib/actions";
+import {
+  createProfileComment,
+  togglePinProfileComment,
+} from "@/app/lib/actions";
 type CommentWithOwner = Prisma.CommentGetPayload<{ include: { owner: true } }>;
 import { deleteProfileComment } from "@/app/lib/actions";
 
@@ -40,7 +43,7 @@ export default function CommentModule({
       currentUser,
       accessedProfile.id,
       comment,
-      accessedUsername,
+      accessedUsername
     );
     setComment("");
   }
@@ -82,10 +85,39 @@ export default function CommentModule({
             isWriter={currentUser === comment.profileId}
             pinned={comment.isPinned}
             handleDelete={() => deleteProfileComment(comment.id)}
-            handleTogglePin={() => togglePinProfileComment(comment.id, comment.isPinned)}
+            handleTogglePin={() =>
+              togglePinProfileComment(comment.id, comment.isPinned)
+            }
           />
         );
       })}
+
+      <CommentComponent
+        id="570abbc9-b1e1-456f-9fbf-559c584faf73"
+        username="normalperson543"
+        profilePicture=""
+        content="This is a comment."
+        dateCreated={new Date()}
+        pinned
+        isCreator
+        handleDelete={() => {}}
+        handleReport={() => {}}
+        handleTogglePin={() => {}}
+      >
+        <CommentComponent
+          id="570abbc9-b1e1-456f-9fbf-559c584faf73"
+          username="normalperson543"
+          profilePicture=""
+          content="This is a reply!"
+          dateCreated={new Date()}
+          pinned
+          isCreator
+          handleDelete={() => {}}
+          handleReport={() => {}}
+          handleTogglePin={() => {}}
+        ></CommentComponent>
+      </CommentComponent>
+      {}
     </div>
   );
 }
