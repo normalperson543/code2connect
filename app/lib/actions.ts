@@ -139,7 +139,7 @@ export async function editProfileBio(userId: string, newBio: string) {
 }
 
 export async function addProfileFollower(targetId: string, followerId: string) {
-  await prisma.profile.update({
+  const updatedFollower = await prisma.profile.update({
     where: {
       id: targetId,
     },
@@ -152,7 +152,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
     },
   });
 
-  await prisma.profile.update({
+  const updatedFollowing = await prisma.profile.update({
     where: {
       id: followerId,
     },
@@ -173,7 +173,7 @@ export async function removeProfileFollower(
   profileId: string,
   followerId: string,
 ) {
-  await prisma.profile.update({
+  const updatedFollower = await prisma.profile.update({
     where: {
       id: profileId,
     },
@@ -186,7 +186,7 @@ export async function removeProfileFollower(
     },
   });
 
-  await prisma.profile.update({
+  const updatedFollowing = await prisma.profile.update({
     where: {
       id: followerId,
     },
@@ -296,4 +296,5 @@ export async function deleteProfileComment(id: string) {
   })
 
   revalidatePath(`/profile/${comment.targetProf?.username}`)
+  redirect(`/profile/${comment.targetProf?.username}`)
 }
