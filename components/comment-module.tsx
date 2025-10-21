@@ -77,6 +77,7 @@ export default function CommentModule({
       <div></div>
 
       {commentsToDisplay.map((comment) => {
+        console.log(`comment replies: ${comment.replies}`)
         return (
           <CommentComponent
             id={comment.id}
@@ -91,7 +92,7 @@ export default function CommentModule({
               togglePinProfileComment(comment.id, comment.isPinned)
             }
           >
-            {comment.replies.map((reply) => {
+            {comment.replies && comment.replies.map((reply) => {
               return (
                 <CommentComponent
                   id={reply.id}
