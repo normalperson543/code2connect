@@ -54,6 +54,9 @@ export default function ProjectPreviewPageUI({
   canEdit,
   isLiked: isLikedDb,
   handleLike,
+  handleFeature,
+  handleUnfeature,
+  isAdmin,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -72,9 +75,12 @@ export default function ProjectPreviewPageUI({
   canEdit: boolean;
   isLiked: boolean;
   handleLike: () => void;
+  handleFeature: () => void;
+  handleUnfeature: () => void;
+  isAdmin: boolean;
 }) {
   const [isForking, setIsForking] = useState(false);
-  const [isLiked, setIsLiked] = useState(isLikedDb)
+  const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
 
   const searchParams = useSearchParams();
@@ -83,7 +89,7 @@ export default function ProjectPreviewPageUI({
     saveDescription(sessionDesc);
   }, 2000);
 
-  const debounceLike = useDebouncedCallback(() => handleLike(), 1000)
+  const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
   return (
     <div className="flex flex-col gap-2">
       <Heading>
@@ -202,15 +208,26 @@ export default function ProjectPreviewPageUI({
             onClick={() => {
               setIsLiked(!isLiked);
               debounceLike();
-              
             }}
           >
             <div className="flex flex-row gap-1">
-              <Text fw={700}>{likes}</Text> <Text>like{likes !== 1 && "s"}</Text>
+              <Text fw={700}>{likes}</Text>{" "}
+              <Text>like{likes !== 1 && "s"}</Text>
             </div>
           </Button>
         </div>
         <div className="w-full flex flex-row gap-2 justify-end">
+          {isAdmin && (
+            <Menu>
+              <Menu.Target>
+                <Button>Admin</Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item onClick={handleFeature}>Feature</Menu.Item>
+                <Menu.Item onClick={handleUnfeature}>Unfeature</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
           <Button
             leftSection={<SparklesIcon width={16} height={16} />}
             onClick={() => {

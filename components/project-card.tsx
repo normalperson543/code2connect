@@ -29,13 +29,13 @@ export default function ProjectCard({
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
-        <Link href={`/projects/${projectInfo.id}`} key={projectInfo.id}>
+        <Link href={`/projects/${projectInfo.id}`} key={projectInfo.id} className="w-full h-full">
           {!projectInfo.isPublic && (
             <Badge className="absolute right-1 top-1 z-1" color="orange">
               Unshared
             </Badge>
           )}
-          <div className="relative h-[135] w-[240]">
+          <div className="relative h-[135] w-full">
             <Image
               src={projectInfo.thumbnail ?? "/assets/placeholder-thumb.jpg"}
               fill
