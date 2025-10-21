@@ -37,8 +37,32 @@ import { placeholder } from "@/app/lib/constants";
 import ProjectCard from "../project-card";
 import MiniProfile from "../mini-profile";
 import Image from "next/image";
+import { Profile } from "@prisma/client";
+import { ProjectWithOwner } from "@/app/lib/projects";
 
-export default function ClusterUI() {
+export default function ClusterUI({
+  id,
+  title,
+  thumbnailUrl,
+  isFollowingDb,
+  description,
+  people,
+  dateModified,
+  followerCount,
+  followers,
+  projects,
+}: {
+  id: string;
+  title: string;
+  thumbnailUrl: string;
+  isFollowingDb: boolean;
+  description: string;
+  people: Profile[];
+  dateModified: Date;
+  followerCount: number;
+  followers: Profile[];
+  projects: ProjectWithOwner[];
+}) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   return (
     <div>
@@ -54,24 +78,15 @@ export default function ClusterUI() {
             />
           </AspectRatio>
           <Title order={2}>Number Games</Title>
-          <div className="flex flex-row gap-2">
-            <Button
-              fullWidth
-              leftSection={<PlusIcon width={16} height={16} />}
-              variant="gradient"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }}
-              className="shadow-md"
-            >
-              Follow
-            </Button>
-            <Button
-              color="red"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }}
-              className="shadow-md"
-            >
-              <ExclamationTriangleIcon width={16} height={16} />
-            </Button>
-          </div>
+          <Button
+            fullWidth
+            leftSection={<PlusIcon width={16} height={16} />}
+            variant="gradient"
+            gradient={{ from: "blue", to: "cyan", deg: 135 }}
+            className="shadow-md"
+          >
+            Follow
+          </Button>
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />

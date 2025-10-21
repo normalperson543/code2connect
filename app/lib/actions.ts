@@ -418,9 +418,50 @@ export async function decrementLikes(projectId: string) {
 
   await prisma.like.delete({
     where: {
+      likeId: {
         projectId: projectId,
         profileId: user.data.user?.id as string,
+      },
     },
   });
-  revalidatePath(`/projects/${projectId}`);
 }
+export async function feature(projectId: string) {
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+  const userDb = await prisma.profile.findUnique({
+    where: { id: user.data.user?.id as string },
+  });
+
+  if (!userDb || !userDb.isAdmin) return;
+
+  const project = await prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      isFeatured: true,
+      featureDate: new Date()
+    },
+  });
+  return project
+}
+export async function unfeature(projectId: string) {
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+  const userDb = await prisma.profile.findUnique({
+    where: { id: user.data.user?.id as string },
+  });
+
+  if (!userDb || !userDb.isAdmin) return;
+
+  const project = await prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      isFeatured: false,
+    },
+  });
+  return project
+}
+

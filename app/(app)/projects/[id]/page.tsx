@@ -1,9 +1,11 @@
 import {
   changeDescription,
   decrementLikes,
+  feature,
   incrementLikes,
+  unfeature,
 } from "@/app/lib/actions";
-import { getProject, getProjectLikes, isLiked } from "@/app/lib/data";
+import { getProfile, getProject, getProjectLikes, isLiked } from "@/app/lib/data";
 import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -25,6 +27,7 @@ export default async function ProjectPreviewPage({
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
   const likes = await getProjectLikes(id);
   const liked = await isLiked(id, user.data.user?.id as string);
+  const userDb = await getProfile(user.data.user?.id as string)
 
   async function handleSaveDesc(newDesc: string) {
     "use server";
@@ -33,8 +36,17 @@ export default async function ProjectPreviewPage({
   async function handleLike() {
     "use server";
     if (liked) await decrementLikes(id);
-    else incrementLikes(id);
+    else await incrementLikes(id);
   }
+  async function handleFeature() {
+    'use server'
+    await feature(id);
+  }
+  async function handleUnfeature() {
+    'use server'
+    await unfeature(id)
+  }
+
   return (
     <ProjectPreviewPageUI
       creator={project.owner?.username as string}
@@ -53,6 +65,7 @@ export default async function ProjectPreviewPage({
       canEdit={canEditInfo}
       isLiked={liked}
       handleLike={handleLike}
+      isAdmin={userDb?.isAdmin as boolean}
     />
   );
 }

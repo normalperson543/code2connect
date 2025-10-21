@@ -5,5 +5,9 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <MTWrapper>{children}</MTWrapper>;
+  return (
+    <div className="pb-4">
+      <MTWrapper>{children}</MTWrapper>
+    </div>
+  );
 }

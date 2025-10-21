@@ -47,7 +47,7 @@ export async function revokeAllProjectSessions(projectId: string) {
 export async function getProjectFiles(
   userId: string,
   id: string,
-  isPublic: boolean,
+  isPublic: boolean
 ) {
   const supabaseAdmin = await createAdminClient();
   const supabase = await createClient();
@@ -68,7 +68,7 @@ export async function getProjectFiles(
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null,
+  ownerId: string | undefined | null
 ) {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
@@ -137,7 +137,7 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1,
+  page: number = 1
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
@@ -197,7 +197,7 @@ export async function getIsFollower(profileId: string, followerId: string) {
 
 export async function getIsFollowing(
   profileUsername: string,
-  currentUserId: string,
+  currentUserId: string
 ) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -329,7 +329,7 @@ export async function getFileUrl(
   userId: string,
   projectId: string,
   fileName: string,
-  isPublic: boolean,
+  isPublic: boolean
 ) {
   const supabaseAdmin = await createAdminClient();
   const supabase = await createClient();
@@ -349,8 +349,6 @@ export async function getFileUrl(
   return;
 }
 export async function getHomeProfileInfo(authUserId: string) {
-  
-
   return await prisma.profile.findUnique({
     where: {
       id: authUserId,
@@ -370,7 +368,7 @@ export async function getHomeProfileInfo(authUserId: string) {
 export async function getCommentReplies(commentId: string) {
   const replies = await prisma.reply.findMany({
     where: {
-      commentId: commentId
+      commentId: commentId,
     },
     include: {
       owner: true,
@@ -383,17 +381,61 @@ export async function getCommentReplies(commentId: string) {
 export async function getUserLikedProjects(userId: string) {
   const projects = await prisma.like.findMany({
     where: {
-      profileId: userId
-    }
-  })
-  return projects
+      profileId: userId,
+    },
+  });
+  return projects;
 }
 export async function isLiked(projectId: string, userId: string) {
   const isLiked = await prisma.like.count({
     where: {
-        projectId: projectId,
-        profileId: userId
+      projectId: projectId,
+      profileId: userId,
+    },
+  });
+  return isLiked > 0;
+}
+export async function getFeatured() {
+  const projects = await prisma.project.findMany({
+    where: {
+      isFeatured: true,
+      isPublic: true
+    },
+    orderBy: {
+      featureDate: "asc",
+    },
+    include: {
+      owner: true,
+    },
+    take: 5
+  });
+  return projects;
+}
+export async function getTopLiked() {
+  const projects = await prisma.project.findMany({
+    where: {
+      isPublic: true
+    },
+    orderBy: {
+      likes: {
+        _count: "desc"
+      }
+    },
+    include: {
+      owner: true
+    },
+    take: 10
+  })
+  return projects
+}
+export async function getCluster(id: string) {
+  const cluster = await prisma.cluster.findUnique({
+    where: {
+      id: id
+    },
+    include: {
+      projects: true,
     }
   })
-  return isLiked > 0;
+  return cluster;
 }

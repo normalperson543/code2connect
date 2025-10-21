@@ -23,6 +23,7 @@ import {
   PlusIcon,
   RectangleStackIcon,
   ShareIcon,
+  ShieldCheckIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
@@ -30,7 +31,7 @@ import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
 import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
-import { fork, shareProject } from "@/app/lib/actions";
+import { deleteProject, feature, fork, shareProject, unfeature, unshareProject } from "@/app/lib/actions";
 import { useState } from "react";
 
 import { ProjectWithOwner } from "@/app/lib/projects";
@@ -52,8 +53,9 @@ export default function ProjectPreviewPageUI({
   parent,
   saveDescription,
   canEdit,
-  isLiked,
+  isLiked: isLikedDb,
   handleLike,
+  isAdmin,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -72,8 +74,10 @@ export default function ProjectPreviewPageUI({
   canEdit: boolean;
   isLiked: boolean;
   handleLike: () => void;
+  isAdmin: boolean;
 }) {
   const [isForking, setIsForking] = useState(false);
+  const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
 
   const searchParams = useSearchParams();
@@ -81,6 +85,8 @@ export default function ProjectPreviewPageUI({
   const debounceSave = useDebouncedCallback(() => {
     saveDescription(sessionDesc);
   }, 2000);
+
+  const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
   return (
     <div className="flex flex-col gap-2">
       <Heading>
@@ -196,14 +202,35 @@ export default function ProjectPreviewPageUI({
           <Button
             leftSection={<SolidHandThumbUpIcon width={16} height={16} />}
             variant={isLiked ? "filled" : "subtle"}
-            onClick={handleLike}
+            onClick={() => {
+              setIsLiked(!isLiked);
+              debounceLike();
+            }}
           >
             <div className="flex flex-row gap-1">
-              <Text fw={700}>{likes}</Text> <Text>likes</Text>
+              <Text fw={700}>{likes}</Text>{" "}
+              <Text>like{likes !== 1 && "s"}</Text>
             </div>
           </Button>
         </div>
         <div className="w-full flex flex-row gap-2 justify-end">
+          {isAdmin && (
+            <Menu>
+              <Menu.Target>
+                <Button
+                  leftSection={<ShieldCheckIcon width={16} height={16} />}
+                >
+                  Admin
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item onClick={() => feature(id)}>Feature</Menu.Item>
+                <Menu.Item onClick={() => unfeature(id)}>Unfeature</Menu.Item>
+                <Menu.Item onClick={() => unshareProject(id)} c="red">Unshare</Menu.Item>
+                <Menu.Item onClick={() => deleteProject(id, creator)} c="red">Delete</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
           <Button
             leftSection={<SparklesIcon width={16} height={16} />}
             onClick={() => {

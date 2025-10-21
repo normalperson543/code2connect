@@ -23,18 +23,23 @@ import { placeholder } from "@/app/lib/constants";
 import { createProject } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
+import { ProjectWithOwner } from "@/app/lib/projects";
 export default function Home({
   username,
   projectCount,
   clusterCount,
   followerCount,
   followingCount,
+  featured,
+  topLiked
 }: {
   username?: string;
   projectCount?: number;
   clusterCount?: number;
   followerCount?: number;
   followingCount?: number;
+  featured: ProjectWithOwner[];
+  topLiked: ProjectWithOwner[];
 }) {
   const [creating, setCreating] = useState(false);
   return (
@@ -239,7 +244,7 @@ export default function Home({
           </ThemeIcon>
           <Title order={3}>Featured by Code2Connect</Title>
         </div>
-        <ProjectCarousel projects={placeholder} />
+        <ProjectCarousel projects={featured} />
       </div>
       <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
         <div className="flex flex-col gap-2 w-1/2">
@@ -280,7 +285,7 @@ export default function Home({
           </ThemeIcon>
           <Title order={3}>Top liked</Title>
         </div>
-        <ProjectCarousel projects={placeholder} />
+        <ProjectCarousel projects={topLiked} />
       </div>
       {!username && (
         <div className="flex flex-col gap-2 pt-18 pb-18 pr-30 pl-30 bg-offblue-950 justify-center text-center">

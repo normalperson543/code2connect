@@ -318,7 +318,7 @@ export default function Editor({
   function handleChangeCurrentFile(newContent: string) {
     if (!canEditInfo) {
       modals.open({
-        title: "You can&apos;t modify this file",
+        title: "You cannot modify this file",
         children: (
           <div className="flex flex-col gap-2">
             <p>
@@ -917,12 +917,13 @@ export default function Editor({
                       </UnstyledButton>
                     </Menu.Target>
                     <Menu.Dropdown>
+                      {canEditInfo &&
                       <Menu.Item
                         leftSection={<PencilIcon width={16} height={16} />}
                         onClick={() => renameModal(currentFile)}
                       >
                         Rename
-                      </Menu.Item>
+                      </Menu.Item>}
                       <Menu.Item
                         leftSection={
                           <ArrowDownTrayIcon width={16} height={16} />
@@ -931,13 +932,14 @@ export default function Editor({
                       >
                         Download
                       </Menu.Item>
+                      {canEditInfo &&
                       <Menu.Item
                         leftSection={<TrashIcon width={16} height={16} />}
                         color="red"
                         onClick={() => deleteConfirm(currentFile)}
                       >
                         Delete
-                      </Menu.Item>
+                      </Menu.Item>}
                     </Menu.Dropdown>
                   </Menu>
                 </>
@@ -1022,13 +1024,6 @@ export default function Editor({
                 <ArrowsPointingOutIcon width={16} height={16} />
               </Button>
             )}
-          </div>
-          <div className="flex flex-row gap-2 w-full flex-nowrap items-center">
-            <GlobeAmericasIcon width={16} height={16} />
-            <TextInput value={frameSrc} disabled className="flex-1" />
-            <Link href={frameSrc} target="_blank">
-              <ArrowTopRightOnSquareIcon width={16} height={16} />
-            </Link>
           </div>
           {isStopped && <StoppedProject />}
           <iframe
