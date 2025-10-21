@@ -1,4 +1,5 @@
 import { countSearchProjects, searchProjects } from "@/app/lib/data";
+import { ProjectWithOwner } from "@/app/lib/projects";
 import ProjectCard from "@/components/project-card";
 import SearchUI from "@/components/search/search";
 import { Pagination } from "@mantine/core";
@@ -18,18 +19,20 @@ console.log(currentPage)
   console.log(projects)
   const count = await countSearchProjects(query);
 
+  projects.map((project) => console.log(project as ProjectWithOwner))
   return (
     <SearchUI
       searchTerm={query}
       page={currentPage}
-      pages={Math.floor(count / 10)}
+      pages={Math.floor(count / 10) + 1}
+      count={count}
     >
       {query && (
-        <div>
+        <>
           {projects.map((project) => (
-            <ProjectCard project={project} />
+            <ProjectCard projectInfo={project as ProjectWithOwner} />
           ))}
-        </div>
+        </>
       )}
     </SearchUI>
   );

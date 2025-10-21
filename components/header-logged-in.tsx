@@ -18,7 +18,7 @@ export default function HeaderLoggedIn() {
             alt="Code2Connect logo"
           />
         </Link>
-        <SearchBar bgColor="red" />
+        <SearchBar />
         <CreateButton />
         <Button leftSection={<FlagIcon width={16} height={16} />}>
           Tutorials

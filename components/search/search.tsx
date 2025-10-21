@@ -1,25 +1,28 @@
 "use client";
 import { placeholder } from "@/app/lib/constants";
-import { Title, Text, Pagination } from "@mantine/core";
+import { Title, Text, Pagination, Input } from "@mantine/core";
 import ProjectCard from "../project-card";
 import { useState } from "react";
 import Heading from "../heading";
 import SearchBar from "../search-bar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function SearchUI({
   pages,
   children,
+  count,
 }: {
-  searchTerm: string;
   page: number;
   pages: number;
+  count: number;
   children: React.ReactNode;
 }) {
-  const [term, setTerm] = useState("");
-  const [activePage, setActivePage] = useState(1);
   const searchParams = useSearchParams();
+  const [term, setTerm] = useState(searchParams.get("query"));
+  const [activePage, setActivePage] = useState(1);
+
   const pathname = usePathname();
   const { replace } = useRouter();
   const handleSearch = useDebouncedCallback(() => {
@@ -53,18 +56,27 @@ export default function SearchUI({
           <div className="w-1/2">
             {term ? (
               <>
-                <Title>Search results for {term}</Title>
-                <Text>returned {pages * 10}+ results</Text>
+                <Title>Search results</Title>
+                {count === 0 ? (
+                  <p>returned no results</p>
+                ) : (
+                  <p>
+                    returned {count} result{count !== 1 && "s"}
+                  </p>
+                )}
               </>
             ) : (
               <Title>Search projects</Title>
             )}
           </div>
           <div className="flex-1">
-            <SearchBar
-              term={term}
-              onChangeSearchTerm={(newTerm: string) => {
-                setTerm(newTerm);
+            <Input
+              type="text"
+              placeholder="Search"
+              leftSection={<MagnifyingGlassIcon width={16} height={16} />}
+              value={term ?? ""}
+              onChange={(e) => {
+                setTerm(e.target.value);
                 handleSearch();
               }}
             />
@@ -72,7 +84,7 @@ export default function SearchUI({
         </div>
       </Heading>
       <div className="items-center flex flex-col gap-2">
-        <div className="flex flex-row gap-4 flex-wrap pl-30 pr-30">
+        <div className="flex flex-row gap-4 flex-wrap pl-16 pr-16 w-full h-full">
           {children}
         </div>
 
