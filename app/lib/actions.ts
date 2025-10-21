@@ -379,6 +379,27 @@ export async function createProfileCommentReply(
   revalidatePath(`/profile/${comment?.targetProf?.username}`);
   redirect(`/profile/${comment?.targetProf?.username}`);
 }
+
+export async function deleteProfileCommentReply(replyId: string) {
+  const reply = await prisma.reply.delete({
+    where: {
+      id: replyId,
+    },
+    include: {
+      owner: true,
+      Comment: {
+        include: {
+          targetProf: true
+        }
+      }
+    }
+  })
+
+  revalidatePath(`/profile/${reply.Comment?.targetProf?.username}`)
+  redirect(`/profile/${reply.Comment?.targetProf?.username}`)
+
+  return reply
+}
 export async function incrementLikes(projectId: string) {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();

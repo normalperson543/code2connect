@@ -5,10 +5,12 @@ import { useState } from "react";
 import { Comment, Prisma, Profile } from "@prisma/client";
 import {
   createProfileComment,
+  deleteProfileCommentReply,
   togglePinProfileComment,
 } from "@/app/lib/actions";
-type CommentWithOwner = Prisma.CommentGetPayload<{ include: { owner: true } }>;
+type CommentWithOwnerAndReplies = Prisma.CommentGetPayload<{ include: { owner: true, replies: { include: {owner: true, Comment: true}} } }>;
 import { deleteProfileComment } from "@/app/lib/actions";
+import { getCommentReplies } from "@/app/lib/data";
 
 export default function CommentModule({
   comments,
@@ -16,7 +18,7 @@ export default function CommentModule({
   accessedProfile,
   accessedUsername,
 }: {
-  comments: CommentWithOwner[];
+  comments: CommentWithOwnerAndReplies[];
   currentUser: string;
   accessedProfile: Profile;
   accessedUsername: string;
@@ -88,7 +90,23 @@ export default function CommentModule({
             handleTogglePin={() =>
               togglePinProfileComment(comment.id, comment.isPinned)
             }
-          />
+          >
+            {comment.replies.map((reply) => {
+              return (
+                <CommentComponent
+                  id={reply.id}
+                  username={reply.owner.username}
+                  content={reply.contents}
+                  dateCreated={reply.dateCreated}
+                  isCreator={currentUser === reply.Comment?.targetId}
+                  isWriter={currentUser === reply.profileId}
+                  isReply={true}
+                  handleDelete={() => deleteProfileCommentReply(reply.id)}
+                />
+              )
+            })}
+          </CommentComponent>
+          
         );
       })}
 

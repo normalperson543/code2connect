@@ -31,6 +31,7 @@ export default function Comment({
   pinned = false,
   isCreator = false,
   isWriter = false,
+  isReply = false,
   handleDelete,
   handleReport,
   handleTogglePin,
@@ -45,6 +46,7 @@ export default function Comment({
   pinned?: boolean;
   isCreator?: boolean;
   isWriter?: boolean;
+  isReply?: boolean,
   handleDelete: (id: string) => void;
   handleReport: (id: string) => void;
   handleTogglePin: (id: string) => void;
@@ -52,6 +54,7 @@ export default function Comment({
   children?: React.ReactNode;
 }) {
   const [replying, setReplying] = useState(false);
+  const [replyContent, setReplyContent] = useState("");
 
   function deleteModal() {
     modals.openConfirmModal({
@@ -106,6 +109,12 @@ export default function Comment({
       onConfirm: () => handleTogglePin(id),
     });
   }
+
+  async function handleReplying() {
+    setReplying(true)
+
+    setReplying(false)
+  }
   return (
     <div className="flex flex-row gap-2 w-full">
       <Avatar src={profilePicture} size="md" />
@@ -131,12 +140,15 @@ export default function Comment({
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                >
-                  Reply
-                </Menu.Item>
-                {isCreator && (
+                {!isReply && (
+                  <Menu.Item
+                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                  >
+                    Reply
+                  </Menu.Item>
+                )}
+                
+                {(isCreator && !isReply) && (
                   <>
                     <Menu.Item
                       leftSection={<TagIcon width={16} height={16} />}

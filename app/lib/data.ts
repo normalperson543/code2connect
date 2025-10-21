@@ -368,7 +368,7 @@ export async function getHomeProfileInfo(authUserId: string) {
   });
 }
 export async function getCommentReplies(commentId: string) {
-  const replies = prisma.reply.findMany({
+  const replies = await prisma.reply.findMany({
     where: {
       commentId: commentId
     },
@@ -377,6 +377,8 @@ export async function getCommentReplies(commentId: string) {
       Comment: true
     }
   })
+
+  return replies
 }
 export async function getUserLikedProjects(userId: string) {
   const projects = await prisma.like.findMany({
