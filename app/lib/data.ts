@@ -308,6 +308,9 @@ export async function searchProjects(query: string, page: number) {
       },
       isPublic: true,
     },
+    include: {
+      owner: true
+    },
 
     skip: (page - 1) * 10,
     take: 10,
