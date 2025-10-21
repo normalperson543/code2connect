@@ -80,6 +80,7 @@ import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
 import {
+  changeDescription,
   createProject,
   renameProject,
   setThumbnail,
@@ -291,6 +292,10 @@ export default function Editor({
     handleSave();
   }, 2000);
 
+  const debounceSaveDescription = useDebouncedCallback(() => {
+    changeDescription(id, description)
+  }, 2000)
+
   async function handleChangeTitle(newTitle: string) {
     if (!canEditInfo) return;
     setIsChanged(true);
@@ -307,9 +312,8 @@ export default function Editor({
   }
   function handleChangeDescription(newDesc: string) {
     if (!canEditInfo) return;
-    setIsChanged(true);
     setDescription(newDesc);
-    debounceSave();
+    debounceSaveDescription();
   }
   function handleChangeCurrentFile(newContent: string) {
     if (!canEditInfo) {
