@@ -23,6 +23,7 @@ import {
   PlusIcon,
   RectangleStackIcon,
   ShareIcon,
+  ShieldCheckIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
@@ -30,7 +31,7 @@ import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
 import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
-import { fork, shareProject } from "@/app/lib/actions";
+import { deleteProject, feature, fork, shareProject, unfeature, unshareProject } from "@/app/lib/actions";
 import { useState } from "react";
 
 import { ProjectWithOwner } from "@/app/lib/projects";
@@ -54,8 +55,6 @@ export default function ProjectPreviewPageUI({
   canEdit,
   isLiked: isLikedDb,
   handleLike,
-  handleFeature,
-  handleUnfeature,
   isAdmin,
 }: {
   creatorImageSrc?: string;
@@ -75,8 +74,6 @@ export default function ProjectPreviewPageUI({
   canEdit: boolean;
   isLiked: boolean;
   handleLike: () => void;
-  handleFeature: () => void;
-  handleUnfeature: () => void;
   isAdmin: boolean;
 }) {
   const [isForking, setIsForking] = useState(false);
@@ -220,11 +217,17 @@ export default function ProjectPreviewPageUI({
           {isAdmin && (
             <Menu>
               <Menu.Target>
-                <Button>Admin</Button>
+                <Button
+                  leftSection={<ShieldCheckIcon width={16} height={16} />}
+                >
+                  Admin
+                </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item onClick={handleFeature}>Feature</Menu.Item>
-                <Menu.Item onClick={handleUnfeature}>Unfeature</Menu.Item>
+                <Menu.Item onClick={() => feature(id)}>Feature</Menu.Item>
+                <Menu.Item onClick={() => unfeature(id)}>Unfeature</Menu.Item>
+                <Menu.Item onClick={() => unshareProject(id)} c="red">Unshare</Menu.Item>
+                <Menu.Item onClick={() => deleteProject(id, creator)} c="red">Delete</Menu.Item>
               </Menu.Dropdown>
             </Menu>
           )}

@@ -1,17 +1,20 @@
 import Home from "@/components/home";
-import { getHomeProfileInfo } from "../lib/data";
+import { getFeatured, getHomeProfileInfo, getTopLiked } from "../lib/data";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
+  
+  const featured = await getFeatured();
+  const topLiked = await getTopLiked();
 
-  if (!user || !authUserId) return <Home />;
+  if (!user || !authUserId) return <Home featured={featured} topLiked={topLiked} />;
 
   const profile = await getHomeProfileInfo(authUserId);
 
-  if (!profile) return <Home />;
+  if (!profile) return <Home featured={featured} topLiked={topLiked} />;
   
   return (
     <Home
@@ -20,6 +23,8 @@ export default async function HomePage() {
       clusterCount={profile._count.clusters}
       followerCount={profile._count.followers}
       followingCount={profile._count.following}
+      featured={featured}
+      topLiked={topLiked}
     />
   );
 }

@@ -6,8 +6,8 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="pb-4">
       <MTWrapper>{children}</MTWrapper>
-    </>
+    </div>
   );
 }

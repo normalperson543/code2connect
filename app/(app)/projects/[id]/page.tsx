@@ -65,8 +65,6 @@ export default async function ProjectPreviewPage({
       canEdit={canEditInfo}
       isLiked={liked}
       handleLike={handleLike}
-      handleFeature={handleFeature}
-      handleUnfeature={handleUnfeature}
       isAdmin={userDb?.isAdmin as boolean}
     />
   );

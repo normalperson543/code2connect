@@ -419,6 +419,7 @@ export async function feature(projectId: string) {
     },
     data: {
       isFeatured: true,
+      featureDate: new Date()
     },
   });
   return project

@@ -24,12 +24,14 @@ model Profile {
   isAdmin     Boolean   @default(false)
   followers   Profile[] @relation("followers")
   following   Profile[] @relation("followers")
-  clusters    Cluster[]
+  clusters    Cluster[] @relation("clusterOwners")
   replies     Reply[]
 
-  writtenComments  Comment[] @relation("CommentOwner")
-  receivedComments Comment[] @relation("CommentTarget")
-  likedProjects    Like[]
+  writtenComments   Comment[] @relation("CommentOwner")
+  receivedComments  Comment[] @relation("CommentTarget")
+  likedProjects     Like[]
+  followingClusters Cluster?  @relation(fields: [clusterId], references: [id])
+  clusterId         String?
 }
 
 model Project {
@@ -41,6 +43,7 @@ model Project {
   isPublic         Boolean   @default(false)
   commentsDisabled Boolean   @default(false)
   isFeatured       Boolean   @default(false)
+  featureDate      DateTime?
   isStarter        Boolean   @default(false)
   parentId         String?
   parent           Project?  @relation(name: "forks", fields: [parentId], references: [id])
@@ -59,7 +62,7 @@ model Cluster {
   id String @id @unique @default(uuid())
 
   title        String?
-  owner        Profile   @relation(fields: [profileId], references: [id])
+  owner        Profile   @relation("clusterOwners", fields: [profileId], references: [id])
   description  String    @default("")
   dateCreated  DateTime  @default(now())
   dateModified DateTime  @default(now())
@@ -67,8 +70,10 @@ model Cluster {
   isIotm       Boolean   @default(false)
   thumbnail    String?
   projects     Project[]
-  profileId    String
-  comments     Comment[]
+  followers    Profile[]
+
+  profileId String
+  comments  Comment[]
 }
 
 model Comment {
