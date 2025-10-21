@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Comment, Prisma, Profile } from "@prisma/client";
 import { createProfileComment } from "@/app/lib/actions";
 type CommentWithOwner = Prisma.CommentGetPayload<{ include: { owner: true } }>;
+import { deleteProfileComment } from "@/app/lib/actions";
 
 export default function CommentModule({
   comments,
@@ -77,6 +78,7 @@ export default function CommentModule({
             dateCreated={comment.dateCreated}
             isCreator={currentUser === comment.targetId}
             isWriter={currentUser === comment.profileId}
+            handleDelete={() => deleteProfileComment(comment.id)}
           />
         );
       })}
