@@ -71,6 +71,7 @@ model Cluster {
   thumbnail    String?
   projects     Project[]
   followers    Profile[]
+  
 
   profileId String
   comments  Comment[]

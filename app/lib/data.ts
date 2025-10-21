@@ -434,7 +434,12 @@ export async function getCluster(id: string) {
       id: id
     },
     include: {
-      projects: true,
+      projects: {
+        include: {
+          owner: true
+        }
+      },
+      followers: true
     }
   })
   return cluster;

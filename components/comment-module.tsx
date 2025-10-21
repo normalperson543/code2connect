@@ -11,6 +11,7 @@ import {
 type CommentWithOwnerAndReplies = Prisma.CommentGetPayload<{ include: { owner: true, replies: { include: {owner: true, Comment: true}} } }>;
 import { deleteProfileComment } from "@/app/lib/actions";
 import { getCommentReplies } from "@/app/lib/data";
+import CommentTextbox from "./comment-textbox";
 
 export default function CommentModule({
   comments,
@@ -55,27 +56,11 @@ export default function CommentModule({
   return (
     <div>
       <Title order={4}>Add a comment</Title>
-      <div className="flex flex-row gap-2 w-full mt-2">
-        <Avatar src="" size="md" />
-        <div className="flex flex-col gap-2 w-full">
-          <Textarea
-            w="100%"
-            rows={3}
-            value={comment}
-            onChange={(e) => setComment(e.currentTarget.value)}
-          />
-          <div className="flex flex-row gap-2 w-full">
-            <Button
-              leftSection={<PaperAirplaneIcon width={16} height={16} />}
-              onClick={(e) => handleSubmitComment()}
-            >
-              Send
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div></div>
-
+      <CommentTextbox
+        value={comment}
+        handleChangeValue={(newString: string) => setComment(newString)}
+        handleSubmit={handleSubmitComment}
+      />
       {commentsToDisplay.map((comment) => {
         return (
           <CommentComponent
