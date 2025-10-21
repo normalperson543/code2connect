@@ -318,11 +318,11 @@ export default function Editor({
   function handleChangeCurrentFile(newContent: string) {
     if (!canEditInfo) {
       modals.open({
-        title: "You can't modify this file",
+        title: "You can&apos;t modify this file",
         children: (
           <div className="flex flex-col gap-2">
             <p>
-              You don't own this project, so changes you make will not save. To
+              You don&apos;t own this project, so changes you make will not save. To
               modify it and make your own changes, fork the project by clicking
               on the Preview Page button and clicking Fork.
             </p>

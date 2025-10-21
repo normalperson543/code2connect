@@ -1,10 +1,7 @@
 "use client";
-import { placeholder } from "@/app/lib/constants";
 import { Title, Text, Pagination, Input } from "@mantine/core";
-import ProjectCard from "../project-card";
 import { useState } from "react";
 import Heading from "../heading";
-import SearchBar from "../search-bar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";

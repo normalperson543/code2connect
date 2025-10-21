@@ -57,9 +57,7 @@ export default function ProfileUI({
   accessedProfileComments: Comment[];
   isFollowingDb: boolean;
 }) {
-  const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [bio, setBio] = useState(accessedProfile.bio);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
 
@@ -68,7 +66,6 @@ export default function ProfileUI({
   const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
 
   async function handleSaveBio() {
-    setIsSaving(true);
     const userId = currentUser;
 
     try {
@@ -76,7 +73,6 @@ export default function ProfileUI({
     } catch (error) {
       throw error;
     }
-    setIsSaving(false);
   }
 
   const debounceSave = useDebouncedCallback(async () => {
@@ -234,7 +230,7 @@ export default function ProfileUI({
           </div>
         </div>
         <div className="flex flex-col gap-2 w-4/5 pr-16 pl-3">
-          <Tabs defaultValue="projects" onChange={setActiveTab}>
+          <Tabs defaultValue="projects">
             <Tabs.List>
               <Tabs.Tab
                 leftSection={<CodeBracketIcon width={16} height={16} />}
@@ -281,6 +277,7 @@ export default function ProfileUI({
                     <ProjectCard
                       projectInfo={project}
                       isOwner={accessedProfile.id === currentUser}
+                      key={project.id}
                     />
                   ))}
                 </div>

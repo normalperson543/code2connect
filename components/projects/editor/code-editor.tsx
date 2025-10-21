@@ -32,7 +32,7 @@ import { python } from "@codemirror/lang-python";
 import { lintKeymap } from "@codemirror/lint";
 import { basicLightInit } from "@uiw/codemirror-theme-basic";
 import { Roboto_Mono } from "next/font/google";
-import { RefAttributes, useRef } from "react";
+import { RefAttributes } from "react";
 
 interface Props
   extends ReactCodeMirrorProps,

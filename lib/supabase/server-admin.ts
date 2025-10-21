@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 
 export async function createAdminClient() {
   return createClient(

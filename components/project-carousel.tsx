@@ -2,7 +2,6 @@
 import { Carousel } from "@mantine/carousel";
 import ProjectCard from "./project-card";
 import { ProjectWithOwner } from "@/app/lib/projects";
-import Link from "next/link";
 
 export default function ProjectCarousel({
   projects,

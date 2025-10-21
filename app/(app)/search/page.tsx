@@ -22,7 +22,6 @@ export default async function Search(props: {
   projects.map((project) => console.log(project as ProjectWithOwner));
   return (
     <SearchUI
-      searchTerm={query}
       page={currentPage}
       pages={Math.floor(count / 10) + 1}
       count={count}

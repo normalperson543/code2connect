@@ -127,7 +127,7 @@ export default function ProjectPreviewPageUI({
       {searchParams.get("shared") === "1" && isPublic && (
         <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center">
           <CheckIcon width={16} height={16} />{" "}
-          <p>You've successfully shared your project!</p>
+          <p>You&apos;ve successfully shared your project!</p>
         </div>
       )}
 
