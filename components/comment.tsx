@@ -4,7 +4,7 @@ import {
   EllipsisHorizontalIcon,
   ExclamationTriangleIcon,
   TrashIcon,
-  ArrowUturnLeftIcon
+  ArrowUturnLeftIcon,
 } from "@heroicons/react/24/outline";
 import { TagIcon } from "@heroicons/react/24/solid";
 import {
@@ -19,6 +19,7 @@ import {
 import { modals } from "@mantine/modals";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 
 export default function Comment({
   id,
@@ -32,6 +33,7 @@ export default function Comment({
   handleDelete,
   handleReport,
   handleTogglePin,
+  children,
 }: {
   id: string;
   username: string;
@@ -44,6 +46,7 @@ export default function Comment({
   handleDelete: (id: string) => void;
   handleReport: (id: string) => void;
   handleTogglePin: (id: string) => void;
+  children?: React.ReactNode;
 }) {
   function deleteModal() {
     modals.openConfirmModal({
@@ -116,51 +119,54 @@ export default function Comment({
             )}
           </div>
           <div>
-              <Menu position="bottom-end">
-                <Menu.Target>
-                  <Button color="light" variant="subtle">
-                    <EllipsisHorizontalIcon width={16} height={16} />
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                  >
-                    Reply
-                  </Menu.Item>
-                  {isCreator && (
-                    <>
-                      <Menu.Item
-                        leftSection={<TagIcon width={16} height={16} />}
-                        onClick={pinned ? unpinModal : pinModal}
-                      >
-                        {pinned ? "Unpin" : "Pin"}
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={<TrashIcon width={16} height={16} />}
-                        color="red"
-                        onClick={deleteModal}
-                      >
-                        Delete
-                      </Menu.Item>
-                    </>
-                  )}
-                  <Menu.Item
-                    leftSection={
-                      <ExclamationTriangleIcon width={16} height={16} />
-                    }
-                    color="red"
-                    onClick={reportModal}
-                  >
-                    Report
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+            <Menu position="bottom-end">
+              <Menu.Target>
+                <Button color="light" variant="subtle">
+                  <EllipsisHorizontalIcon width={16} height={16} />
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                >
+                  Reply
+                </Menu.Item>
+                {isCreator && (
+                  <>
+                    <Menu.Item
+                      leftSection={<TagIcon width={16} height={16} />}
+                      onClick={pinned ? unpinModal : pinModal}
+                    >
+                      {pinned ? "Unpin" : "Pin"}
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<TrashIcon width={16} height={16} />}
+                      color="red"
+                      onClick={deleteModal}
+                    >
+                      Delete
+                    </Menu.Item>
+                  </>
+                )}
+                <Menu.Item
+                  leftSection={
+                    <ExclamationTriangleIcon width={16} height={16} />
+                  }
+                  color="red"
+                  onClick={reportModal}
+                >
+                  Report
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </div>
         </div>
 
         <Text>{content}</Text>
         <Text c="dimmed">{dateCreated.toLocaleString()}</Text>
+        <div className="pl-4 flex flex-col gap-2">
+          {children}
+        </div>
       </div>
     </div>
   );
