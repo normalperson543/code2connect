@@ -107,19 +107,12 @@ export async function getProject(projectId: string) {
   return project;
 }
 export async function getProjectLikes(projectId: string) {
-  const project = await prisma.project.findMany({
+  const likes = await prisma.like.count({
     where: {
-      id: projectId,
-    },
-    include: {
-      _count: {
-        select: { likers: true },
-      },
+      projectId: projectId,
     },
   });
-  if (!(await canAccessProject(project[0].isPublic, project[0].profileId)))
-    return;
-  return project[0]._count.likers;
+  return likes;
 }
 
 export async function getProfile(userId: string) {
@@ -384,4 +377,12 @@ export async function getCommentReplies(commentId: string) {
       Comment: true
     }
   })
+}
+export async function getUserLikedProjects(userId: string) {
+  const projects = await prisma.like.findMany({
+    where: {
+      profileId: userId
+    }
+  })
+  return projects
 }

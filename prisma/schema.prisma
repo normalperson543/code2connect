@@ -15,21 +15,21 @@ model ProjectSessionToken {
 }
 
 model Profile {
-  id            String    @id @unique
-  username      String    @unique
-  bio           String    @default("")
-  dateCreated   DateTime  @default(now())
-  projects      Project[]
-  isDisabled    Boolean   @default(false)
-  isAdmin       Boolean   @default(false)
-  followers     Profile[] @relation("followers")
-  following     Profile[] @relation("followers")
-  clusters      Cluster[]
-  replies       Reply[]
-  likedProjects Project[] @relation(name: "likers")
+  id          String    @id @unique
+  username    String    @unique
+  bio         String    @default("")
+  dateCreated DateTime  @default(now())
+  projects    Project[]
+  isDisabled  Boolean   @default(false)
+  isAdmin     Boolean   @default(false)
+  followers   Profile[] @relation("followers")
+  following   Profile[] @relation("followers")
+  clusters    Cluster[]
+  replies     Reply[]
 
   writtenComments  Comment[] @relation("CommentOwner")
   receivedComments Comment[] @relation("CommentTarget")
+  likedProjects    Like[]
 }
 
 model Project {
@@ -46,13 +46,13 @@ model Project {
   parent           Project?  @relation(name: "forks", fields: [parentId], references: [id])
   forks            Project[] @relation("forks")
   datePublished    DateTime?
-  dateModified      DateTime? @default(now())
+  dateModified     DateTime? @default(now())
   dateCreated      DateTime  @default(now())
 
   owner     Profile?  @relation(fields: [profileId], references: [id])
   profileId String?
   clusters  Cluster[] @relation()
-  likers    Profile[] @relation(name: "likers")
+  likes     Like[]
 }
 
 model Cluster {
@@ -89,7 +89,7 @@ model Comment {
   Project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
 
-  isPinned  Boolean @default(false)
+  isPinned Boolean @default(false)
 }
 
 model Reply {
@@ -102,4 +102,14 @@ model Reply {
   profileId   String
   Comment     Comment? @relation(fields: [commentId], references: [id])
   commentId   String?
+}
+
+model Like {
+  project Project @relation(fields: [projectId], references: [id])
+  user    Profile @relation(fields: [profileId], references: [id])
+
+  projectId String
+  profileId String
+
+  @@id(name: "likeId", [projectId, profileId])
 }

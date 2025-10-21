@@ -31,7 +31,7 @@ export async function createProject() {
     .from("projects")
     .upload(
       `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')",
+      "print('Hello, World!')"
     );
   redirect(`/projects/${project.id}/editor`);
 }
@@ -122,7 +122,7 @@ export async function fork(projectId: string) {
         .from("projects")
         .copy(
           `${old.owner?.id as string}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`,
+          `${user.data.user?.id}/${project.id}/${file.name}`
         );
     }
   }
@@ -175,7 +175,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
 
 export async function removeProfileFollower(
   profileId: string,
-  followerId: string,
+  followerId: string
 ) {
   const updatedFollower = await prisma.profile.update({
     where: {
@@ -224,7 +224,7 @@ export async function createProfileComment(
   ownerId: string,
   targetId: string,
   content: string,
-  targetUsername: string,
+  targetUsername: string
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -307,69 +307,101 @@ export async function deleteProfileComment(id: string) {
     },
   });
 
-  revalidatePath(`/profile/${comment.targetProf?.username}`)
-  redirect(`/profile/${comment.targetProf?.username}`)
+  revalidatePath(`/profile/${comment.targetProf?.username}`);
+  redirect(`/profile/${comment.targetProf?.username}`);
 }
 
-export async function togglePinProfileComment(id: string, currentPinStatus: boolean) {
+export async function togglePinProfileComment(
+  id: string,
+  currentPinStatus: boolean
+) {
   const selectedComment = await prisma.comment.findUnique({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      targetProf: true
-    }
-  })
+      targetProf: true,
+    },
+  });
 
-  if(!currentPinStatus) {
+  if (!currentPinStatus) {
     await prisma.comment.updateMany({
       where: {
         targetId: selectedComment?.targetId,
         NOT: {
-          id: id
-        }
+          id: id,
+        },
       },
       data: {
-        isPinned: false
-      }
-    })
+        isPinned: false,
+      },
+    });
   }
-
 
   const comment = await prisma.comment.update({
     where: {
       id: id,
     },
     include: {
-      targetProf: true
+      targetProf: true,
     },
     data: {
-      isPinned: !currentPinStatus
+      isPinned: !currentPinStatus,
     },
   });
 
-  revalidatePath(`/profile/${comment.targetProf?.username}`)
-  redirect(`/profile/${comment.targetProf?.username}`)
+  revalidatePath(`/profile/${comment.targetProf?.username}`);
+  redirect(`/profile/${comment.targetProf?.username}`);
 }
 
-export async function createProfileCommentReply(commentId: string, replierId: string, content: string ) {
+export async function createProfileCommentReply(
+  commentId: string,
+  replierId: string,
+  content: string
+) {
   const reply = await prisma.reply.create({
     data: {
       profileId: replierId,
       commentId: commentId,
-      contents: content
-    }
-  })
+      contents: content,
+    },
+  });
 
   const comment = await prisma.comment.findUnique({
     where: {
-      id: commentId
+      id: commentId,
     },
     include: {
-      targetProf: true
-    }
-  })
+      targetProf: true,
+    },
+  });
 
-  revalidatePath(`/profile/${comment?.targetProf?.username}`)
-  redirect(`/profile/${comment?.targetProf?.username}`)
+  revalidatePath(`/profile/${comment?.targetProf?.username}`);
+  redirect(`/profile/${comment?.targetProf?.username}`);
+}
+export async function incrementLikes(projectId: string) {
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+
+  await prisma.like.create({
+    data: {
+      projectId: projectId,
+      profileId: user.data.user?.id as string,
+    },
+  });
+  revalidatePath(`/projects/${projectId}`);
+}
+export async function decrementLikes(projectId: string) {
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+
+  await prisma.like.delete({
+    where: {
+      AND: {
+        projectId: projectId,
+        profileId: user.data.user?.id as string,
+      },
+    },
+  });
+  revalidatePath(`/projects/${projectId}`);
 }
