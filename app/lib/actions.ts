@@ -397,9 +397,10 @@ export async function decrementLikes(projectId: string) {
 
   await prisma.like.delete({
     where: {
+      likeId: {
         projectId: projectId,
         profileId: user.data.user?.id as string,
+      },
     },
   });
-  revalidatePath(`/projects/${projectId}`);
 }

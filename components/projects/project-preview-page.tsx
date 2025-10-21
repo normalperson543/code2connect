@@ -52,7 +52,7 @@ export default function ProjectPreviewPageUI({
   parent,
   saveDescription,
   canEdit,
-  isLiked,
+  isLiked: isLikedDb,
   handleLike,
 }: {
   creatorImageSrc?: string;
@@ -74,6 +74,7 @@ export default function ProjectPreviewPageUI({
   handleLike: () => void;
 }) {
   const [isForking, setIsForking] = useState(false);
+  const [isLiked, setIsLiked] = useState(isLikedDb)
   const [sessionDesc, setSessionDesc] = useState(description);
 
   const searchParams = useSearchParams();
@@ -81,6 +82,8 @@ export default function ProjectPreviewPageUI({
   const debounceSave = useDebouncedCallback(() => {
     saveDescription(sessionDesc);
   }, 2000);
+
+  const debounceLike = useDebouncedCallback(() => handleLike(), 1000)
   return (
     <div className="flex flex-col gap-2">
       <Heading>
@@ -196,10 +199,14 @@ export default function ProjectPreviewPageUI({
           <Button
             leftSection={<SolidHandThumbUpIcon width={16} height={16} />}
             variant={isLiked ? "filled" : "subtle"}
-            onClick={handleLike}
+            onClick={() => {
+              setIsLiked(!isLiked);
+              debounceLike();
+              
+            }}
           >
             <div className="flex flex-row gap-1">
-              <Text fw={700}>{likes}</Text> <Text>likes</Text>
+              <Text fw={700}>{likes}</Text> <Text>like{likes !== 1 && "s"}</Text>
             </div>
           </Button>
         </div>
