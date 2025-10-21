@@ -87,6 +87,9 @@ export async function getProject(projectId: string) {
       clusters: true,
       comments: true,
       forks: {
+        where: {
+          isPublic: true
+        },
         include: {
           owner: true,
         },
@@ -330,15 +333,17 @@ export async function getFileUrl(
   fileName: string,
   isPublic: boolean
 ) {
-  const supabase = await createAdminClient();
+  const supabaseAdmin = await createAdminClient();
+  const supabase = await createClient()
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
+  console.log("File URL Details")
   console.log(authUserId);
   console.log(userId);
   if (userId === authUserId || isPublic) {
     console.log("good, authorizing");
-    const { data: dataUrl } = supabase.storage
+    const { data: dataUrl } = supabaseAdmin.storage
       .from("projects")
       .getPublicUrl(`/${userId}/${projectId}/${fileName}`);
     return dataUrl;

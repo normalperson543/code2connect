@@ -57,6 +57,7 @@ export async function GET(
     `${process.env.DEPLOY_URL}/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
     `./${file.name}`,
   ]);
+  console.log(fileUrls)
 
   pysConfig = {
     packages: [],

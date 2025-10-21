@@ -129,6 +129,7 @@ export default function Editor({
   id,
   title: dbTitle,
   isPublic,
+  creatorId,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -138,6 +139,7 @@ export default function Editor({
   id: string;
   title: string;
   isPublic: boolean;
+  creatorId: string;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
   const [description, setDescription] = useState(dbDesc);
@@ -162,15 +164,11 @@ export default function Editor({
   const supabase = createClient();
 
   async function loadFiles() {
+    const session = await syncSession();
+    console.log(session)
+    console.log("Done syncing");
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
-    let session = activeSession;
-    if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
-      //validate session ID
-      const renewedSession = await renewProjectSession(id);
-      setActiveSession(renewedSession);
-      session = renewedSession;
-    }
     let fileArr: (
       | string
       | {
@@ -179,7 +177,7 @@ export default function Editor({
         }
     )[][] = [];
 
-    const pf = await getProjectFiles(userId as string, id, isPublic);
+    const pf = await getProjectFiles(creatorId, id, isPublic);
     console.log(pf);
     let projectFiles;
     if (pf) {
@@ -191,6 +189,7 @@ export default function Editor({
     if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
     console.log("Proceeding");
     console.log(pf);
+    console.log(activeSession);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
         console.log("Getting the files...");
@@ -200,9 +199,10 @@ export default function Editor({
           file.name,
           isPublic
         );
+        console.log(dataUrl)
         if (!dataUrl) return;
         const fileContents = await fetch(
-          `${dataUrl.publicUrl}?cache=${Math.random()}`,
+          `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
           { cache: "no-store" }
         );
         let tempFileArr = [
@@ -312,7 +312,23 @@ export default function Editor({
     debounceSave();
   }
   function handleChangeCurrentFile(newContent: string) {
-    if (!canEditInfo) return;
+    if (!canEditInfo) {
+      modals.open({
+        title: "You can't modify this file",
+        children: (
+          <div className="flex flex-col gap-2">
+            <p>
+              You don't own this project, so changes you make will not save. To
+              modify it and make your own changes, fork the project by clicking
+              on the Preview Page button and clicking Fork.
+            </p>
+            <Button fullWidth onClick={() => modals.closeAll()}>
+              Got it
+            </Button>
+          </div>
+        ),
+      });
+    }
     let newFiles = files;
     newFiles[currentFile].contents = newContent;
     setFiles(newFiles);
@@ -446,7 +462,6 @@ export default function Editor({
   async function refreshPreview() {
     setIsStopped(false);
     setIsStarting(true);
-    const userId = (await supabase.auth.getUser()).data.user?.id;
 
     let session = activeSession;
     if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
@@ -456,7 +471,7 @@ export default function Editor({
       session = renewedSession;
       forceUpdate();
     }
-    frameSrc = `${previewUrl}/?project=${id}&user=${userId}&session=${session?.id}`;
+    frameSrc = `${previewUrl}/?project=${id}&user=${creatorId}&session=${session?.id}`;
     if (outputFrame.current) {
       const frame = outputFrame.current as HTMLIFrameElement;
       frame.src = frameSrc;
@@ -499,18 +514,22 @@ export default function Editor({
     // B) the owner or mods are viewing the project.
     // This is to allow the runner to only download files
     // pertaining to that session.
+
     const session = await getFirstProjectSession(id); // gets recent project sessions
     if (session) {
       const newSession = await renewProjectSession(id);
+      console.log(newSession);
       setActiveSession(newSession);
+      return newSession;
     } else {
       const newSession = await newProjectSession(id);
+      console.log(newSession);
       setActiveSession(newSession);
+      return newSession;
     }
   }
 
   useEffect(() => {
-    syncSession();
     loadFiles();
     return;
   }, []);
@@ -716,28 +735,36 @@ export default function Editor({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                    onClick={undoRedoModal}
-                    rightSection={
-                      <div>
-                        <CtrlCmd />+<Kbd>Z</Kbd>
-                      </div>
-                    }
-                  >
-                    Undo
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<ArrowUturnRightIcon width={16} height={16} />}
-                    onClick={undoRedoModal}
-                    rightSection={
-                      <div>
-                        <CtrlCmd />+<Kbd>Shift</Kbd>+<Kbd>Z</Kbd>
-                      </div>
-                    }
-                  >
-                    Redo
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <>
+                      <Menu.Item
+                        leftSection={
+                          <ArrowUturnLeftIcon width={16} height={16} />
+                        }
+                        onClick={undoRedoModal}
+                        rightSection={
+                          <div>
+                            <CtrlCmd />+<Kbd>Z</Kbd>
+                          </div>
+                        }
+                      >
+                        Undo
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={
+                          <ArrowUturnRightIcon width={16} height={16} />
+                        }
+                        onClick={undoRedoModal}
+                        rightSection={
+                          <div>
+                            <CtrlCmd />+<Kbd>Shift</Kbd>+<Kbd>Z</Kbd>
+                          </div>
+                        }
+                      >
+                        Redo
+                      </Menu.Item>
+                    </>
+                  )}
                   <Menu.Item
                     leftSection={<MagnifyingGlassIcon width={16} height={16} />}
                     onClick={() =>
@@ -783,18 +810,20 @@ export default function Editor({
                 </ThemeIcon>
                 <Text fw={700}>Files</Text>
               </div>
-              <div className="flex flex-row gap-2">
-                <Button variant="outline">
-                  <ArrowUpTrayIcon
-                    onClick={() => dropzoneRef.current?.()}
-                    width={16}
-                    height={16}
-                  />
-                </Button>
-                <Button onClick={() => newFileModal()}>
-                  <PlusIcon width={16} height={16} />
-                </Button>
-              </div>
+              {canEditInfo && (
+                <div className="flex flex-row gap-2">
+                  <Button variant="outline">
+                    <ArrowUpTrayIcon
+                      onClick={() => dropzoneRef.current?.()}
+                      width={16}
+                      height={16}
+                    />
+                  </Button>
+                  <Button onClick={() => newFileModal()}>
+                    <PlusIcon width={16} height={16} />
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="h-3/4 overflow-y-auto">
               <Dropzone

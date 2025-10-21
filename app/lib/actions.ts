@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { canAccessProject, getProject } from "./data";
 import { revalidatePath } from "next/cache";
 import { words } from "./words";
+import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function createProject() {
   const supabase = await createClient();
@@ -84,7 +85,8 @@ export async function createAccount(username: string, userId: string) {
   return user;
 }
 export async function fork(projectId: string) {
-  const supabase = await createClient();
+  const supabaseAdmin = await createAdminClient();
+  const supabase = await createClient()
   const user = await supabase.auth.getUser();
 
   if (!user) {
@@ -109,15 +111,16 @@ export async function fork(projectId: string) {
       },
     },
   });
-  const { data: projectFiles } = await supabase.storage
+  const { data: projectFiles } = await supabaseAdmin.storage
     .from("projects")
-    .list(`${user.data.user?.id}/${old.id}`);
+    .list(`${old.owner?.id}/${old.id}`);
+  console.log(projectFiles)
   if (projectFiles) {
     for (const file of projectFiles) {
-      await supabase.storage
+      await supabaseAdmin.storage
         .from("projects")
         .copy(
-          `${user.data.user?.id}/${old.id}/${file.name}`,
+          `${old.owner?.id as string}/${old.id}/${file.name}`,
           `${user.data.user?.id}/${project.id}/${file.name}`,
         );
     }
@@ -260,6 +263,11 @@ export async function unshareProject(id: string) {
       isPublic: false,
     },
   });
+  await prisma.projectSessionToken.deleteMany({ //invalidate all session tokens
+    where: {
+      projectId: id
+    }
+  })
   revalidatePath(`/projects/${id}`);
   redirect(`/projects/${id}`);
 }
