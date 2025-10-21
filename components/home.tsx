@@ -22,6 +22,7 @@ import Image from "next/image";
 import { placeholder } from "@/app/lib/constants";
 import { createProject } from "@/app/lib/actions";
 import { useState } from "react";
+import Link from "next/link";
 export default function Home({
   username,
   projectCount,
@@ -102,9 +103,14 @@ export default function Home({
             >
               New project
             </Button>
-            <Button leftSection={<UserIcon width={16} height={16} />} size="lg">
-              My profile
-            </Button>
+            <Link href={`/profile/${username}`}>
+              <Button
+                leftSection={<UserIcon width={16} height={16} />}
+                size="lg"
+              >
+                My profile
+              </Button>
+            </Link>
           </div>
         </div>
       ) : (
@@ -160,7 +166,10 @@ export default function Home({
                 >
                   Get started
                 </Button>
-                <Button leftSection={<UserPlusIcon width={16} height={16} />} size="lg">
+                <Button
+                  leftSection={<UserPlusIcon width={16} height={16} />}
+                  size="lg"
+                >
                   Join the community
                 </Button>
               </div>

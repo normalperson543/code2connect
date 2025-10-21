@@ -89,7 +89,6 @@ export default function Comment({
             )}
           </div>
           <div>
-            {!isWriter && (
               <Menu position="bottom-end">
                 <Menu.Target>
                   <Button color="light" variant="subtle">
@@ -124,7 +123,6 @@ export default function Comment({
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
-            )}
           </div>
         </div>
 
