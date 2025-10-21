@@ -4,6 +4,7 @@ import {
   EllipsisHorizontalIcon,
   ExclamationTriangleIcon,
   TrashIcon,
+  ArrowUturnLeftIcon
 } from "@heroicons/react/24/outline";
 import { TagIcon } from "@heroicons/react/24/solid";
 import {
@@ -71,6 +72,32 @@ export default function Comment({
       onConfirm: () => handleReport(id),
     });
   }
+  function pinModal() {
+    modals.openConfirmModal({
+      title: `Pin ${username}'s comment?`,
+      children: (
+        <Text size="sm">
+          Are you sure you would like to pin {username}&apos;s comment?
+        </Text>
+      ),
+      labels: { confirm: "Yes, pin", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => handleTogglePin(id),
+    });
+  }
+  function unpinModal() {
+    modals.openConfirmModal({
+      title: `Unpin ${username}'s comment?`,
+      children: (
+        <Text size="sm">
+          Are you sure you would like to Unpin {username}&apos;s comment?
+        </Text>
+      ),
+      labels: { confirm: "Yes, unpin", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => handleTogglePin(id),
+    });
+  }
   return (
     <div className="flex flex-row gap-2 w-full">
       <Avatar src={profilePicture} size="md" />
@@ -96,10 +123,16 @@ export default function Comment({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                  >
+                    Reply
+                  </Menu.Item>
                   {isCreator && (
                     <>
                       <Menu.Item
                         leftSection={<TagIcon width={16} height={16} />}
+                        onClick={pinned ? unpinModal : pinModal}
                       >
                         {pinned ? "Unpin" : "Pin"}
                       </Menu.Item>

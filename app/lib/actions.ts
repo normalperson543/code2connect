@@ -310,3 +310,20 @@ export async function deleteProfileComment(id: string) {
   revalidatePath(`/profile/${comment.targetProf?.username}`)
   redirect(`/profile/${comment.targetProf?.username}`)
 }
+
+export async function togglePinProfileComment(id: string, currentPinStatus: boolean) {
+  const comment = await prisma.comment.update({
+    where: {
+      id: id,
+    },
+    include: {
+      targetProf: true
+    },
+    data: {
+      isPinned: !currentPinStatus
+    },
+  });
+
+  revalidatePath(`/profile/${comment.targetProf?.username}`)
+  redirect(`/profile/${comment.targetProf?.username}`)
+}

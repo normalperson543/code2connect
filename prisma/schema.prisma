@@ -89,7 +89,7 @@ model Comment {
   Project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
 
-  isPinned  Boolean?
+  isPinned  Boolean @default(false)
 }
 
 model Reply {
