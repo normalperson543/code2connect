@@ -462,6 +462,7 @@ export async function getCluster(id: string) {
       id: id,
     },
     include: {
+      owner: true,
       projects: {
         include: {
           owner: true,

@@ -87,7 +87,7 @@ export default function Home({
                 </div>
                 <div className="flex flex-col gap-1">
                   <ThemeIcon radius="xl">
-                    <UserGroupIcon width={16} height={16} />
+                    <UserPlusIcon width={16} height={16} />
                   </ThemeIcon>
                   <p className="text-2xl font-bold">{followingCount}</p>
                   <p>following</p>
