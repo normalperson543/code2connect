@@ -15,15 +15,17 @@ import theme from "@/app/lib/theme";
 export default function MTWrapper({
   children,
   includeHeader = true,
+  includeExtraPadding = false,
 }: {
   children: React.ReactNode;
   includeHeader?: boolean;
+  includeExtraPadding?: boolean;
 }) {
   return (
     <MantineProvider theme={theme}>
       <ModalsProvider>
         {includeHeader && <HeaderLoggedIn />}
-        <div className={`${includeHeader && "mt-14"} w-full h-full`}>
+        <div className={`${(includeHeader || includeExtraPadding) && "mt-14"} w-full h-full`}>
           {children}
         </div>
         <NavigationProgress />
