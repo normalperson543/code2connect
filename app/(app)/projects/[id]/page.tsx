@@ -19,6 +19,9 @@ export default async function ProjectPreviewPage({
 
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
+  if(!user.data.user) {
+    throw new Error("Could not get current user while accessing project.")
+  }
 
   const project = await getProject(id);
 
@@ -66,6 +69,9 @@ export default async function ProjectPreviewPage({
       isLiked={liked}
       handleLike={handleLike}
       isAdmin={userDb?.isAdmin as boolean}
+      currentUserId={user.data.user?.id}
+      project={project}
+      projectId={project.id}
     />
   );
 }

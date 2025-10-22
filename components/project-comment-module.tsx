@@ -2,39 +2,37 @@ import { Avatar, Button, Collapse, Pagination, Spoiler, Stack, Textarea, Title }
 import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { Comment, Prisma, Profile } from "@prisma/client";
+import { Comment, Prisma, Profile, Project } from "@prisma/client";
 import {
-  createProfileComment,
-  deleteProfileCommentReply,
-  togglePinProfileComment,
-  deleteProfileComment,
-  createProfileCommentReply
+  createProjectComment,
+  deleteProjectComment,
+  togglePinProjectComment,
+  deleteProjectCommentReply,
+  createProjectCommentReply
 } from "@/app/lib/actions";
 type CommentWithOwnerAndReplies = Prisma.CommentGetPayload<{ include: { owner: true, replies: { include: {owner: true, Comment: true}} } }>;
 import { getCommentReplies } from "@/app/lib/data";
 import CommentTextbox from "./comment-textbox";
 
-export default function CommentModule({
+export default function ProjectCommentModule({
   comments,
   currentUser,
-  accessedProfile,
-  accessedUsername,
+  accessedProject,
+  projectId,
   commentsPerPage
 }: {
   comments: CommentWithOwnerAndReplies[];
   currentUser: string;
-  accessedProfile: Profile;
-  accessedUsername: string;
+  accessedProject: Project;
+  projectId: string;
   commentsPerPage: number
 }) {
   const [comment, setComment] = useState("");
-  const [savingComment, setSavingComment] = useState(false);
   const [openedReplies, setOpenedReplies] = useState<{[key: string]: boolean}>({});
   const [activePage, setActivePage] = useState(1);
   const COMMENTS_PER_PAGE = commentsPerPage;
   let commentsToDisplay = []
   const pinnedCommentIndex = comments.findIndex(comment => comment.isPinned)
-  const pinnedComment = comments[pinnedCommentIndex]
   if(pinnedCommentIndex >= 0) {
     commentsToDisplay = [
       comments[pinnedCommentIndex],
@@ -51,12 +49,7 @@ export default function CommentModule({
   const paginatedComments = commentsToDisplay.slice(startIndex, endIndex)
 
   function handleSubmitComment() {
-    createProfileComment(
-      currentUser,
-      accessedProfile.id,
-      comment,
-      accessedUsername
-    );
+    createProjectComment(projectId, currentUser, comment)
     setComment("");
   }
 
@@ -83,14 +76,14 @@ export default function CommentModule({
             username={comment.owner.username}
             content={comment.contents}
             dateCreated={comment.dateCreated}
-            isCreator={currentUser === comment.targetId}
+            isCreator={currentUser === accessedProject.profileId}
             isWriter={currentUser === comment.profileId}
             pinned={comment.isPinned}
-            handleDelete={() => deleteProfileComment(comment.id)}
+            handleDelete={() => deleteProjectComment(comment.id)}
             handleTogglePin={() =>
-              togglePinProfileComment(comment.id, comment.isPinned)
+              togglePinProjectComment(comment.id, comment.isPinned)
             }
-            handleReply={createProfileCommentReply}
+            handleReply={createProjectCommentReply}
           >
             {(comment.replies && comment.replies.length > 0) && (
               <div>
@@ -114,10 +107,10 @@ export default function CommentModule({
                         username={reply.owner.username}
                         content={reply.contents}
                         dateCreated={reply.dateCreated}
-                        isCreator={currentUser === reply.Comment?.targetId}
+                        isCreator={currentUser === accessedProject.profileId}
                         isWriter={currentUser === reply.profileId}
                         isReply={true}
-                        handleDelete={() => deleteProfileCommentReply(reply.id)}
+                        handleDelete={() => deleteProjectCommentReply(reply.id)}
                       />
                   )
                 })}
