@@ -41,6 +41,8 @@ export default function Comment({
   handleReply,
   children,
   currentUserId,
+  commentId,
+
 }: {
   id: string;
   username: string;
@@ -57,6 +59,7 @@ export default function Comment({
   handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
   currentUserId: string;
+  commentId?: string
 }) {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -115,7 +118,14 @@ export default function Comment({
     });
   }
   async function handleSubmitReply() {
-    handleReply(id, currentUserId, replyContent)
+    if(isReply) {
+      if(!commentId) {
+        throw new Error("Could not get parent comment id when replying to a reply")
+      }
+      handleReply( commentId, currentUserId, replyContent)
+    } else {
+      handleReply(id, currentUserId, replyContent)
+    }
     setReplyContent("");
     setReplying(false)
   }
@@ -145,14 +155,12 @@ export default function Comment({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  {!isReply && (
-                    <Menu.Item
-                      leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                      onClick={() => setReplying(!replying)}
-                    >
-                      {replying ? "Stop Reply" : "Reply"}
-                    </Menu.Item>
-                  )}
+                  <Menu.Item
+                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                    onClick={() => setReplying(!replying)}
+                  >
+                    {replying ? "Stop Reply" : "Reply"}
+                  </Menu.Item>
                   
                   {(isCreator && !isReply) && (
                     <>

@@ -117,6 +117,9 @@ export default function CommentModule({
                         isWriter={currentUser === reply.profileId}
                         isReply={true}
                         handleDelete={() => deleteProfileCommentReply(reply.id)}
+                        commentId={comment.id}
+                        handleReply={createProfileCommentReply}
+                        currentUserId={currentUser}
                       />
                   )
                 })}
