@@ -5,7 +5,13 @@ import {
   incrementLikes,
   unfeature,
 } from "@/app/lib/actions";
-import { getProfile, getProject, getProjectComments, getProjectLikes, isLiked } from "@/app/lib/data";
+import {
+  getProfile,
+  getProject,
+  getProjectComments,
+  getProjectLikes,
+  isLiked,
+} from "@/app/lib/data";
 import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -19,8 +25,8 @@ export default async function ProjectPreviewPage({
 
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
-  if(!user.data.user) {
-    throw new Error("Could not get current user while accessing project.")
+  if (!user.data.user) {
+    throw new Error("Could not get current user while accessing project.");
   }
 
   const project = await getProject(id);
@@ -30,8 +36,8 @@ export default async function ProjectPreviewPage({
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
   const likes = await getProjectLikes(id);
   const liked = await isLiked(id, user.data.user?.id as string);
-  const userDb = await getProfile(user.data.user?.id as string)
-  const projectComments = await getProjectComments(project.id)
+  const userDb = await getProfile(user.data.user?.id as string);
+  const projectComments = await getProjectComments(project.id);
 
   async function handleSaveDesc(newDesc: string) {
     "use server";
@@ -43,12 +49,12 @@ export default async function ProjectPreviewPage({
     else await incrementLikes(id);
   }
   async function handleFeature() {
-    'use server'
+    "use server";
     await feature(id);
   }
   async function handleUnfeature() {
-    'use server'
-    await unfeature(id)
+    "use server";
+    await unfeature(id);
   }
 
   return (
@@ -73,6 +79,7 @@ export default async function ProjectPreviewPage({
       currentUserId={user.data.user?.id}
       project={project}
       projectId={project.id}
+      currentUsername={userDb?.username as string}
     />
   );
 }

@@ -23,7 +23,12 @@ import { useState } from "react";
 import React from "react";
 import CommentTextbox from "./comment-textbox";
 import { createProfileCommentReply } from "@/app/lib/actions";
-import { getCommentReplies, getProfile, getProfileWithUsername, getReply } from "@/app/lib/data";
+import {
+  getCommentReplies,
+  getProfile,
+  getProfileWithUsername,
+  getReply,
+} from "@/app/lib/data";
 
 export default function Comment({
   id,
@@ -42,7 +47,7 @@ export default function Comment({
   children,
   currentUserId,
   commentId,
-
+  currentUsername,
 }: {
   id: string;
   username: string;
@@ -52,14 +57,15 @@ export default function Comment({
   pinned?: boolean;
   isCreator?: boolean;
   isWriter?: boolean;
-  isReply?: boolean,
+  isReply?: boolean;
   handleDelete: (id: string) => void;
   handleReport: (id: string) => void;
   handleTogglePin: (id: string) => void;
   handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
   currentUserId: string;
-  commentId?: string
+  commentId?: string;
+  currentUsername: string;
 }) {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -118,16 +124,18 @@ export default function Comment({
     });
   }
   async function handleSubmitReply() {
-    if(isReply) {
-      if(!commentId) {
-        throw new Error("Could not get parent comment id when replying to a reply")
+    if (isReply) {
+      if (!commentId) {
+        throw new Error(
+          "Could not get parent comment id when replying to a reply",
+        );
       }
-      handleReply( commentId, currentUserId, replyContent)
+      handleReply(commentId, currentUserId, replyContent);
     } else {
-      handleReply(id, currentUserId, replyContent)
+      handleReply(id, currentUserId, replyContent);
     }
     setReplyContent("");
-    setReplying(false)
+    setReplying(false);
   }
   return (
     <div>
@@ -161,8 +169,8 @@ export default function Comment({
                   >
                     {replying ? "Stop Reply" : "Reply"}
                   </Menu.Item>
-                  
-                  {(isCreator && !isReply) && (
+
+                  {isCreator && !isReply && (
                     <>
                       <Menu.Item
                         leftSection={<TagIcon width={16} height={16} />}
@@ -205,8 +213,11 @@ export default function Comment({
                 <Title order={5}>Reply</Title>
                 <CommentTextbox
                   value={replyContent}
-                  handleChangeValue={(newString: string) => setReplyContent(newString)}
+                  handleChangeValue={(newString: string) =>
+                    setReplyContent(newString)
+                  }
                   handleSubmit={handleSubmitReply}
+                  profileUsername={currentUsername}
                 />
               </>
             )}

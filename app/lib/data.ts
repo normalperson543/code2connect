@@ -47,7 +47,7 @@ export async function revokeAllProjectSessions(projectId: string) {
 export async function getProjectFiles(
   userId: string,
   id: string,
-  isPublic: boolean
+  isPublic: boolean,
 ) {
   const supabaseAdmin = await createAdminClient();
   const supabase = await createClient();
@@ -68,7 +68,7 @@ export async function getProjectFiles(
 }
 export async function canAccessProject(
   isPublic: boolean | undefined | null,
-  ownerId: string | undefined | null
+  ownerId: string | undefined | null,
 ) {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
@@ -92,16 +92,16 @@ export async function getProject(projectId: string) {
           owner: true,
           replies: {
             include: {
-              owner: true
+              owner: true,
             },
             orderBy: {
-              dateCreated: "asc"
-            }
-          }
+              dateCreated: "asc",
+            },
+          },
         },
         orderBy: {
-          dateCreated: "desc"
-        }
+          dateCreated: "desc",
+        },
       },
       forks: {
         where: {
@@ -125,24 +125,24 @@ export async function getProject(projectId: string) {
 export async function getProjectComments(projectId: string) {
   const comments = await prisma.comment.findMany({
     where: {
-      projectId: projectId
+      projectId: projectId,
     },
     include: {
       owner: true,
       replies: {
         include: {
           owner: true,
-          Comment: true
+          Comment: true,
         },
         orderBy: {
-          dateCreated: "asc"
-        }
-      }
+          dateCreated: "asc",
+        },
+      },
     },
     orderBy: {
-      dateCreated: "desc"
-    }
-  })
+      dateCreated: "desc",
+    },
+  });
 
   return comments;
 }
@@ -166,7 +166,6 @@ export async function getProfile(userId: string) {
   return profile;
 }
 
-
 export async function getProfileBio(userId: string, bio: string) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -179,7 +178,7 @@ export async function getProfileBio(userId: string, bio: string) {
 
 export async function getThumbnailSearchResults(
   searchQuery: string,
-  page: number = 1
+  page: number = 1,
 ) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
@@ -239,7 +238,7 @@ export async function getIsFollower(profileId: string, followerId: string) {
 
 export async function getIsFollowing(
   profileUsername: string,
-  currentUserId: string
+  currentUserId: string,
 ) {
   const profile = await prisma.profile.findUnique({
     where: {
@@ -333,7 +332,7 @@ export async function getProfileReceivedComments(profileUsername: string) {
             orderBy: {
               dateCreated: "asc",
             },
-          }
+          },
         },
         orderBy: {
           dateCreated: "desc",
@@ -380,7 +379,7 @@ export async function getFileUrl(
   userId: string,
   projectId: string,
   fileName: string,
-  isPublic: boolean
+  isPublic: boolean,
 ) {
   const supabaseAdmin = await createAdminClient();
   const supabase = await createClient();
@@ -423,12 +422,12 @@ export async function getCommentReplies(commentId: string) {
     },
     include: {
       owner: true,
-      Comment: true
+      Comment: true,
     },
     orderBy: {
       dateCreated: "desc",
-    }
-  })
+    },
+  });
 
   return replies;
 }
@@ -508,12 +507,12 @@ export async function getCluster(id: string) {
 export async function getReply(id: string) {
   const reply = await prisma.reply.findUnique({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  return reply
+  return reply;
 }

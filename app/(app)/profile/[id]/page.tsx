@@ -4,14 +4,13 @@ import {
   getIsFollowing,
   getProfileReceivedComments,
   getProfileProjects,
+  getProfile,
 } from "@/app/lib/data";
 import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
-
- 
 export async function generateMetadata({
   params,
 }: {
@@ -19,12 +18,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
-  const user = await getProfileWithUsername(id)
+  const user = await getProfileWithUsername(id);
 
   if (!user) return {};
   return {
     title: `${user.username} on Code2Connect`,
-    description: user.bio ?? "A user on Code2Connect"
+    description: user.bio ?? "A user on Code2Connect",
   };
 }
 
@@ -44,16 +43,23 @@ export default async function Profile({
   const followInfo = await getProfileFollowInfo(id);
   const projects = await getProfileProjects(profileAccessed.id);
   const receivedComments = await getProfileReceivedComments(id);
-  const isFollowing = await getIsFollowing(id, user?.id as string);
+  let isFollowing = false;
+  let currentProfile;
+  if (user && user.id) {
+    console.log("going");
+    console.log(user.id);
+    isFollowing = await getIsFollowing(id, user?.id as string);
+    currentProfile = await getProfile(user?.id as string);
+  }
 
   console.log("projects: " + projects);
 
-  if (user && profileAccessed) {
+  if (profileAccessed) {
     return (
       <ProfileUI
         accessedUserName={id}
         accessedProfile={profileAccessed}
-        currentUser={user.id}
+        currentUser={user ? user.id : ""}
         accessedProfileFollowers={
           followInfo?.followers ? followInfo.followers : []
         }
@@ -69,6 +75,7 @@ export default async function Profile({
         accessedProfileProjects={projects ? projects : []}
         accessedProfileComments={receivedComments ? receivedComments : []}
         isFollowingDb={isFollowing}
+        currentUsername={currentProfile?.username as string}
       />
     );
   } else {

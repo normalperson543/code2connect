@@ -31,7 +31,7 @@ export async function createProject() {
     .from("projects")
     .upload(
       `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')"
+      "print('Hello, World!')",
     );
   redirect(`/projects/${project.id}/editor`);
 }
@@ -122,7 +122,7 @@ export async function fork(projectId: string) {
         .from("projects")
         .copy(
           `${old.owner?.id as string}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`
+          `${user.data.user?.id}/${project.id}/${file.name}`,
         );
     }
   }
@@ -175,7 +175,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
 
 export async function removeProfileFollower(
   profileId: string,
-  followerId: string
+  followerId: string,
 ) {
   const updatedFollower = await prisma.profile.update({
     where: {
@@ -224,7 +224,7 @@ export async function createProfileComment(
   ownerId: string,
   targetId: string,
   content: string,
-  targetUsername: string
+  targetUsername: string,
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -313,7 +313,7 @@ export async function deleteProfileComment(id: string) {
 
 export async function togglePinProfileComment(
   id: string,
-  currentPinStatus: boolean
+  currentPinStatus: boolean,
 ) {
   const selectedComment = await prisma.comment.findUnique({
     where: {
@@ -357,16 +357,18 @@ export async function togglePinProfileComment(
 export async function createProfileCommentReply(
   commentId: string,
   replierId: string,
-  content: string
+  content: string,
 ) {
   const replier = await prisma.profile.findUnique({
     where: {
-      id: replierId
-    }
-  })
+      id: replierId,
+    },
+  });
 
   if (!replier) {
-    throw new Error("Could not find replier's profile when making profile comment reply.")
+    throw new Error(
+      "Could not find replier's profile when making profile comment reply.",
+    );
   }
 
   const reply = await prisma.reply.create({
@@ -378,10 +380,10 @@ export async function createProfileCommentReply(
     include: {
       Comment: {
         include: {
-          targetProf: true
-        }
-      }
-    }
+          targetProf: true,
+        },
+      },
+    },
   });
 
   revalidatePath(`/profile/${reply.Comment?.targetProf?.username}`);
@@ -397,16 +399,16 @@ export async function deleteProfileCommentReply(replyId: string) {
       owner: true,
       Comment: {
         include: {
-          targetProf: true
-        }
-      }
-    }
-  })
+          targetProf: true,
+        },
+      },
+    },
+  });
 
-  revalidatePath(`/profile/${reply.Comment?.targetProf?.username}`)
-  redirect(`/profile/${reply.Comment?.targetProf?.username}`)
+  revalidatePath(`/profile/${reply.Comment?.targetProf?.username}`);
+  redirect(`/profile/${reply.Comment?.targetProf?.username}`);
 
-  return reply
+  return reply;
 }
 export async function incrementLikes(projectId: string) {
   const supabase = await createClient();
@@ -448,10 +450,10 @@ export async function feature(projectId: string) {
     },
     data: {
       isFeatured: true,
-      featureDate: new Date()
+      featureDate: new Date(),
     },
   });
-  return project
+  return project;
 }
 export async function unfeature(projectId: string) {
   const supabase = await createClient();
@@ -470,61 +472,71 @@ export async function unfeature(projectId: string) {
       isFeatured: false,
     },
   });
-  return project
+  return project;
 }
 
-export async function createProjectComment(projectId: string, commenterId: string, content: string) {
+export async function createProjectComment(
+  projectId: string,
+  commenterId: string,
+  content: string,
+) {
   const comment = await prisma.comment.create({
     data: {
       profileId: commenterId,
       projectId: projectId,
-      contents: content
-    }
-  })
+      contents: content,
+    },
+  });
 
-  revalidatePath(`/projects/${projectId}`)
-  redirect(`/projects/${projectId}`)
+  revalidatePath(`/projects/${projectId}`);
+  redirect(`/projects/${projectId}`);
 
-  return comment
+  return comment;
 }
 
 export async function deleteProjectComment(commentId: string) {
   const comment = await prisma.comment.delete({
     where: {
-      id: commentId
-    }
-  })
+      id: commentId,
+    },
+  });
 
-  revalidatePath(`/projects/${comment.projectId}`)
-  redirect(`/projects/${comment.projectId}`)
+  revalidatePath(`/projects/${comment.projectId}`);
+  redirect(`/projects/${comment.projectId}`);
 
   return comment;
 }
 
-export async function createProjectCommentReply(commentId: string, replierId: string, content: string) {
+export async function createProjectCommentReply(
+  commentId: string,
+  replierId: string,
+  content: string,
+) {
   const replier = await prisma.profile.findUnique({
     where: {
-      id: replierId
-    }
-  })
+      id: replierId,
+    },
+  });
 
-  if(!replier) {
-    throw new Error("Could not find replier's profile when making project comment reply.")
+  if (!replier) {
+    throw new Error(
+      "Could not find replier's profile when making project comment reply.",
+    );
   }
 
   const reply = await prisma.reply.create({
     data: {
       profileId: replier.id,
       commentId: commentId,
-      contents: content
+      contents: content,
     },
     include: {
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  revalidatePath(`/projects/${reply.Comment?.projectId}`)
-  redirect(`/projects/${reply.Comment?.projectId}`)
+  revalidatePath(`/projects/${reply.Comment?.projectId}`);
+  redirect(`/projects/${reply.Comment?.projectId}`);
 
   return reply;
 }
@@ -532,77 +544,105 @@ export async function createProjectCommentReply(commentId: string, replierId: st
 export async function deleteProjectCommentReply(id: string) {
   const reply = await prisma.reply.delete({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  revalidatePath(`/projects/${reply.Comment?.projectId}`)
-  redirect(`/projects/${reply.Comment?.projectId}`)
+  revalidatePath(`/projects/${reply.Comment?.projectId}`);
+  redirect(`/projects/${reply.Comment?.projectId}`);
 
-  return reply
+  return reply;
 }
 
-export async function togglePinProjectComment(id: string, currentPinStatus: boolean) {
+export async function togglePinProjectComment(
+  id: string,
+  currentPinStatus: boolean,
+) {
   const selectedComment = await prisma.comment.findUnique({
     where: {
-      id: id
+      id: id,
     },
-  })
+  });
 
-  if(!currentPinStatus && selectedComment?.projectId) {
+  if (!currentPinStatus && selectedComment?.projectId) {
     await prisma.comment.updateMany({
       where: {
         projectId: selectedComment.projectId,
         NOT: {
-          id: id
+          id: id,
         },
       },
       data: {
         isPinned: false,
-      }
-    })
+      },
+    });
   }
 
   const comment = await prisma.comment.update({
     where: {
-      id: id
+      id: id,
     },
     data: {
-      isPinned: !currentPinStatus
-    }
-  })
+      isPinned: !currentPinStatus,
+    },
+  });
 
-  revalidatePath(`/projects/${comment.projectId}`)
-  redirect(`/projects/${comment.projectId}`)
+  revalidatePath(`/projects/${comment.projectId}`);
+  redirect(`/projects/${comment.projectId}`);
 
-  return comment
+  return comment;
 }
 
-export async function changeClusterDescription(id: string, description: string) {
+export async function changeClusterDescription(
+  id: string,
+  description: string,
+) {
   const cluster = await prisma.cluster.update({
     where: {
-      id: id
+      id: id,
     },
     data: {
-      description: description
-    }
-  })
+      description: description,
+    },
+  });
   return cluster;
 }
-export async function addProjectToCluster(clusterId: string, projectId: string) {
-  const project = await prisma.project.update({
+export async function addProjectToCluster(
+  clusterId: string,
+  projectId: string,
+) {
+  await prisma.project.update({
     where: {
-      id: clusterId
+      id: projectId,
     },
     data: {
       clusters: {
         connect: {
-          id: clusterId
-        }
-      }
-    }
-  })
+          id: clusterId,
+        },
+      },
+    },
+  });
+  revalidatePath(`/clusters/${clusterId}`);
+}
+export async function removeProjectFromCluster(
+  clusterId: string,
+  projectId: string,
+) {
+  await prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      clusters: {
+        disconnect: {
+          id: clusterId,
+        },
+      },
+    },
+  });
+  revalidatePath(`/clusters/${clusterId}`);
 }

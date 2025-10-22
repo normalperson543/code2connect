@@ -6,16 +6,17 @@ export default async function HomePage() {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
-  
+
   const featured = await getFeatured();
   const topLiked = await getTopLiked();
 
-  if (!user || !authUserId) return <Home featured={featured} topLiked={topLiked} />;
+  if (!user || !authUserId)
+    return <Home featured={featured} topLiked={topLiked} />;
 
   const profile = await getHomeProfileInfo(authUserId);
 
   if (!profile) return <Home featured={featured} topLiked={topLiked} />;
-  
+
   return (
     <Home
       username={profile.username}

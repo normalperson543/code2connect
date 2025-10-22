@@ -31,7 +31,7 @@ export default function Home({
   followerCount,
   followingCount,
   featured,
-  topLiked
+  topLiked,
 }: {
   username?: string;
   projectCount?: number;

@@ -60,6 +60,7 @@ export default function ClusterUI({
   projects,
   allowCollab,
   canEdit,
+  currentUser,
 }: {
   id: string;
   title: string;
@@ -73,6 +74,7 @@ export default function ClusterUI({
   projects: ProjectWithOwner[];
   allowCollab: boolean;
   canEdit: boolean;
+  currentUser: string;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -97,7 +99,7 @@ export default function ClusterUI({
     }
     if (!projectId) {
       notifications.show({
-        position: "top-center",
+        position: "top-right",
         withCloseButton: true,
         autoClose: false,
         title: "Please specify a valid project link",
@@ -108,7 +110,22 @@ export default function ClusterUI({
       });
       return;
     }
-    await addProjectToCluster(id, projectId);
+    try {
+      await addProjectToCluster(id, projectId);
+      setAdding(false);
+      setAddUrl("");
+    } catch (e) {
+      setAdding(false);
+      notifications.show({
+        position: "top-center",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+    }
   }
   return (
     <div>
@@ -236,7 +253,14 @@ export default function ClusterUI({
               )}
               <div className="flex flex-row gap-4 flex-wrap">
                 {projects.map((project) => (
-                  <ProjectCard projectInfo={project} />
+                  <ProjectCard
+                    projectInfo={project}
+                    key={project.id}
+                    clusterId={id}
+                    canRemoveFromCluster={
+                      project.owner?.id === currentUser || canEdit
+                    }
+                  />
                 ))}
               </div>
 

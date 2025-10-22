@@ -198,13 +198,13 @@ export default function Editor({
           userId as string,
           id,
           file.name,
-          isPublic
+          isPublic,
         );
         console.log(dataUrl);
         if (!dataUrl) return;
         const fileContents = await fetch(
           `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         let tempFileArr = [
           file.id,
@@ -243,7 +243,7 @@ export default function Editor({
     popupError(
       "Your project did not save",
       "Check your Internet connection, and try again later.",
-      err
+      err,
     );
   }
   function popupError(title: string, message: string, err?: string) {
@@ -306,7 +306,7 @@ export default function Editor({
       popupError(
         "Couldn't rename your project",
         "",
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -322,9 +322,9 @@ export default function Editor({
         children: (
           <div className="flex flex-col gap-2">
             <p>
-              You don&apos;t own this project, so changes you make will not save. To
-              modify it and make your own changes, fork the project by clicking
-              on the Preview Page button and clicking Fork.
+              You don&apos;t own this project, so changes you make will not
+              save. To modify it and make your own changes, fork the project by
+              clicking on the Preview Page button and clicking Fork.
             </p>
             <Button fullWidth onClick={() => modals.closeAll()}>
               Got it
@@ -497,7 +497,7 @@ export default function Editor({
       reader.onerror = () =>
         popupError(
           "There was a problem uploading your file",
-          "Please try uploading again."
+          "Please try uploading again.",
         );
       reader.onload = () => {
         // Do whatever you want with the file contents
@@ -917,13 +917,14 @@ export default function Editor({
                       </UnstyledButton>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      {canEditInfo &&
-                      <Menu.Item
-                        leftSection={<PencilIcon width={16} height={16} />}
-                        onClick={() => renameModal(currentFile)}
-                      >
-                        Rename
-                      </Menu.Item>}
+                      {canEditInfo && (
+                        <Menu.Item
+                          leftSection={<PencilIcon width={16} height={16} />}
+                          onClick={() => renameModal(currentFile)}
+                        >
+                          Rename
+                        </Menu.Item>
+                      )}
                       <Menu.Item
                         leftSection={
                           <ArrowDownTrayIcon width={16} height={16} />
@@ -932,14 +933,15 @@ export default function Editor({
                       >
                         Download
                       </Menu.Item>
-                      {canEditInfo &&
-                      <Menu.Item
-                        leftSection={<TrashIcon width={16} height={16} />}
-                        color="red"
-                        onClick={() => deleteConfirm(currentFile)}
-                      >
-                        Delete
-                      </Menu.Item>}
+                      {canEditInfo && (
+                        <Menu.Item
+                          leftSection={<TrashIcon width={16} height={16} />}
+                          color="red"
+                          onClick={() => deleteConfirm(currentFile)}
+                        >
+                          Delete
+                        </Menu.Item>
+                      )}
                     </Menu.Dropdown>
                   </Menu>
                 </>

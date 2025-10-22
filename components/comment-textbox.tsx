@@ -5,14 +5,18 @@ export default function CommentTextbox({
   value,
   handleChangeValue,
   handleSubmit,
+  profileUsername,
+  profilePfpSrc,
 }: {
   value: string;
   handleChangeValue: (newString: string) => void;
   handleSubmit: () => void;
+  profileUsername: string;
+  profilePfpSrc?: string;
 }) {
   return (
     <div className="flex flex-row gap-2 w-full mt-2">
-      <Avatar src="" size="md" />
+      <Avatar src={profilePfpSrc} name={profileUsername} size="md" />
       <div className="flex flex-col gap-2 w-full">
         <Textarea
           w="100%"

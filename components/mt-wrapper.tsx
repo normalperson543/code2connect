@@ -25,7 +25,9 @@ export default function MTWrapper({
     <MantineProvider theme={theme}>
       <ModalsProvider>
         {includeHeader && <HeaderLoggedIn />}
-        <div className={`${(includeHeader || includeExtraPadding) && "mt-14"} w-full h-full`}>
+        <div
+          className={`${(includeHeader || includeExtraPadding) && "mt-14"} w-full h-full`}
+        >
           {children}
         </div>
         <NavigationProgress />

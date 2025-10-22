@@ -35,6 +35,7 @@ import Link from "next/link";
 import { notifications } from "@mantine/notifications";
 import MiniProfile from "../mini-profile";
 import PlaceholderMessage from "../placeholder-message";
+import { ProjectWithOwner } from "@/app/lib/projects";
 
 export default function ProfileUI({
   accessedUserName,
@@ -47,6 +48,7 @@ export default function ProfileUI({
   accessedProfileProjects,
   accessedProfileComments,
   isFollowingDb,
+  currentUsername,
 }: {
   accessedUserName: string;
   accessedProfile: Profile;
@@ -55,9 +57,10 @@ export default function ProfileUI({
   accessedProfileFollowersCount: number;
   accessedProfileFollowing: Profile[];
   accessedProfileFollowingCount: number;
-  accessedProfileProjects: Project[];
+  accessedProfileProjects: ProjectWithOwner[];
   accessedProfileComments: Comment[];
   isFollowingDb: boolean;
+  currentUsername: string;
 }) {
   const [bio, setBio] = useState(accessedProfile.bio);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -66,9 +69,8 @@ export default function ProfileUI({
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
   const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
-  const followersToShow = accessedProfileFollowers.slice(0, 5)
-  const followingToShow = accessedProfileFollowing.slice(0, 5)
-
+  const followersToShow = accessedProfileFollowers.slice(0, 5);
+  const followingToShow = accessedProfileFollowing.slice(0, 5);
 
   async function handleSaveBio() {
     const userId = currentUser;
@@ -186,7 +188,9 @@ export default function ProfileUI({
                   );
                 })}
                 {accessedProfileFollowers.length >= 5 && (
-                  <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
+                  <Avatar size="md">
+                    +{accessedProfileFollowersCount - 5}
+                  </Avatar>
                 )}
               </Avatar.Group>
             </div>
@@ -215,7 +219,9 @@ export default function ProfileUI({
                   );
                 })}
                 {accessedProfileFollowing.length >= 5 && (
-                  <Avatar size="md">+{accessedProfileFollowersCount - 5}</Avatar>
+                  <Avatar size="md">
+                    +{accessedProfileFollowersCount - 5}
+                  </Avatar>
                 )}
               </Avatar.Group>
             </div>
@@ -278,10 +284,10 @@ export default function ProfileUI({
               )}
               <div>
                 <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
-                  {displayedProjects.map((project) => (
+                  {displayedProjects.map((project: ProjectWithOwner) => (
                     <ProjectCard
                       projectInfo={project}
-                      isOwner={accessedProfile.id === currentUser}
+                      canDelete={accessedProfile.id === currentUser}
                       key={project.id}
                     />
                   ))}
@@ -306,6 +312,7 @@ export default function ProfileUI({
                 accessedProfile={accessedProfile}
                 accessedUsername={accessedUserName}
                 commentsPerPage={10}
+                currentUsername={currentUsername}
               />
             </Tabs.Panel>
 

@@ -31,7 +31,14 @@ import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
 import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
-import { deleteProject, feature, fork, shareProject, unfeature, unshareProject } from "@/app/lib/actions";
+import {
+  deleteProject,
+  feature,
+  fork,
+  shareProject,
+  unfeature,
+  unshareProject,
+} from "@/app/lib/actions";
 import { useState } from "react";
 
 import { ProjectWithOwner } from "@/app/lib/projects";
@@ -60,7 +67,8 @@ export default function ProjectPreviewPageUI({
   isAdmin,
   currentUserId,
   project,
-  projectId
+  projectId,
+  currentUsername,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -82,7 +90,8 @@ export default function ProjectPreviewPageUI({
   isAdmin: boolean;
   currentUserId: string;
   project: Project;
-  projectId: string
+  projectId: string;
+  currentUsername: string;
 }) {
   const [isForking, setIsForking] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedDb);
@@ -235,8 +244,12 @@ export default function ProjectPreviewPageUI({
               <Menu.Dropdown>
                 <Menu.Item onClick={() => feature(id)}>Feature</Menu.Item>
                 <Menu.Item onClick={() => unfeature(id)}>Unfeature</Menu.Item>
-                <Menu.Item onClick={() => unshareProject(id)} c="red">Unshare</Menu.Item>
-                <Menu.Item onClick={() => deleteProject(id, creator)} c="red">Delete</Menu.Item>
+                <Menu.Item onClick={() => unshareProject(id)} c="red">
+                  Unshare
+                </Menu.Item>
+                <Menu.Item onClick={() => deleteProject(id, creator)} c="red">
+                  Delete
+                </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           )}
@@ -276,6 +289,7 @@ export default function ProjectPreviewPageUI({
           accessedProject={project}
           projectId={projectId}
           commentsPerPage={5}
+          currentUsername={currentUsername}
         />
       </div>
       {forks.length > 0 && (

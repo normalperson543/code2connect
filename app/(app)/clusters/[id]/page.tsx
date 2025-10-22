@@ -16,23 +16,25 @@ export default async function Cluster({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login")
-    
+  if (!user) redirect("/auth/login");
+
   const canEditInfo = cluster.owner?.id === (user?.id as string);
 
-
-  return <ClusterUI
-    id={cluster.id}
-    title={cluster.title ?? ""}
-    thumbnailUrl={cluster.thumbnail ?? ""}
-    isFollowingDb={false}
-    dateModified={cluster.dateModified}
-    description={cluster.description}
-    people={[]}
-    followerCount={cluster._count.followers}
-    projects={cluster.projects}
-    followers={cluster.followers}
-    allowCollab={cluster.allowCollab}
-    canEdit={canEditInfo}
-  />;
+  return (
+    <ClusterUI
+      id={cluster.id}
+      title={cluster.title ?? ""}
+      thumbnailUrl={cluster.thumbnail ?? ""}
+      isFollowingDb={false}
+      dateModified={cluster.dateModified}
+      description={cluster.description}
+      people={[]}
+      followerCount={cluster._count.followers}
+      projects={cluster.projects}
+      followers={cluster.followers}
+      allowCollab={cluster.allowCollab}
+      canEdit={canEditInfo}
+      currentUser={user.id}
+    />
+  );
 }

@@ -12,16 +12,20 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ProjectWithOwner } from "@/app/lib/projects";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { deleteProject } from "@/app/lib/actions";
+import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { deleteProject, removeProjectFromCluster } from "@/app/lib/actions";
 import { useState } from "react";
 
 export default function ProjectCard({
   projectInfo,
-  isOwner = false,
+  canDelete = false,
+  clusterId,
+  canRemoveFromCluster = false,
 }: {
   projectInfo: ProjectWithOwner;
-  isOwner?: boolean;
+  canDelete?: boolean;
+  clusterId?: string;
+  canRemoveFromCluster?: boolean;
 }) {
   const [deleting, setDeleting] = useState(false);
   console.log("from pc");
@@ -29,7 +33,11 @@ export default function ProjectCard({
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
-        <Link href={`/projects/${projectInfo.id}`} key={projectInfo.id} className="w-full h-full">
+        <Link
+          href={`/projects/${projectInfo.id}`}
+          key={projectInfo.id}
+          className="w-full h-full"
+        >
           {!projectInfo.isPublic && (
             <Badge className="absolute right-1 top-1 z-1" color="orange">
               Unshared
@@ -58,7 +66,7 @@ export default function ProjectCard({
           </div>
           <Anchor component="button">{projectInfo.owner?.username}</Anchor>
         </Link>
-        {isOwner && (
+        {canDelete && (
           <Menu>
             <Menu.Target>
               <Button
@@ -82,6 +90,31 @@ export default function ProjectCard({
                 }}
               >
                 Yes, delete this project
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
+        {canRemoveFromCluster && clusterId && (
+          <Menu>
+            <Menu.Target>
+              <Button
+                color="red"
+                leftSection={<XMarkIcon width={16} height={16} />}
+                loading={deleting}
+              >
+                Remove
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<XMarkIcon width={16} height={16} />}
+                c="red"
+                onClick={() => {
+                  removeProjectFromCluster(clusterId, projectInfo.id);
+                  setDeleting(true);
+                }}
+              >
+                Remove from cluster
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
