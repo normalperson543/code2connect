@@ -40,6 +40,7 @@ export default function Comment({
   handleTogglePin,
   handleReply,
   children,
+  currentUserId,
 }: {
   id: string;
   username: string;
@@ -55,6 +56,7 @@ export default function Comment({
   handleTogglePin: (id: string) => void;
   handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
+  currentUserId: string;
 }) {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
@@ -113,7 +115,7 @@ export default function Comment({
     });
   }
   async function handleSubmitReply() {
-    handleReply(id, username, replyContent)
+    handleReply(id, currentUserId, replyContent)
     setReplyContent("");
     setReplying(false)
   }

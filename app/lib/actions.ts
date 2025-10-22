@@ -356,12 +356,12 @@ export async function togglePinProfileComment(
 
 export async function createProfileCommentReply(
   commentId: string,
-  replierUsername: string,
+  replierId: string,
   content: string
 ) {
   const replier = await prisma.profile.findUnique({
     where: {
-      username: replierUsername
+      id: replierId
     }
   })
 
@@ -501,10 +501,10 @@ export async function deleteProjectComment(commentId: string) {
   return comment;
 }
 
-export async function createProjectCommentReply(commentId: string, replierUsername: string, content: string) {
+export async function createProjectCommentReply(commentId: string, replierId: string, content: string) {
   const replier = await prisma.profile.findUnique({
     where: {
-      username: replierUsername
+      id: replierId
     }
   })
 

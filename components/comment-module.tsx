@@ -91,6 +91,7 @@ export default function CommentModule({
               togglePinProfileComment(comment.id, comment.isPinned)
             }
             handleReply={createProfileCommentReply}
+            currentUserId={currentUser}
           >
             {(comment.replies && comment.replies.length > 0) && (
               <div>
@@ -106,8 +107,6 @@ export default function CommentModule({
             <Collapse in={!!openedReplies[comment.id]}>
               <Stack>
                 {comment.replies && comment.replies.map((reply) => {
-                  console.log("currentuser: " + currentUser)
-                  console.log("reply.comment.targetid: " + reply.Comment?.targetId)
                   return (
                       <CommentComponent
                         id={reply.id}
