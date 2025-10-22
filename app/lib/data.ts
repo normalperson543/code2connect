@@ -95,7 +95,7 @@ export async function getProject(projectId: string) {
               owner: true
             },
             orderBy: {
-              dateCreated: "desc"
+              dateCreated: "asc"
             }
           }
         },
@@ -305,7 +305,7 @@ export async function getProfileReceivedComments(profileUsername: string) {
               Comment: true,
             },
             orderBy: {
-              dateCreated: "desc",
+              dateCreated: "asc",
             },
           }
         },
@@ -400,7 +400,7 @@ export async function getCommentReplies(commentId: string) {
       Comment: true
     },
     orderBy: {
-      dateCreated: "desc",
+      dateCreated: "asc",
     }
   })
 
