@@ -110,6 +110,9 @@ export default function ProjectCommentModule({
                         isWriter={currentUser === reply.profileId}
                         isReply={true}
                         handleDelete={() => deleteProjectCommentReply(reply.id)}
+                        commentId={comment.id}
+                        handleReply={createProjectCommentReply}
+                        currentUserId={currentUser}
                       />
                   )
                 })}
