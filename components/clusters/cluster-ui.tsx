@@ -41,6 +41,7 @@ import { Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
 import { changeClusterDescription } from "@/app/lib/actions";
+import PlaceholderMessage from "../placeholder-message";
 
 export default function ClusterUI({
   id,
@@ -54,6 +55,7 @@ export default function ClusterUI({
   followers,
   projects,
   allowCollab,
+  canEdit,
 }: {
   id: string;
   title: string;
@@ -66,6 +68,7 @@ export default function ClusterUI({
   followers: Profile[];
   projects: ProjectWithOwner[];
   allowCollab: boolean;
+  canEdit: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -73,11 +76,11 @@ export default function ClusterUI({
 
   const debounceSaveDesc = useDebouncedCallback(() => {
     changeClusterDescription(id, description);
-  });
+  }, 2000);
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
-        <div className="flex flex-col gap-2 w-1/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
+        <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <AspectRatio ratio={16 / 9}>
             <Image
               src="/assets/default-image.png"
@@ -145,7 +148,7 @@ export default function ClusterUI({
           <Divider />
           <div className="flex flex-row gap-2 items-center">
             <CalendarIcon width={16} height={16} />
-            <Text>Last modified {new Date().toLocaleDateString()}</Text>
+            <Text>Last modified {new Date().toLocaleString()}</Text>
           </div>
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
@@ -183,6 +186,16 @@ export default function ClusterUI({
                   <PlusIcon width={16} height={16} />
                 </Button>
               </div>
+              {projects.length === 0 && (
+                <PlaceholderMessage>
+                  <CodeBracketIcon
+                    width={64}
+                    height={64}
+                    className="opacity-50"
+                  />
+                  <p>This cluster doesn't have any projects.</p>
+                </PlaceholderMessage>
+              )}
               <div className="flex flex-row gap-4 flex-wrap">
                 {projects.map((project) => (
                   <ProjectCard projectInfo={project} />

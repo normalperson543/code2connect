@@ -120,7 +120,7 @@ export default function Comment({
   return (
     <div>
       <div className="flex flex-row gap-2 w-full">
-        <Avatar src={profilePicture} size="md" />
+        <Avatar src={profilePicture} name={username} size="md" />
         <div className="flex flex-col gap-1 w-full">
           <div className="flex flex-row justify-between">
             <div className="flex flex-row gap-2 items-center">

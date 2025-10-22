@@ -34,6 +34,7 @@ import { useDebouncedCallback } from "use-debounce";
 import Link from "next/link";
 import { notifications } from "@mantine/notifications";
 import MiniProfile from "../mini-profile";
+import PlaceholderMessage from "../placeholder-message";
 
 export default function ProfileUI({
   accessedUserName,
@@ -266,14 +267,14 @@ export default function ProfileUI({
 
             <Tabs.Panel value="projects" mt="md">
               {displayedProjects.length === 0 && (
-                <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                <PlaceholderMessage>
                   <CodeBracketIcon
                     width={64}
                     height={64}
                     className="opacity-50"
                   />
                   <p>This user doesn&apos;t have any projects.</p>
-                </div>
+                </PlaceholderMessage>
               )}
               <div>
                 <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
@@ -311,10 +312,10 @@ export default function ProfileUI({
             <Tabs.Panel value="followers" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
                 {accessedProfileFollowers.length === 0 && (
-                  <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                  <PlaceholderMessage>
                     <UsersIcon width={64} height={64} className="opacity-50" />
                     <p>This user doesn&apos;t have any followers.</p>
-                  </div>
+                  </PlaceholderMessage>
                 )}
                 {accessedProfileFollowers.map((follower) => {
                   return (
@@ -330,14 +331,14 @@ export default function ProfileUI({
             <Tabs.Panel value="following" mt="sm">
               <div className="flex flex-row flex-wrap gap-2">
                 {accessedProfileFollowing.length === 0 && (
-                  <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-4 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full">
+                  <PlaceholderMessage>
                     <UserPlusIcon
                       width={64}
                       height={64}
                       className="opacity-50"
                     />
                     <p>This user isn&apos;t following anyone.</p>
-                  </div>
+                  </PlaceholderMessage>
                 )}
                 {accessedProfileFollowing.map((following) => {
                   return (
