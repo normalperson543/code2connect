@@ -5,7 +5,7 @@ import {
   incrementLikes,
   unfeature,
 } from "@/app/lib/actions";
-import { getProfile, getProject, getProjectLikes, isLiked } from "@/app/lib/data";
+import { getProfile, getProject, getProjectComments, getProjectLikes, isLiked } from "@/app/lib/data";
 import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -31,6 +31,7 @@ export default async function ProjectPreviewPage({
   const likes = await getProjectLikes(id);
   const liked = await isLiked(id, user.data.user?.id as string);
   const userDb = await getProfile(user.data.user?.id as string)
+  const projectComments = await getProjectComments(project.id)
 
   async function handleSaveDesc(newDesc: string) {
     "use server";
@@ -56,7 +57,7 @@ export default async function ProjectPreviewPage({
       canEditInfo={canEditInfo}
       title={project.title as string}
       description={project.description as string}
-      comments={project.comments}
+      comments={projectComments}
       clusters={project.clusters}
       likes={likes as number}
       id={id}

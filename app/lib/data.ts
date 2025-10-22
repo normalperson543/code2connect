@@ -121,6 +121,32 @@ export async function getProject(projectId: string) {
   if (!(await canAccessProject(project?.isPublic, project?.profileId))) return;
   return project;
 }
+
+export async function getProjectComments(projectId: string) {
+  const comments = await prisma.comment.findMany({
+    where: {
+      projectId: projectId
+    },
+    include: {
+      owner: true,
+      replies: {
+        include: {
+          owner: true,
+          Comment: true
+        },
+        orderBy: {
+          dateCreated: "asc"
+        }
+      }
+    },
+    orderBy: {
+      dateCreated: "desc"
+    }
+  })
+
+  return comments;
+}
+
 export async function getProjectLikes(projectId: string) {
   const likes = await prisma.like.count({
     where: {
@@ -400,7 +426,7 @@ export async function getCommentReplies(commentId: string) {
       Comment: true
     },
     orderBy: {
-      dateCreated: "asc",
+      dateCreated: "desc",
     }
   })
 
