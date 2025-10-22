@@ -21,6 +21,7 @@ import {
   UserPlusIcon,
   XMarkIcon,
   CheckIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
 import { Comment, Profile, Project } from "@prisma/client";
@@ -221,11 +222,15 @@ export default function ProfileUI({
           <Divider />
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
-            <Text>{accessedProfileFollowersCount} followers</Text>
+            <p>{accessedProfileFollowersCount} followers</p>
           </div>
           <div className="flex flex-row gap-2 items-center">
             <UserPlusIcon width={16} height={16} />
-            <Text>{accessedProfileFollowingCount} following</Text>
+            <p>{accessedProfileFollowingCount} following</p>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <CalendarIcon width={16} height={16} />
+            <p>Joined {accessedProfile.dateCreated.toLocaleString()}</p>
           </div>
         </div>
         <div className="flex flex-col gap-2 w-4/5 pr-16 pl-3">
