@@ -89,6 +89,7 @@ import {
 } from "@/app/lib/actions";
 import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
+import { v4 } from "uuid";
 
 function SidebarFile({
   desc,
@@ -391,7 +392,7 @@ export default function Editor({
       unduplicatedName = splitName.join(".");
     }
     let newFiles = files;
-    const uuid = crypto.randomUUID();
+    const uuid = v4();
     newFiles[uuid] = { name: unduplicatedName, contents: contents };
     setFiles(newFiles);
     setIsChanged(true);

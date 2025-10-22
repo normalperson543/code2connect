@@ -614,6 +614,12 @@ export async function addProjectToCluster(
   clusterId: string,
   projectId: string,
 ) {
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectId
+    }
+  })
+  if (!project || !project.isPublic) throw new Error("Project does not exist or is not public.")
   await prisma.project.update({
     where: {
       id: projectId,

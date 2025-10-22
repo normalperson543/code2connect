@@ -16,28 +16,7 @@ export async function handleAddToCluster(clusterId: string, addUrl: string) {
     }
   }
   if (!projectId) {
-    notifications.show({
-      position: "top-right",
-      withCloseButton: true,
-      autoClose: false,
-      title: "Please specify a valid project link",
-      message: "It should start with https://code2connect.vercel.app/projects.",
-      color: "red",
-      icon: <XMarkIcon />,
-    });
-    return;
+    throw new Error("Please specify a valid project URL.");
   }
-  try {
-    await addProjectToCluster(clusterId, projectId);
-  } catch (e) {
-    notifications.show({
-      position: "top-center",
-      withCloseButton: true,
-      autoClose: false,
-      title: "There was a problem adding your project",
-      message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
-      color: "red",
-      icon: "",
-    });
-  }
+  await addProjectToCluster(clusterId, projectId);
 }
