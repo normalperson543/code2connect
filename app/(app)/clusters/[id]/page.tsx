@@ -24,7 +24,7 @@ export default async function Cluster({
     <ClusterUI
       id={cluster.id}
       title={cluster.title ?? ""}
-      thumbnailUrl={cluster.thumbnail ?? ""}
+      thumbnailUrl={cluster.thumbnail ?? "/assets/placeholder-thumb.jpg"}
       isFollowingDb={false}
       dateModified={cluster.dateModified}
       description={cluster.description}
