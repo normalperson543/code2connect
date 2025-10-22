@@ -37,6 +37,8 @@ import { useState } from "react";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
+import CommentTextbox from "../comment-textbox";
+import ProjectCommentModule from "../project-comment-module";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -56,6 +58,9 @@ export default function ProjectPreviewPageUI({
   isLiked: isLikedDb,
   handleLike,
   isAdmin,
+  currentUserId,
+  project,
+  projectId
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -75,10 +80,14 @@ export default function ProjectPreviewPageUI({
   isLiked: boolean;
   handleLike: () => void;
   isAdmin: boolean;
+  currentUserId: string;
+  project: Project;
+  projectId: string
 }) {
   const [isForking, setIsForking] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
+  const [commentText, setCommentText] = useState("");
 
   const searchParams = useSearchParams();
 
@@ -259,33 +268,14 @@ export default function ProjectPreviewPageUI({
           <ThemeIcon radius="xl" className="shadow-md">
             <ChatBubbleOvalLeftIcon width={16} height={16} />
           </ThemeIcon>
-          <Title order={4}>Comments (20+)</Title>
+          <Title order={4}>Comments</Title>
         </div>
-        <Title order={4}>Add a comment</Title>
-        <div className="flex flex-row gap-2 w-full">
-          <Avatar src="" size="md" />
-          <div className="flex flex-col gap-2 w-full">
-            <Textarea w="100%" rows={3} />
-            <div className="flex flex-row gap-2 w-full">
-              <Button
-                leftSection={<PaperAirplaneIcon width={16} height={16} />}
-              >
-                Send
-              </Button>
-            </div>
-          </div>
-        </div>
-        <Comment
-          id="570abbc9-b1e1-456f-9fbf-559c584faf73"
-          username="normalperson543"
-          profilePicture=""
-          content="This is a comment."
-          dateCreated={new Date()}
-          pinned
-          isCreator
-          handleDelete={() => {}}
-          handleReport={() => {}}
-          handleTogglePin={() => {}}
+        <ProjectCommentModule
+          comments={comments}
+          currentUser={currentUserId}
+          accessedProject={project}
+          projectId={projectId}
+          commentsPerPage={5}
         />
       </div>
       {forks.length > 0 && (

@@ -87,7 +87,15 @@ export async function getProject(projectId: string) {
     include: {
       owner: true,
       clusters: true,
-      comments: true,
+      comments: {
+        include: {
+          replies: {
+            include: {
+              owner: true
+            }
+          }
+        }
+      },
       forks: {
         where: {
           isPublic: true,
@@ -124,6 +132,7 @@ export async function getProfile(userId: string) {
 
   return profile;
 }
+
 
 export async function getProfileBio(userId: string, bio: string) {
   const profile = await prisma.profile.findUnique({
@@ -287,7 +296,10 @@ export async function getProfileReceivedComments(profileUsername: string) {
             include: {
               owner: true,
               Comment: true,
-            }
+            },
+            orderBy: {
+              dateCreated: "desc",
+            },
           }
         },
         orderBy: {
@@ -379,6 +391,9 @@ export async function getCommentReplies(commentId: string) {
     include: {
       owner: true,
       Comment: true
+    },
+    orderBy: {
+      dateCreated: "desc",
     }
   })
 
@@ -449,4 +464,17 @@ export async function getCluster(id: string) {
     }
   })
   return cluster;
+}
+
+export async function getReply(id: string) {
+  const reply = await prisma.reply.findUnique({
+    where: {
+      id: id
+    },
+    include: {
+      Comment: true
+    }
+  })
+
+  return reply
 }

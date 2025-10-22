@@ -21,6 +21,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import React from "react";
+import CommentTextbox from "./comment-textbox";
+import { createProfileCommentReply } from "@/app/lib/actions";
+import { getCommentReplies, getProfile, getProfileWithUsername, getReply } from "@/app/lib/data";
 
 export default function Comment({
   id,
@@ -50,7 +53,7 @@ export default function Comment({
   handleDelete: (id: string) => void;
   handleReport: (id: string) => void;
   handleTogglePin: (id: string) => void;
-  handleReply: (id: string) => void;
+  handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
 }) {
   const [replying, setReplying] = useState(false);
@@ -109,80 +112,96 @@ export default function Comment({
       onConfirm: () => handleTogglePin(id),
     });
   }
-
-  async function handleReplying() {
-    setReplying(true)
-
+  async function handleSubmitReply() {
+    handleReply(id, username, replyContent)
+    setReplyContent("");
     setReplying(false)
   }
   return (
-    <div className="flex flex-row gap-2 w-full">
-      <Avatar src={profilePicture} size="md" />
-      <div className="flex flex-col gap-1 w-full">
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-row gap-2 items-center">
-            <Link href={`/profile/${username}`}>
-              <Anchor component="button">
-                <Title order={5}>{username}</Title>
-              </Anchor>
-            </Link>
-            {pinned && (
-              <Badge leftSection={<TagIcon width={12} height={12} />}>
-                Pinned
-              </Badge>
-            )}
-          </div>
-          <div>
-            <Menu position="bottom-end">
-              <Menu.Target>
-                <Button color="light" variant="subtle">
-                  <EllipsisHorizontalIcon width={16} height={16} />
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {!isReply && (
+    <div>
+      <div className="flex flex-row gap-2 w-full">
+        <Avatar src={profilePicture} size="md" />
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex flex-row justify-between">
+            <div className="flex flex-row gap-2 items-center">
+              <Link href={`/profile/${username}`}>
+                <Anchor component="button">
+                  <Title order={5}>{username}</Title>
+                </Anchor>
+              </Link>
+              {pinned && (
+                <Badge leftSection={<TagIcon width={12} height={12} />}>
+                  Pinned
+                </Badge>
+              )}
+            </div>
+            <div>
+              <Menu position="bottom-end">
+                <Menu.Target>
+                  <Button color="light" variant="subtle">
+                    <EllipsisHorizontalIcon width={16} height={16} />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {!isReply && (
+                    <Menu.Item
+                      leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                      onClick={() => setReplying(!replying)}
+                    >
+                      {replying ? "Stop Reply" : "Reply"}
+                    </Menu.Item>
+                  )}
+                  
+                  {(isCreator && !isReply) && (
+                    <>
+                      <Menu.Item
+                        leftSection={<TagIcon width={16} height={16} />}
+                        onClick={pinned ? unpinModal : pinModal}
+                      >
+                        {pinned ? "Unpin" : "Pin"}
+                      </Menu.Item>
+                    </>
+                  )}
+                  {isCreator && (
+                    <>
+                      <Menu.Item
+                        leftSection={<TrashIcon width={16} height={16} />}
+                        color="red"
+                        onClick={deleteModal}
+                      >
+                        Delete
+                      </Menu.Item>
+                    </>
+                  )}
                   <Menu.Item
-                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                    leftSection={
+                      <ExclamationTriangleIcon width={16} height={16} />
+                    }
+                    color="red"
+                    onClick={reportModal}
                   >
-                    Reply
+                    Report
                   </Menu.Item>
-                )}
-                
-                {(isCreator && !isReply) && (
-                  <>
-                    <Menu.Item
-                      leftSection={<TagIcon width={16} height={16} />}
-                      onClick={pinned ? unpinModal : pinModal}
-                    >
-                      {pinned ? "Unpin" : "Pin"}
-                    </Menu.Item>
-                    <Menu.Item
-                      leftSection={<TrashIcon width={16} height={16} />}
-                      color="red"
-                      onClick={deleteModal}
-                    >
-                      Delete
-                    </Menu.Item>
-                  </>
-                )}
-                <Menu.Item
-                  leftSection={
-                    <ExclamationTriangleIcon width={16} height={16} />
-                  }
-                  color="red"
-                  onClick={reportModal}
-                >
-                  Report
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+                </Menu.Dropdown>
+              </Menu>
+            </div>
           </div>
-        </div>
 
-        <Text>{content}</Text>
-        <Text c="dimmed">{dateCreated.toLocaleString()}</Text>
-        <div className="pl-4 flex flex-col gap-2">
-          {children}
+          <Text>{content}</Text>
+          <Text c="dimmed">{dateCreated.toLocaleString()}</Text>
+          <div className="pl-4 flex flex-col gap-2">
+            {replying && (
+              <>
+                <Title order={5}>Reply</Title>
+                <CommentTextbox
+                  value={replyContent}
+                  handleChangeValue={(newString: string) => setReplyContent(newString)}
+                  handleSubmit={handleSubmitReply}
+                />
+              </>
+            )}
+            {children}
+          </div>
         </div>
       </div>
     </div>
