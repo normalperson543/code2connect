@@ -8,6 +8,25 @@ import {
 import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+
+
+ 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const user = await getProfileWithUsername(id)
+
+  if (!user) return {};
+  return {
+    title: `${user.username} on Code2Connect`,
+    description: user.bio ?? "A user on Code2Connect"
+  };
+}
 
 export default async function Profile({
   params,

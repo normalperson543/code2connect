@@ -465,3 +465,14 @@ export async function unfeature(projectId: string) {
   return project
 }
 
+export async function changeClusterDescription(id: string, description: string) {
+  const cluster = await prisma.cluster.update({
+    where: {
+      id: id
+    },
+    data: {
+      description: description
+    }
+  })
+  return cluster;
+}

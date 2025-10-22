@@ -71,7 +71,7 @@ model Cluster {
   thumbnail    String?
   projects     Project[]
   followers    Profile[]
-  
+  allowCollab  Boolean   @default(true)
 
   profileId String
   comments  Comment[]

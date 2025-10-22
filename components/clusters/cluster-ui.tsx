@@ -39,18 +39,21 @@ import MiniProfile from "../mini-profile";
 import Image from "next/image";
 import { Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
+import { useDebouncedCallback } from "use-debounce";
+import { changeClusterDescription } from "@/app/lib/actions";
 
 export default function ClusterUI({
   id,
   title,
   thumbnailUrl,
   isFollowingDb,
-  description,
+  description: descriptionDb,
   people,
   dateModified,
   followerCount,
   followers,
   projects,
+  allowCollab,
 }: {
   id: string;
   title: string;
@@ -62,10 +65,15 @@ export default function ClusterUI({
   followerCount: number;
   followers: Profile[];
   projects: ProjectWithOwner[];
+  allowCollab: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
+  const [description, setDescription] = useState(descriptionDb);
 
+  const debounceSaveDesc = useDebouncedCallback(() => {
+    changeClusterDescription(id, description);
+  });
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
@@ -82,12 +90,18 @@ export default function ClusterUI({
           <Title order={2}>{title}</Title>
           <Button
             fullWidth
-            leftSection={isFollowing ? <XMarkIcon width={16} height={16} /> : <PlusIcon width={16} height={16} />}
+            leftSection={
+              isFollowing ? (
+                <XMarkIcon width={16} height={16} />
+              ) : (
+                <PlusIcon width={16} height={16} />
+              )
+            }
             variant={isFollowing ? "filled" : "gradient"}
             gradient={{ from: "blue", to: "cyan", deg: 135 }}
             className="shadow-md"
           >
-            Follow
+            {isFollowing ? "Unfollow" : "Follow"}
           </Button>
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
@@ -95,7 +109,14 @@ export default function ClusterUI({
             </ThemeIcon>
             <Title order={4}>Description</Title>
           </div>
-          <Textarea rows={8} value={description ?? ""}></Textarea>
+          <Textarea
+            rows={8}
+            value={description ?? ""}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              debounceSaveDesc();
+            }}
+          ></Textarea>
           <Checkbox label="Anyone can add projects" color="green" />
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
@@ -128,7 +149,7 @@ export default function ClusterUI({
           </div>
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
-            <Text>63 followers</Text>
+            <Text>{followerCount} followers</Text>
           </div>
         </div>
         <div className="flex flex-col gap-2 w-4/5 pr-16">
@@ -163,7 +184,7 @@ export default function ClusterUI({
                 </Button>
               </div>
               <div className="flex flex-row gap-4 flex-wrap">
-                {placeholder.map((project) => (
+                {projects.map((project) => (
                   <ProjectCard projectInfo={project} />
                 ))}
               </div>

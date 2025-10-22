@@ -372,11 +372,11 @@ export async function getCommentReplies(commentId: string) {
     },
     include: {
       owner: true,
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  return replies
+  return replies;
 }
 export async function getUserLikedProjects(userId: string) {
   const projects = await prisma.like.findMany({
@@ -399,7 +399,7 @@ export async function getFeatured() {
   const projects = await prisma.project.findMany({
     where: {
       isFeatured: true,
-      isPublic: true
+      isPublic: true,
     },
     orderBy: {
       featureDate: "asc",
@@ -407,40 +407,45 @@ export async function getFeatured() {
     include: {
       owner: true,
     },
-    take: 5
+    take: 5,
   });
   return projects;
 }
 export async function getTopLiked() {
   const projects = await prisma.project.findMany({
     where: {
-      isPublic: true
+      isPublic: true,
     },
     orderBy: {
       likes: {
-        _count: "desc"
-      }
+        _count: "desc",
+      },
     },
     include: {
-      owner: true
+      owner: true,
     },
-    take: 10
-  })
-  return projects
+    take: 10,
+  });
+  return projects;
 }
 export async function getCluster(id: string) {
   const cluster = await prisma.cluster.findUnique({
     where: {
-      id: id
+      id: id,
     },
     include: {
       projects: {
         include: {
-          owner: true
-        }
+          owner: true,
+        },
       },
-      followers: true
-    }
-  })
+      followers: true,
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  });
   return cluster;
 }

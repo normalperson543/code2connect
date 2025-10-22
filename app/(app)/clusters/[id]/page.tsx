@@ -19,9 +19,9 @@ export default async function Cluster({
     dateModified={cluster.dateModified}
     description={cluster.description}
     people={[]}
-    followerCount={69}
+    followerCount={cluster._count.followers}
     projects={cluster.projects}
     followers={cluster.followers}
-
+    allowCollab={cluster.allowCollab}
   />;
 }
