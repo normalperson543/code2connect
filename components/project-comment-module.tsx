@@ -84,6 +84,7 @@ export default function ProjectCommentModule({
               togglePinProjectComment(comment.id, comment.isPinned)
             }
             handleReply={createProjectCommentReply}
+            currentUserId={currentUser}
           >
             {(comment.replies && comment.replies.length > 0) && (
               <div>

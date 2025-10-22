@@ -304,7 +304,7 @@ export default function ProfileUI({
                 currentUser={currentUser}
                 accessedProfile={accessedProfile}
                 accessedUsername={accessedUserName}
-                commentsPerPage={3}
+                commentsPerPage={10}
               />
             </Tabs.Panel>
 
