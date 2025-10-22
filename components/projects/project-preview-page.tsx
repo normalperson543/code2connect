@@ -10,6 +10,7 @@ import {
   Divider,
   ThemeIcon,
   Menu,
+  TextInput,
 } from "@mantine/core";
 import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
@@ -25,6 +26,7 @@ import {
   ShareIcon,
   ShieldCheckIcon,
   SparklesIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import ProjectCarousel from "../project-carousel";
@@ -32,6 +34,7 @@ import Heading from "../heading";
 import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
 import {
+  addProjectToCluster,
   deleteProject,
   feature,
   fork,
@@ -46,6 +49,8 @@ import { useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import CommentTextbox from "../comment-textbox";
 import ProjectCommentModule from "../project-comment-module";
+import { modals } from "@mantine/modals";
+import { validate } from "uuid";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -97,6 +102,8 @@ export default function ProjectPreviewPageUI({
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
   const [commentText, setCommentText] = useState("");
+  const [clusterUrl, setClusterUrl] = useState("")
+  const [adding, setAdding] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -105,6 +112,37 @@ export default function ProjectPreviewPageUI({
   }, 2000);
 
   const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
+
+  async function handleAdd() {
+    setAdding(true);
+    
+  }
+  }
+  function AddToClusterModal() {
+    return (
+      <div className="flex flex-col gap-2">
+            <TextInput
+              type="text"
+              value={clusterUrl}
+              label="What's the link to the cluster?"
+              onChange={(e) => {
+                const target = e.target as HTMLInputElement;
+                setClusterUrl(target.value);
+              }}
+              minLength={1}
+            />
+            <Button
+              fullWidth
+              onClick={() => {
+                handleAdd();
+                modals.closeAll();
+              }}
+            >
+              Done
+            </Button>
+          </div>
+    )
+  }
   return (
     <div className="flex flex-col gap-2">
       <Heading>

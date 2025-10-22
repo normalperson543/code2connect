@@ -228,7 +228,7 @@ export default function ClusterUI({
             <div className="flex flex-col gap-2">
               <Title order={3}>Add a project</Title>
               <p>
-                Enter a project ID (e.g. 85d9e8ee-d63d-4898-80d3-ed18491cbd27)
+                Paste a project URL here to add your project.
               </p>
               <div className="flex flex-row gap-2">
                 <TextInput
@@ -236,6 +236,7 @@ export default function ClusterUI({
                   className="w-full"
                   value={addUrl}
                   onChange={(e) => setAddUrl(e.target.value)}
+                  placeholder="http://code2connect.vercel.app/projects/2d2a4a59-5ad6-4221-a093-c5d99c1cbaad"
                 />
                 <Button onClick={handleAdd} loading={adding}>
                   <PlusIcon width={16} height={16} />
