@@ -38,8 +38,10 @@ import { Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
 import {
+  addClusterFollower,
   addProjectToCluster,
   changeClusterDescription,
+  removeClusterFollower,
   changeCollabStatus,
   deleteCluster,
   renameCluster,
@@ -48,6 +50,7 @@ import {
 import PlaceholderMessage from "../placeholder-message";
 import { validate } from "uuid";
 import { notifications } from "@mantine/notifications";
+import { isClusterFollower } from "@/app/lib/data";
 import { getThumbnailSearchResults } from "@/app/lib/data";
 import { modals } from "@mantine/modals";
 import ThumbnailPickerModal from "../modals/thumbnail-picker";
@@ -139,6 +142,18 @@ export default function ClusterUI({
       });
     }
   }
+
+  async function handleFollowingToggle(newStatus: boolean) {
+    if(!newStatus) {
+      console.log("unfollowing")
+      removeClusterFollower(id, currentUser)
+    } else {
+      console.log("following")
+      addClusterFollower(id, currentUser);
+    }
+    setIsFollowing(!isFollowing)
+  }
+
 
   async function thumbnailPickerModal() {
     const results = await getThumbnailSearchResults(title);
