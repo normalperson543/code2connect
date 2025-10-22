@@ -1,4 +1,4 @@
-import { getCluster } from "@/app/lib/data";
+import { getCluster, isClusterFollower } from "@/app/lib/data";
 import ClusterUI from "@/components/clusters/cluster-ui";
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
@@ -19,13 +19,14 @@ export default async function Cluster({
   if (!user) redirect("/auth/login");
 
   const canEditInfo = cluster.owner?.id === (user?.id as string);
+  const isFollower = await isClusterFollower(user.id, id)
 
   return (
     <ClusterUI
       id={cluster.id}
       title={cluster.title ?? ""}
       thumbnailUrl={cluster.thumbnail ?? ""}
-      isFollowingDb={false}
+      isFollowingDb={isFollower}
       dateModified={cluster.dateModified}
       description={cluster.description}
       people={[]}

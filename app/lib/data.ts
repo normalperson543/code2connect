@@ -516,3 +516,24 @@ export async function getReply(id: string) {
 
   return reply;
 }
+
+export async function isClusterFollower(followerId: string, clusterId: string) {
+  const follower = await prisma.cluster.findUnique({
+    where: {
+      id: clusterId
+    },
+    select: {
+      followers: {
+        where: {
+          id: followerId
+        }
+      }
+    }
+  })
+  
+  if(follower && follower.followers && follower.followers.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}

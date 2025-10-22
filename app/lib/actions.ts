@@ -652,3 +652,36 @@ export async function removeProjectFromCluster(
   });
   revalidatePath(`/clusters/${clusterId}`);
 }
+
+export async function addClusterFollower(clusterId: string, followerId: string) {
+  const updatedCluster = await prisma.cluster.update({
+    where: {
+      id: clusterId
+    },
+    data: {
+      followers: {
+        connect: {
+          id: followerId
+        }
+      }
+    }
+  });
+
+  revalidatePath(`/clusters/${clusterId}`)
+  redirect(`/clusters/${clusterId}`)
+}
+
+export async function removeClusterFollower(clusterId: string, followerId: string) {
+  const updatedCluster = prisma.cluster.update({
+    where: {
+      id: clusterId
+    },
+    data: {
+      followers: {
+        disconnect: {
+          id: followerId
+        }
+      }
+    }
+  })
+}
