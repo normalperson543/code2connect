@@ -672,7 +672,7 @@ export async function addClusterFollower(clusterId: string, followerId: string) 
 }
 
 export async function removeClusterFollower(clusterId: string, followerId: string) {
-  const updatedCluster = prisma.cluster.update({
+  const updatedCluster = await prisma.cluster.update({
     where: {
       id: clusterId
     },
@@ -684,4 +684,7 @@ export async function removeClusterFollower(clusterId: string, followerId: strin
       }
     }
   })
+
+  revalidatePath(`/clusters/${clusterId}`)
+  redirect(`/clusters/${clusterId}`)
 }

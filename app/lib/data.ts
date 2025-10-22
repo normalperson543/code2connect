@@ -517,7 +517,7 @@ export async function getReply(id: string) {
   return reply;
 }
 
-export async function isClusterFollower(followerId: string, clusterId: string) {
+export async function isClusterFollower(currentUserId: string, clusterId: string) {
   const follower = await prisma.cluster.findUnique({
     where: {
       id: clusterId
@@ -525,15 +525,28 @@ export async function isClusterFollower(followerId: string, clusterId: string) {
     select: {
       followers: {
         where: {
-          id: followerId
+          id: currentUserId
         }
       }
     }
   })
   
-  if(follower && follower.followers && follower.followers.length > 0) {
+  if(follower && follower.followers && follower.followers.length > 0 && follower.followers[0].id === currentUserId) {
     return true
   } else {
     return false
   }
+}
+
+export async function getClusterFollowers(clusterId: string) {
+  const followers = await prisma.cluster.findUnique({
+    where: {
+      id: clusterId
+    },
+    select: {
+      followers: true
+    }
+  })
+
+  return followers?.followers
 }

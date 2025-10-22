@@ -41,12 +41,15 @@ import { Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
 import {
+  addClusterFollower,
   addProjectToCluster,
   changeClusterDescription,
+  removeClusterFollower,
 } from "@/app/lib/actions";
 import PlaceholderMessage from "../placeholder-message";
 import { validate } from "uuid";
 import { notifications } from "@mantine/notifications";
+import { isClusterFollower } from "@/app/lib/data";
 export default function ClusterUI({
   id,
   title,
@@ -127,6 +130,18 @@ export default function ClusterUI({
       });
     }
   }
+
+  async function handleFollowingToggle(newStatus: boolean) {
+    if(!newStatus) {
+      console.log("unfollowing")
+      removeClusterFollower(id, currentUser)
+    } else {
+      console.log("following")
+      addClusterFollower(id, currentUser);
+    }
+    setIsFollowing(!isFollowing)
+  }
+
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
@@ -153,6 +168,7 @@ export default function ClusterUI({
             variant={isFollowing ? "filled" : "gradient"}
             gradient={{ from: "blue", to: "cyan", deg: 135 }}
             className="shadow-md"
+            onClick={() => handleFollowingToggle(!isFollowing)}
           >
             {isFollowing ? "Unfollow" : "Follow"}
           </Button>
