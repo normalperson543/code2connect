@@ -40,9 +40,13 @@ import Image from "next/image";
 import { Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
-import { changeClusterDescription } from "@/app/lib/actions";
+import {
+  addProjectToCluster,
+  changeClusterDescription,
+} from "@/app/lib/actions";
 import PlaceholderMessage from "../placeholder-message";
-
+import { validate } from "uuid";
+import { notifications } from "@mantine/notifications";
 export default function ClusterUI({
   id,
   title,
@@ -73,10 +77,39 @@ export default function ClusterUI({
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [description, setDescription] = useState(descriptionDb);
+  const [addUrl, setAddUrl] = useState("");
+  const [adding, setAdding] = useState(false);
 
   const debounceSaveDesc = useDebouncedCallback(() => {
     changeClusterDescription(id, description);
   }, 2000);
+
+  async function handleAdd() {
+    setAdding(true);
+    const pathname = new URL(addUrl).pathname;
+    const pathnamePages = pathname.split("/").filter(Boolean);
+    let projectId;
+    for (let i = pathnamePages.length - 1; i >= 0; i--) {
+      if (validate(pathnamePages[i])) {
+        projectId = pathnamePages[i];
+        break;
+      }
+    }
+    if (!projectId) {
+      notifications.show({
+        position: "top-center",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid project link",
+        message:
+          "It should start with https://code2connect.vercel.app/projects.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    await addProjectToCluster(id, projectId);
+  }
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
@@ -181,8 +214,13 @@ export default function ClusterUI({
                 Enter a project ID (e.g. 85d9e8ee-d63d-4898-80d3-ed18491cbd27)
               </p>
               <div className="flex flex-row gap-2">
-                <TextInput type="text" className="w-full" />
-                <Button>
+                <TextInput
+                  type="text"
+                  className="w-full"
+                  value={addUrl}
+                  onChange={(e) => setAddUrl(e.target.value)}
+                />
+                <Button onClick={handleAdd} loading={adding}>
                   <PlusIcon width={16} height={16} />
                 </Button>
               </div>

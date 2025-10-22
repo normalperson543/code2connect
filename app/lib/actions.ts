@@ -592,3 +592,17 @@ export async function changeClusterDescription(id: string, description: string) 
   })
   return cluster;
 }
+export async function addProjectToCluster(clusterId: string, projectId: string) {
+  const project = await prisma.project.update({
+    where: {
+      id: clusterId
+    },
+    data: {
+      clusters: {
+        connect: {
+          id: clusterId
+        }
+      }
+    }
+  })
+}
