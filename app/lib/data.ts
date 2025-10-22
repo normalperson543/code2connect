@@ -89,11 +89,18 @@ export async function getProject(projectId: string) {
       clusters: true,
       comments: {
         include: {
+          owner: true,
           replies: {
             include: {
               owner: true
+            },
+            orderBy: {
+              dateCreated: "desc"
             }
           }
+        },
+        orderBy: {
+          dateCreated: "desc"
         }
       },
       forks: {

@@ -99,8 +99,6 @@ export default function ProjectCommentModule({
             <Collapse in={!!openedReplies[comment.id]}>
               <Stack>
                 {comment.replies && comment.replies.map((reply) => {
-                  console.log("currentuser: " + currentUser)
-                  console.log("reply.comment.targetid: " + reply.Comment?.targetId)
                   return (
                       <CommentComponent
                         id={reply.id}
