@@ -191,24 +191,30 @@ export default function ClusterUI({
             <ThemeIcon radius="xl" className="shadow-md">
               <UsersIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={4}>People</Title>
+            <Title order={4}>Followers</Title>
             <Avatar.Group>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Avatar size="md">+5</Avatar>
+              {followers.map((follower) => {
+                console.log("cluster follower: " + follower.username)
+                return (
+                  <Tooltip
+                    label={follower.username}
+                    withArrow
+                    key={follower.id}
+                  >
+                    <Avatar
+                      name={follower.username}
+                      size="md"
+                      component="a"
+                      href={`./${follower.username}`}
+                    />
+                  </Tooltip>
+                )
+              })}
+              {followers.length >= 5 && (
+                <Avatar size="md">
+                  +{followerCount - 5}
+                </Avatar>
+              )}
             </Avatar.Group>
           </div>
           <Divider />
