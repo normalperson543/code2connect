@@ -80,7 +80,7 @@ export default function ClusterUI({
   currentUser,
   currentUsername,
   comments,
-  cluster
+  cluster,
   dateCreated,
   isAdmin,
   ownerUsername,
