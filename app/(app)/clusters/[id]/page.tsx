@@ -19,9 +19,17 @@ export default async function Cluster({
   if (!user) redirect("/auth/login");
 
   const userDb = await getProfile(user.id as string);
-
-  const canEditInfo = cluster.owner?.id === (user?.id as string);
-  const isFollower = await isClusterFollower(user.id, id)
+  let canEditInfo = false;
+  let isFollower = false;
+  let isAdmin = false;
+  if (user && user.id) {
+    const currentProfile = await getProfile(user?.id as string);
+    if (currentProfile) {
+      isAdmin = currentProfile.isAdmin;
+    }
+    canEditInfo = cluster.owner?.id === (user?.id as string) || isAdmin;
+    isFollower = await isClusterFollower(user.id, id);
+  }
 
   return (
     <ClusterUI
@@ -37,10 +45,14 @@ export default async function Cluster({
       followers={cluster.followers}
       allowCollab={cluster.allowCollab}
       canEdit={canEditInfo}
-      currentUser={user.id}
+      currentUser={user?.id}
       comments={cluster.comments}
       cluster={cluster}
       currentUsername={userDb?.username as string}
+      dateCreated={cluster.dateCreated}
+      isAdmin={isAdmin}
+      ownerUsername={cluster.owner?.username}
+      projectCount={cluster._count.projects}
     />
   );
 }

@@ -16,11 +16,13 @@ import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
 import {
   Bars3CenterLeftIcon,
+  CalendarIcon,
   ChatBubbleOvalLeftIcon,
   CheckIcon,
   ExclamationTriangleIcon,
   GlobeAmericasIcon,
   PaperAirplaneIcon,
+  PhotoIcon,
   PlusIcon,
   RectangleStackIcon,
   ShareIcon,
@@ -56,6 +58,13 @@ import CommentTextbox from "../comment-textbox";
 import { modals } from "@mantine/modals";
 import { validate } from "uuid";
 import CommentModule from "../comment-module";
+import ClusterCard from "../clusters/cluster-card";
+import { ClusterWithOwner } from "@/app/lib/cluster-types";
+import ClusterCarousel from "../cluster-carousel";
+import { notifications } from "@mantine/notifications";
+import AddToClusterModal from "../modals/add-to-cluster-modal";
+import { getCluster } from "@/app/lib/data";
+import { CommentWithOwner } from "@/app/lib/comment-types";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -79,14 +88,15 @@ export default function ProjectPreviewPageUI({
   project,
   projectId,
   currentUsername,
+  datePublished,
 }: {
   creatorImageSrc?: string;
   creator: string;
   canEditInfo: boolean;
   title: string;
   description: string;
-  comments: CommentData[] | null;
-  clusters: Cluster[] | null;
+  comments: CommentWithOwner[] | null;
+  clusters: ClusterWithOwner[] | null;
   likes: number;
   id: string;
   thumbnail: string;
@@ -102,12 +112,12 @@ export default function ProjectPreviewPageUI({
   project: Project;
   projectId: string;
   currentUsername: string;
+  datePublished?: Date | null;
 }) {
   const [isForking, setIsForking] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
   const [commentText, setCommentText] = useState("");
-  const [clusterUrl, setClusterUrl] = useState("")
   const [adding, setAdding] = useState(false);
 
   const searchParams = useSearchParams();
@@ -118,37 +128,98 @@ export default function ProjectPreviewPageUI({
 
   const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
 
-  async function handleAdd() {
+  console.log(clusters);
+  async function handleAdd(clusterUrl: string) {
     setAdding(true);
-    
+    let pathname;
+    try {
+      pathname = new URL(clusterUrl).pathname;
+    } catch {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid cluster link",
+        message:
+          "It should start with https://code2connect.vercel.app/clusters.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    const pathnamePages = pathname.split("/").filter(Boolean);
+    let clusterId;
+    for (let i = pathnamePages.length - 1; i >= 0; i--) {
+      if (validate(pathnamePages[i])) {
+        clusterId = pathnamePages[i];
+        break;
+      }
+    }
+    if (!clusterId) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid cluster link",
+        message:
+          "It should start with https://code2connect.vercel.app/clusters.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    try {
+      const cluster = await getCluster(clusterId);
+      if (!cluster) {
+        notifications.show({
+          position: "top-right",
+          withCloseButton: true,
+          autoClose: false,
+          title: "This cluster doesn't exist",
+          message: "Please confirm if the cluster link is correct.",
+          color: "red",
+          icon: <XMarkIcon />,
+        });
+        return;
+      }
+    } catch (e) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+    }
+    try {
+      await addProjectToCluster(clusterId, projectId);
+    } catch (e) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    notifications.show({
+      position: "top-right",
+      withCloseButton: true,
+      autoClose: true,
+      title: "Project added successfully",
+      message: "Your project has been added to the cluster.",
+      color: "green",
+      icon: <CheckIcon />,
+    });
   }
-  function AddToClusterModal() {
-    return (
-      <div className="flex flex-col gap-2">
-            <TextInput
-              type="text"
-              value={clusterUrl}
-              label="What's the link to the cluster?"
-              onChange={(e) => {
-                const target = e.target as HTMLInputElement;
-                setClusterUrl(target.value);
-              }}
-              minLength={1}
-            />
-            <Button
-              fullWidth
-              onClick={() => {
-                handleAdd();
-                modals.closeAll();
-              }}
-            >
-              Done
-            </Button>
-          </div>
-    )
-  }
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full h-full">
       <Heading>
         <div className="flex flex-row gap-4 items-center">
           <Avatar name={creator} src={creatorImageSrc} size="lg" bg="white" />
@@ -255,6 +326,24 @@ export default function ProjectPreviewPageUI({
               readOnly
             />
           )}
+          {thumbnail && (
+            <div className="flex flex-row gap-2 items-center">
+              <PhotoIcon width={16} height={16} opacity={0.5} />
+
+              <Text c="dimmed">
+                Photo from{" "}
+                <Anchor component={Link} href={thumbnail}>
+                  Pexels
+                </Anchor>
+              </Text>
+            </div>
+          )}
+          {datePublished && isPublic && (
+            <div className="flex flex-row gap-2 items-center">
+              <CalendarIcon width={16} height={16} opacity={0.5} />
+              <Text c="dimmed">Published {datePublished.toLocaleString()}</Text>
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">
@@ -295,29 +384,45 @@ export default function ProjectPreviewPageUI({
               </Menu.Dropdown>
             </Menu>
           )}
-          <Button
-            leftSection={<SparklesIcon width={16} height={16} />}
-            onClick={() => {
-              fork(id);
-              setIsForking(true);
-            }}
-            loading={isForking}
-          >
-            Fork
-          </Button>
-          <Button leftSection={<PlusIcon width={16} height={16} />}>
-            Add to cluster
-          </Button>
-          <Button
-            leftSection={<ExclamationTriangleIcon width={16} height={16} />}
-            color="orange"
-            autoContrast
-          >
-            Report
-          </Button>
+          {isPublic && (
+            <>
+              <Button
+                leftSection={<SparklesIcon width={16} height={16} />}
+                onClick={() => {
+                  fork(id);
+                  setIsForking(true);
+                }}
+                loading={isForking}
+              >
+                Fork
+              </Button>
+              <Button
+                leftSection={<PlusIcon width={16} height={16} />}
+                onClick={() =>
+                  modals.open({
+                    title: `Add to cluster`,
+                    children: (
+                      <AddToClusterModal
+                        onComplete={(url: string) => handleAdd(url)}
+                      />
+                    ),
+                  })
+                }
+              >
+                Add to cluster
+              </Button>
+              <Button
+                leftSection={<ExclamationTriangleIcon width={16} height={16} />}
+                color="orange"
+                autoContrast
+              >
+                Report
+              </Button>
+            </>
+          )}
         </div>
       </div>
-      <Divider orientation="horizontal" className="mt-4 mb-4" />
+      <Divider orientation="horizontal" className="mt-8 mb-8" />
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">
         <div className="flex-1 flex flex-row items-center gap-2">
           <ThemeIcon radius="xl" className="shadow-md">
@@ -340,9 +445,9 @@ export default function ProjectPreviewPageUI({
       </div>
       {forks.length > 0 && (
         <>
-          <Divider orientation="horizontal" className="mt-4 mb-4" />
+          <Divider orientation="horizontal" className="mt-8 mb-8" />
 
-          <div className="w-full pl-16 pr-16 flex flex-col gap-2">
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
             <div className="flex-1 flex flex-row items-center gap-2">
               <ThemeIcon radius="xl" className="shadow-md">
                 <SparklesIcon width={16} height={16} />
@@ -353,16 +458,20 @@ export default function ProjectPreviewPageUI({
           </div>
         </>
       )}
-      <Divider orientation="horizontal" />
-
-      <div className="w-full pl-16 pr-16 flex flex-col gap-2">
-        <div className="flex-1 flex flex-row items-center gap-2">
-          <ThemeIcon radius="xl" className="shadow-md">
-            <RectangleStackIcon width={16} height={16} />
-          </ThemeIcon>
-          <Title order={4}>Clusters</Title>
-        </div>
-      </div>
+      {clusters && clusters.length > 0 && (
+        <>
+          <Divider orientation="horizontal" className="mt-8 mb-8" />
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
+            <div className="flex-1 flex flex-row items-center gap-2">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <RectangleStackIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={4}>Clusters</Title>
+            </div>
+            <ClusterCarousel clusters={clusters} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

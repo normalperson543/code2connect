@@ -1,5 +1,5 @@
 "use client";
-import { Title, Text, Pagination, Input } from "@mantine/core";
+import { Title, Pagination, Input } from "@mantine/core";
 import { useState } from "react";
 import Heading from "../heading";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

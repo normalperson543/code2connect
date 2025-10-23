@@ -86,7 +86,16 @@ export async function getProject(projectId: string) {
     },
     include: {
       owner: true,
-      clusters: true,
+      clusters: {
+        include: {
+          owner: true,
+          _count: {
+            select: {
+              projects: true,
+            },
+          },
+        },
+      },
       comments: {
         include: {
           owner: true,
@@ -490,14 +499,21 @@ export async function getCluster(id: string) {
     include: {
       owner: true,
       projects: {
+        where: {
+          isPublic: true,
+        },
         include: {
           owner: true,
+        },
+        orderBy: {
+          datePublished: "desc",
         },
       },
       followers: true,
       _count: {
         select: {
           followers: true,
+          projects: true,
         },
       },
       comments: {
@@ -535,36 +551,73 @@ export async function getReply(id: string) {
   return reply;
 }
 
-export async function isClusterFollower(currentUserId: string, clusterId: string) {
+export async function isClusterFollower(
+  currentUserId: string,
+  clusterId: string,
+) {
   const follower = await prisma.cluster.findUnique({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     select: {
       followers: {
         where: {
-          id: currentUserId
-        }
-      }
-    }
-  })
-  
-  if(follower && follower.followers && follower.followers.length > 0 && follower.followers[0].id === currentUserId) {
-    return true
+          id: currentUserId,
+        },
+      },
+    },
+  });
+
+  if (
+    follower &&
+    follower.followers &&
+    follower.followers.length > 0 &&
+    follower.followers[0].id === currentUserId
+  ) {
+    return true;
   } else {
-    return false
+    return false;
   }
 }
 
 export async function getClusterFollowers(clusterId: string) {
   const followers = await prisma.cluster.findUnique({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     select: {
-      followers: true
-    }
-  })
+      followers: true,
+    },
+  });
 
-  return followers?.followers
+  return followers?.followers;
+}
+export async function getIotm() {
+  const cluster = await prisma.cluster.findFirst({
+    where: {
+      isIotm: true,
+    },
+    include: {
+      owner: true,
+      projects: {
+        where: {
+          isPublic: true,
+        },
+        include: {
+          owner: true,
+        },
+        orderBy: {
+          datePublished: "desc",
+        },
+        take: 5,
+      },
+      followers: true,
+      _count: {
+        select: {
+          projects: true,
+        },
+      },
+    },
+  });
+  return cluster;
 }
