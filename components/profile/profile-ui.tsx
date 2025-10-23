@@ -41,6 +41,7 @@ import { notifications } from "@mantine/notifications";
 import MiniProfile from "../mini-profile";
 import PlaceholderMessage from "../placeholder-message";
 import { ProjectWithOwner } from "@/app/lib/projects";
+import { CommentWithOwner } from "@/app/lib/comment-types";
 
 export default function ProfileUI({
   accessedUserName,
@@ -63,7 +64,7 @@ export default function ProfileUI({
   accessedProfileFollowing: Profile[];
   accessedProfileFollowingCount: number;
   accessedProfileProjects: ProjectWithOwner[];
-  accessedProfileComments: Comment[];
+  accessedProfileComments: CommentWithOwner[];
   isFollowingDb: boolean;
   currentUsername: string;
 }) {

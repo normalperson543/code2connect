@@ -431,7 +431,7 @@ export default function ProjectPreviewPageUI({
           <Title order={4}>Comments</Title>
         </div>
         <CommentModule
-          comments={comments}
+          comments={comments ?? []}
           currentUser={currentUserId}
           accessedProject={project}
           commentsPerPage={5}

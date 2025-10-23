@@ -48,6 +48,7 @@ export default function CommentModule({
   handlePinComment: (commentId: string, currentPinStatus: boolean) => void;
 }) {
   const [comment, setComment] = useState("");
+  const [isSending, setIsSending] = useState(false)
   const [openedReplies, setOpenedReplies] = useState<{
     [key: string]: boolean;
   }>({});
@@ -73,6 +74,7 @@ export default function CommentModule({
   
 
   function handleSubmitComment() {
+    setIsSending(true)
     if(accessedProfile) {
       handleCreateComment(currentUser, accessedProfile.id, comment)
     } else if (accessedProject) {
@@ -83,6 +85,7 @@ export default function CommentModule({
       throw new Error("Could not get profile, project, or cluster when making comment.")
     }
     setComment("");
+    setIsSending(false)
   }
 
   function toggleReplies(commentId: string) {
@@ -100,6 +103,7 @@ export default function CommentModule({
         handleChangeValue={(newString: string) => setComment(newString)}
         handleSubmit={handleSubmitComment}
         profileUsername={currentUsername}
+        sending={isSending}
       />
       {paginatedComments.map((comment) => {
         console.log(`comment replies: ${comment.replies}`);

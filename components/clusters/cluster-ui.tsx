@@ -65,6 +65,7 @@ import { modals } from "@mantine/modals";
 import ThumbnailPickerModal from "../modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
 import Link from "next/link";
+import { CommentWithOwner } from "@/app/lib/comment-types";
 export default function ClusterUI({
   id,
   title: titleDb,
@@ -103,7 +104,7 @@ export default function ClusterUI({
   isAdmin: boolean;
   ownerUsername: string;
   currentUsername: string;
-  comments: Comment[],
+  comments: CommentWithOwner[],
   cluster: Cluster
   projectCount: number;
 }) {
@@ -476,7 +477,7 @@ export default function ClusterUI({
           )}
           {activeTab === "comments" && (
             <CommentModule
-              comments={comments}
+              comments={comments ?? []}
               currentUser={currentUser}
               accessedCluster={cluster}
               commentsPerPage={5}

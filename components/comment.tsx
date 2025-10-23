@@ -51,7 +51,7 @@ export default function Comment({
 }: {
   id: string;
   username: string;
-  profilePicture: string;
+  profilePicture?: string;
   content: string;
   dateCreated: Date;
   pinned?: boolean;
@@ -59,8 +59,8 @@ export default function Comment({
   isWriter?: boolean;
   isReply?: boolean;
   handleDelete: (id: string) => void;
-  handleReport: (id: string) => void;
-  handleTogglePin: (id: string) => void;
+  handleReport?: (id: string) => void;
+  handleTogglePin?: (id: string) => void;
   handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
   currentUserId: string;
@@ -95,7 +95,7 @@ export default function Comment({
       ),
       labels: { confirm: "Yes, report", cancel: "Cancel" },
       confirmProps: { color: "red" },
-      onConfirm: () => handleReport(id),
+      onConfirm: () => handleReport && handleReport(id),
     });
   }
   function pinModal() {
@@ -108,7 +108,7 @@ export default function Comment({
       ),
       labels: { confirm: "Yes, pin", cancel: "Cancel" },
       confirmProps: { color: "red" },
-      onConfirm: () => handleTogglePin(id),
+      onConfirm: () => handleTogglePin && handleTogglePin(id),
     });
   }
   function unpinModal() {
@@ -121,7 +121,7 @@ export default function Comment({
       ),
       labels: { confirm: "Yes, unpin", cancel: "Cancel" },
       confirmProps: { color: "red" },
-      onConfirm: () => handleTogglePin(id),
+      onConfirm: () => handleTogglePin && handleTogglePin(id),
     });
   }
   async function handleSubmitReply() {
