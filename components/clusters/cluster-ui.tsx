@@ -98,7 +98,7 @@ export default function ClusterUI({
   projects: ProjectWithOwner[];
   allowCollab: boolean;
   canEdit: boolean;
-  currentUser?: string;
+  currentUser: string;
   dateCreated: Date;
   isAdmin: boolean;
   ownerUsername: string;
@@ -108,12 +108,19 @@ export default function ClusterUI({
   projectCount: number;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
+  const [activePage, setActivePage] = useState(1);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [description, setDescription] = useState(descriptionDb);
   const [addUrl, setAddUrl] = useState("");
   const [adding, setAdding] = useState(false);
   const [allowCollab, setAllowCollab] = useState(allowCollabDb);
   const [title, setTitle] = useState(titleDb);
+
+  const startIndex = (activePage - 1) * 9;
+  const endIndex = startIndex + 9
+  const displayedProjects = projects.slice(startIndex, endIndex)
+
+  const followersToShow = followers.slice(0,5);
 
   const debounceSaveDesc = useDebouncedCallback(() => {
     changeClusterDescription(id, description);
@@ -337,7 +344,7 @@ export default function ClusterUI({
             </ThemeIcon>
             <Title order={4}>Followers</Title>
             <Avatar.Group>
-              {followers.map((follower) => {
+              {followersToShow.map((follower) => {
                 console.log("cluster follower: " + follower.username);
                 return (
                   <Tooltip
@@ -443,8 +450,8 @@ export default function ClusterUI({
                   <p>This cluster doesn't have any projects.</p>
                 </PlaceholderMessage>
               )}
-              <div className="flex flex-row gap-4 flex-wrap">
-                {projects.map((project) => (
+              <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                {displayedProjects.map((project: ProjectWithOwner) => (
                   <ProjectCard
                     projectInfo={project}
                     key={project.id}
@@ -455,8 +462,16 @@ export default function ClusterUI({
                   />
                 ))}
               </div>
-
-              <Pagination total={5} />
+              {projectCount <= 9 ? (
+                <div></div>
+              ): (
+                <Pagination
+                  total={Math.trunc(projectCount / 9) + 1}
+                  value={activePage}
+                  onChange={setActivePage}
+                  mt="lg"
+                />
+              )}
             </div>
           )}
           {activeTab === "comments" && (
