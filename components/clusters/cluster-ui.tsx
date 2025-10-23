@@ -98,7 +98,7 @@ export default function ClusterUI({
   projects: ProjectWithOwner[];
   allowCollab: boolean;
   canEdit: boolean;
-  currentUser?: string;
+  currentUser: string;
   dateCreated: Date;
   isAdmin: boolean;
   ownerUsername: string;
@@ -108,12 +108,17 @@ export default function ClusterUI({
   projectCount: number;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
+  const [activePage, setActivePage] = useState(1);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [description, setDescription] = useState(descriptionDb);
   const [addUrl, setAddUrl] = useState("");
   const [adding, setAdding] = useState(false);
   const [allowCollab, setAllowCollab] = useState(allowCollabDb);
   const [title, setTitle] = useState(titleDb);
+
+  const startIndex = (activePage - 1) * 9;
+  const endIndex = startIndex + 9
+  const displayedProjects = projects.slice(startIndex, endIndex)
 
   const followersToShow = followers.slice(0,5);
 
@@ -446,7 +451,7 @@ export default function ClusterUI({
                 </PlaceholderMessage>
               )}
               <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
-                {projects.map((project) => (
+                {displayedProjects.map((project: ProjectWithOwner) => (
                   <ProjectCard
                     projectInfo={project}
                     key={project.id}
@@ -462,6 +467,9 @@ export default function ClusterUI({
               ): (
                 <Pagination
                   total={Math.trunc(projectCount / 9) + 1}
+                  value={activePage}
+                  onChange={setActivePage}
+                  mt="lg"
                 />
               )}
             </div>
