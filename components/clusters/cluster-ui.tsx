@@ -69,6 +69,7 @@ export default function ClusterUI({
   allowCollab: allowCollabDb,
   canEdit,
   currentUser,
+  dateCreated
 }: {
   id: string;
   title: string;
@@ -83,6 +84,7 @@ export default function ClusterUI({
   allowCollab: boolean;
   canEdit: boolean;
   currentUser: string;
+  dateCreated: Date;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -285,6 +287,10 @@ export default function ClusterUI({
             </Avatar.Group>
           </div>
           <Divider />
+          <div className="flex flex-row gap-2 items-center">
+            <CalendarIcon width={16} height={16} />
+            <Text>Created {dateCreated.toLocaleString()}</Text>
+          </div>
           <div className="flex flex-row gap-2 items-center">
             <CalendarIcon width={16} height={16} />
             <Text>Last modified {dateModified.toLocaleString()}</Text>

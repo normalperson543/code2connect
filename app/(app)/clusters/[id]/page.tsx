@@ -36,6 +36,7 @@ export default async function Cluster({
       allowCollab={cluster.allowCollab}
       canEdit={canEditInfo}
       currentUser={user.id}
+      dateCreated={cluster.dateCreated}
     />
   );
 }
