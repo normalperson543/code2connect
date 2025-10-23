@@ -69,6 +69,7 @@ export default function Comment({
 }) {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
+  const [isSending, setIsSending] = useState(false)
 
   function deleteModal() {
     modals.openConfirmModal({
@@ -124,6 +125,7 @@ export default function Comment({
     });
   }
   async function handleSubmitReply() {
+    setIsSending(true)
     if (isReply) {
       if (!commentId) {
         throw new Error(
@@ -136,6 +138,11 @@ export default function Comment({
     }
     setReplyContent("");
     setReplying(false);
+    setIsSending(false)
+  }
+
+  function handleStopReplying() {
+    setReplying(false)
   }
   return (
     <div>
@@ -163,12 +170,14 @@ export default function Comment({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                    onClick={() => setReplying(!replying)}
-                  >
-                    {replying ? "Stop Reply" : "Reply"}
-                  </Menu.Item>
+                  {!replying && (
+                    <Menu.Item
+                      leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                      onClick={() => setReplying(!replying)}
+                    >
+                      Reply
+                    </Menu.Item>
+                  )}
 
                   {isCreator && !isReply && (
                     <>
@@ -218,6 +227,9 @@ export default function Comment({
                   }
                   handleSubmit={handleSubmitReply}
                   profileUsername={currentUsername}
+                  stopReplying={true}
+                  handleStopReplying={handleStopReplying}
+                  sending={isSending}
                 />
               </>
             )}

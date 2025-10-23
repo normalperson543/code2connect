@@ -115,6 +115,8 @@ export default function ClusterUI({
   const [allowCollab, setAllowCollab] = useState(allowCollabDb);
   const [title, setTitle] = useState(titleDb);
 
+  const followersToShow = followers.slice(0,5);
+
   const debounceSaveDesc = useDebouncedCallback(() => {
     changeClusterDescription(id, description);
   }, 2000);
@@ -337,7 +339,7 @@ export default function ClusterUI({
             </ThemeIcon>
             <Title order={4}>Followers</Title>
             <Avatar.Group>
-              {followers.map((follower) => {
+              {followersToShow.map((follower) => {
                 console.log("cluster follower: " + follower.username);
                 return (
                   <Tooltip
@@ -443,7 +445,7 @@ export default function ClusterUI({
                   <p>This cluster doesn't have any projects.</p>
                 </PlaceholderMessage>
               )}
-              <div className="flex flex-row gap-4 flex-wrap">
+              <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
                 {projects.map((project) => (
                   <ProjectCard
                     projectInfo={project}
@@ -455,8 +457,13 @@ export default function ClusterUI({
                   />
                 ))}
               </div>
-
-              <Pagination total={5} />
+              {projectCount <= 9 ? (
+                <div></div>
+              ): (
+                <Pagination
+                  total={Math.trunc(projectCount / 9) + 1}
+                />
+              )}
             </div>
           )}
           {activeTab === "comments" && (
