@@ -190,10 +190,8 @@ export default function ClusterUI({
   async function handleFollowingToggle(newStatus: boolean) {
     if (!currentUser) return;
     if (!newStatus) {
-      console.log("unfollowing");
       removeClusterFollower(id, currentUser);
     } else {
-      console.log("following");
       addClusterFollower(id, currentUser);
     }
     setIsFollowing(!isFollowing);
@@ -342,7 +340,6 @@ export default function ClusterUI({
             <Title order={4}>Followers</Title>
             <Avatar.Group>
               {followersToShow.map((follower) => {
-                console.log("cluster follower: " + follower.username);
                 return (
                   <Tooltip
                     label={follower.username}

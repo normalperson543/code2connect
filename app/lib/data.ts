@@ -54,14 +54,10 @@ export async function getProjectFiles(
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
-  console.log(authUserId);
-  console.log(userId);
   if (userId === authUserId || isPublic) {
-    console.log("Good");
     const list = await supabaseAdmin.storage
       .from("projects")
       .list(`${userId}/${id}`);
-    console.log(list);
     return list;
   }
   return;
@@ -395,11 +391,7 @@ export async function getFileUrl(
   const user = await supabase.auth.getUser();
   const authUserId = user.data.user?.id;
 
-  console.log("File URL Details");
-  console.log(authUserId);
-  console.log(userId);
   if (userId === authUserId || isPublic) {
-    console.log("good, authorizing");
     const { data: dataUrl } = supabaseAdmin.storage
       .from("projects")
       .getPublicUrl(`/${userId}/${projectId}/${fileName}`);
