@@ -2,12 +2,11 @@
 
 import { Input } from "@mantine/core";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 export default function SearchBar() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("query"));
+  const [query, setQuery] = useState("");
 
   return (
     <Input
