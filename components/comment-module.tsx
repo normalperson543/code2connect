@@ -11,40 +11,43 @@ import {
 import CommentComponent from "./comment";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { Comment, Prisma, Profile } from "@prisma/client";
-import {
-  createProfileComment,
-  deleteProfileCommentReply,
-  togglePinProfileComment,
-  deleteProfileComment,
-  createProfileCommentReply,
-} from "@/app/lib/actions";
+import { Cluster, Comment, Prisma, Profile, Project } from "@prisma/client";
 type CommentWithOwnerAndReplies = Prisma.CommentGetPayload<{
   include: {
     owner: true;
     replies: { include: { owner: true; Comment: true } };
   };
 }>;
-import { getCommentReplies } from "@/app/lib/data";
 import CommentTextbox from "./comment-textbox";
 
 export default function CommentModule({
   comments,
   currentUser,
   accessedProfile,
-  accessedUsername,
+  accessedProject,
+  accessedCluster,
   commentsPerPage,
   currentUsername,
+  handleCreateComment,
+  handleDeleteComment,
+  handleCreateCommentReply,
+  handleDeleteCommentReply,
+  handlePinComment,
 }: {
   comments: CommentWithOwnerAndReplies[];
   currentUser: string;
-  accessedProfile: Profile;
-  accessedUsername: string;
+  accessedProfile?: Profile;
+  accessedProject?: Project;
+  accessedCluster?: Cluster;
   commentsPerPage: number;
   currentUsername: string;
+  handleCreateComment: (commentOwnerId: string, commentTargetId: string, content: string) => void;
+  handleDeleteComment: (id: string) => void;
+  handleCreateCommentReply: (commentId: string, replierId: string, content: string) => void;
+  handleDeleteCommentReply: (id: string) => void;
+  handlePinComment: (commentId: string, currentPinStatus: boolean) => void;
 }) {
   const [comment, setComment] = useState("");
-  const [savingComment, setSavingComment] = useState(false);
   const [openedReplies, setOpenedReplies] = useState<{
     [key: string]: boolean;
   }>({});
@@ -52,7 +55,6 @@ export default function CommentModule({
   const COMMENTS_PER_PAGE = commentsPerPage;
   let commentsToDisplay = [];
   const pinnedCommentIndex = comments.findIndex((comment) => comment.isPinned);
-  const pinnedComment = comments[pinnedCommentIndex];
   if (pinnedCommentIndex >= 0) {
     commentsToDisplay = [
       comments[pinnedCommentIndex],
@@ -68,13 +70,18 @@ export default function CommentModule({
   const endIndex = startIndex + COMMENTS_PER_PAGE;
   const paginatedComments = commentsToDisplay.slice(startIndex, endIndex);
 
+  
+
   function handleSubmitComment() {
-    createProfileComment(
-      currentUser,
-      accessedProfile.id,
-      comment,
-      accessedUsername,
-    );
+    if(accessedProfile) {
+      handleCreateComment(currentUser, accessedProfile.id, comment)
+    } else if (accessedProject) {
+      handleCreateComment(currentUser, accessedProject.id, comment)
+    } else if (accessedCluster) {
+      handleCreateComment(currentUser, accessedCluster.id, comment)
+    } else {
+      throw new Error("Could not get profile, project, or cluster when making comment.")
+    }
     setComment("");
   }
 
@@ -102,14 +109,16 @@ export default function CommentModule({
             username={comment.owner.username}
             content={comment.contents}
             dateCreated={comment.dateCreated}
-            isCreator={currentUser === comment.targetId}
-            isWriter={currentUser === comment.profileId}
-            pinned={comment.isPinned}
-            handleDelete={() => deleteProfileComment(comment.id)}
-            handleTogglePin={() =>
-              togglePinProfileComment(comment.id, comment.isPinned)
+            isCreator={accessedProfile ? currentUser === comment.targetId : 
+                      accessedProject ? currentUser === accessedProject.profileId:
+                      currentUser === accessedCluster?.profileId
             }
-            handleReply={createProfileCommentReply}
+            pinned={comment.isPinned}
+            handleDelete={() => handleDeleteComment(comment.id)}
+            handleTogglePin={() =>
+              handlePinComment(comment.id, comment.isPinned)
+            }
+            handleReply={handleCreateCommentReply}
             currentUserId={currentUser}
             currentUsername={currentUsername}
           >
@@ -136,12 +145,14 @@ export default function CommentModule({
                         username={reply.owner.username}
                         content={reply.contents}
                         dateCreated={reply.dateCreated}
-                        isCreator={currentUser === reply.Comment?.targetId}
-                        isWriter={currentUser === reply.profileId}
+                        isCreator={accessedProfile ? currentUser === reply.Comment?.targetId :
+                                  accessedProject ? currentUser === accessedProject.profileId :
+                                  currentUser === accessedCluster?.profileId
+                        }
                         isReply={true}
-                        handleDelete={() => deleteProfileCommentReply(reply.id)}
+                        handleDelete={() => handleDeleteCommentReply(reply.id)}
                         commentId={comment.id}
-                        handleReply={createProfileCommentReply}
+                        handleReply={handleCreateCommentReply}
                         currentUserId={currentUser}
                         currentUsername={currentUsername}
                       />

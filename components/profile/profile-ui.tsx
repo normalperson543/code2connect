@@ -27,8 +27,13 @@ import CommentModule from "../comment-module";
 import { Comment, Profile, Project } from "@prisma/client";
 import {
   addProfileFollower,
+  createProfileComment,
+  createProfileCommentReply,
+  deleteProfileComment,
+  deleteProfileCommentReply,
   editProfileBio,
   removeProfileFollower,
+  togglePinProfileComment,
 } from "@/app/lib/actions";
 import { useDebouncedCallback } from "use-debounce";
 import Link from "next/link";
@@ -310,9 +315,13 @@ export default function ProfileUI({
                 comments={accessedProfileComments}
                 currentUser={currentUser}
                 accessedProfile={accessedProfile}
-                accessedUsername={accessedUserName}
                 commentsPerPage={10}
                 currentUsername={currentUsername}
+                handleCreateComment={createProfileComment}
+                handleDeleteComment={deleteProfileComment}
+                handleCreateCommentReply={createProfileCommentReply}
+                handleDeleteCommentReply={deleteProfileCommentReply}
+                handlePinComment={togglePinProfileComment}
               />
             </Tabs.Panel>
 

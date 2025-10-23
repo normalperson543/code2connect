@@ -224,7 +224,6 @@ export async function createProfileComment(
   ownerId: string,
   targetId: string,
   content: string,
-  targetUsername: string,
 ) {
   const comment = await prisma.comment.create({
     data: {
@@ -232,10 +231,13 @@ export async function createProfileComment(
       targetId: targetId,
       contents: content,
     },
+    include: {
+      targetProf: true
+    }
   });
 
-  revalidatePath(`/profile/${targetUsername}`);
-  redirect(`/profile/${targetUsername}`);
+  revalidatePath(`/profile/${comment.targetProf?.username}`);
+  redirect(`/profile/${comment.targetProf?.username}`);
 
   return comment;
 }
@@ -304,8 +306,19 @@ export async function deleteProfileComment(id: string) {
     },
     include: {
       targetProf: true,
+      replies: true
     },
   });
+
+  if(comment.replies && comment.replies.length > 0) {
+    comment.replies.forEach(async (reply) => {
+      await prisma.reply.delete({
+        where: {
+          id: reply.id
+        }
+      })
+    })
+  }
 
   revalidatePath(`/profile/${comment.targetProf?.username}`);
   redirect(`/profile/${comment.targetProf?.username}`);
@@ -476,8 +489,8 @@ export async function unfeature(projectId: string) {
 }
 
 export async function createProjectComment(
-  projectId: string,
   commenterId: string,
+  projectId: string,
   content: string,
 ) {
   const comment = await prisma.comment.create({
@@ -499,7 +512,20 @@ export async function deleteProjectComment(commentId: string) {
     where: {
       id: commentId,
     },
+    include: {
+      replies: true
+    }
   });
+
+  if(comment.replies && comment.replies.length > 0) {
+    comment.replies.forEach(async (reply) => {
+      await prisma.reply.delete({
+        where: {
+          id: reply.id
+        }
+      })
+    })
+  }
 
   revalidatePath(`/projects/${comment.projectId}`);
   redirect(`/projects/${comment.projectId}`);
@@ -726,4 +752,115 @@ export async function removeClusterFollower(clusterId: string, followerId: strin
 
   revalidatePath(`/clusters/${clusterId}`)
   redirect(`/clusters/${clusterId}`)
+}
+
+export async function createClusterComment(commenterId: string, clusterId: string, content: string) {
+  const comment = await prisma.comment.create({
+    data: {
+      profileId: commenterId,
+      clusterId: clusterId,
+      contents: content
+    }
+  })
+
+  revalidatePath(`/clusters/${clusterId}`)
+  redirect(`/clusters/${clusterId}`)
+}
+
+export async function deleteClusterComment(commentId: string) {
+  const comment = await prisma.comment.delete({
+    where: {
+      id: commentId
+    },
+    include: {
+      replies: true
+    }
+  })
+
+  if(comment.replies && comment.replies.length > 0) {
+    comment.replies.forEach(async (reply) => {
+      await prisma.reply.delete({
+        where: {
+          id: reply.id
+        }
+      })
+    })
+  }
+
+  revalidatePath(`/clusters/${comment.clusterId}`)
+  redirect(`/clusters/${comment.clusterId}`)
+}
+
+export async function createClusterCommentReply(commentId: string, replierId: string, content: string) {
+  const replier = await prisma.profile.findUnique({
+    where: {
+      id: replierId
+    }
+  })
+
+  if(!replier) {
+    throw new Error( "Could not find replier's profile when making cluster comment reply")
+  }
+
+  const reply = await prisma.reply.create({
+    data: {
+      profileId: replierId,
+      commentId: commentId,
+      contents: content
+    },
+    include: {
+      Comment: true
+    }
+  })
+
+  revalidatePath(`/clusters/${reply.Comment?.clusterId}`)
+  redirect(`/clusters/${reply.Comment?.clusterId}`)
+}
+
+export async function deleteClusterCommentReply(id: string) {
+  const reply = await prisma.reply.delete({
+    where: {
+      id: id
+    },
+    include: {
+      Comment: true
+    }
+  })
+
+  revalidatePath(`/clusters/${reply.Comment?.clusterId}`)
+  redirect(`/clusters/${reply.Comment?.clusterId}`)
+}
+
+export async function togglePinClusterComment(id: string, currentPinStatus: boolean) {
+  const selectedComment = await prisma.comment.findUnique({
+    where: {
+      id: id
+    }
+  })
+
+  if(!currentPinStatus && selectedComment?.clusterId) {
+    await prisma.comment.updateMany({
+      where: {
+        clusterId: selectedComment.clusterId,
+        NOT: {
+          id: id
+        }
+      },
+      data: {
+        isPinned: false
+      }
+    })
+  }
+
+  const comment = await prisma.comment.update({
+    where: {
+      id: id
+    },
+    data: {
+      isPinned: !currentPinStatus
+    }
+  })
+
+  revalidatePath(`/clusters/${comment.clusterId}`)
+  redirect(`/clusters/${comment.clusterId}`)
 }

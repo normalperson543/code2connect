@@ -34,7 +34,7 @@ import {
 import { useState } from "react";
 import ProjectCard from "../project-card";
 import Image from "next/image";
-import { Profile } from "@prisma/client";
+import { Cluster, Comment, Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
 import {
@@ -46,6 +46,11 @@ import {
   deleteCluster,
   renameCluster,
   setClusterThumbnail,
+  createClusterComment,
+  deleteClusterComment,
+  createClusterCommentReply,
+  deleteClusterCommentReply,
+  togglePinClusterComment,
 } from "@/app/lib/actions";
 import PlaceholderMessage from "../placeholder-message";
 import { validate } from "uuid";
@@ -69,6 +74,9 @@ export default function ClusterUI({
   allowCollab: allowCollabDb,
   canEdit,
   currentUser,
+  currentUsername,
+  comments,
+  cluster
 }: {
   id: string;
   title: string;
@@ -83,6 +91,9 @@ export default function ClusterUI({
   allowCollab: boolean;
   canEdit: boolean;
   currentUser: string;
+  currentUsername: string;
+  comments: Comment[],
+  cluster: Cluster
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -280,7 +291,7 @@ export default function ClusterUI({
                       name={follower.username}
                       size="md"
                       component="a"
-                      href={`./${follower.username}`}
+                      href={`/profile/${follower.username}`}
                     />
                   </Tooltip>
                 )
@@ -367,7 +378,20 @@ export default function ClusterUI({
               <Pagination total={5} />
             </div>
           )}
-          {activeTab === "comments" && <CommentModule />}
+          {activeTab === "comments" && (
+            <CommentModule
+              comments={comments}
+              currentUser={currentUser}
+              accessedCluster={cluster}
+              commentsPerPage={5}
+              currentUsername={currentUsername}
+              handleCreateComment={createClusterComment}
+              handleDeleteComment={deleteClusterComment}
+              handleCreateCommentReply={createClusterCommentReply}
+              handleDeleteCommentReply={deleteClusterCommentReply}
+              handlePinComment={togglePinClusterComment}
+            />
+          )}
         </div>
       </div>
     </div>

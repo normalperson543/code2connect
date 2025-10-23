@@ -93,6 +93,7 @@ export async function getProject(projectId: string) {
           replies: {
             include: {
               owner: true,
+              Comment: true
             },
             orderBy: {
               dateCreated: "asc",
@@ -499,6 +500,23 @@ export async function getCluster(id: string) {
           followers: true,
         },
       },
+      comments: {
+        include: {
+          owner: true,
+          replies: {
+            include: {
+              owner: true,
+              Comment: true
+            },
+            orderBy: {
+              dateCreated: "asc"
+            }
+          }
+        },
+        orderBy: {
+          dateCreated: "desc"
+        }
+      }
     },
   });
   return cluster;
