@@ -37,10 +37,15 @@ import { Cluster, Comment as CommentData, Project } from "@prisma/client";
 import Comment from "../comment";
 import {
   addProjectToCluster,
+  createProjectComment,
+  createProjectCommentReply,
   deleteProject,
+  deleteProjectComment,
+  deleteProjectCommentReply,
   feature,
   fork,
   shareProject,
+  togglePinProjectComment,
   unfeature,
   unshareProject,
 } from "@/app/lib/actions";
@@ -50,9 +55,9 @@ import { ProjectWithOwner } from "@/app/lib/projects";
 import { useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import CommentTextbox from "../comment-textbox";
-import ProjectCommentModule from "../project-comment-module";
 import { modals } from "@mantine/modals";
 import { validate } from "uuid";
+import CommentModule from "../comment-module";
 import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
 import ClusterCarousel from "../cluster-carousel";
@@ -425,13 +430,17 @@ export default function ProjectPreviewPageUI({
           </ThemeIcon>
           <Title order={4}>Comments</Title>
         </div>
-        <ProjectCommentModule
+        <CommentModule
           comments={comments}
           currentUser={currentUserId}
           accessedProject={project}
-          projectId={projectId}
           commentsPerPage={5}
           currentUsername={currentUsername}
+          handleCreateComment={createProjectComment}
+          handleDeleteComment={deleteProjectComment}
+          handleCreateCommentReply={createProjectCommentReply}
+          handleDeleteCommentReply={deleteProjectCommentReply}
+          handlePinComment={togglePinProjectComment}
         />
       </div>
       {forks.length > 0 && (

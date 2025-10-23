@@ -5,6 +5,8 @@ import { CodeBracketIcon } from "@heroicons/react/24/outline";
 import { Anchor, AspectRatio, Avatar, Card, Title } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
+type ClusterWithOwner = Prisma.ClusterGetPayload<{include: { owner: true}}>
 export default function ClusterCard({
   clusterInfo,
   projectCount,
