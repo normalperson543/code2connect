@@ -205,32 +205,34 @@ export default function ClusterUI({
             >
               {isFollowing ? "Unfollow" : "Follow"}
             </Button>
-            <Menu>
-              <Menu.Target>
-                <Button>
-                  <EllipsisVerticalIcon width={16} height={16} color="white" />
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item leftSection={<PhotoIcon width={16} height={16} />} onClick={thumbnailPickerModal}>
-                  Change thumbnail
-                </Menu.Item>
-                <Menu.Sub>
-                  <Menu.Sub.Target>
-                    <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
-                  </Menu.Sub.Target>
-                  <Menu.Sub.Dropdown>
-                    <Menu.Item
-                      leftSection={<TrashIcon width={16} height={16} />}
-                      c="red"
-                      onClick={() => deleteCluster(id)}
-                    >
-                      Yes, permanently delete this cluster
-                    </Menu.Item>
-                  </Menu.Sub.Dropdown>
-                </Menu.Sub>
-              </Menu.Dropdown>
-            </Menu>
+            {canEdit && (
+              <Menu>
+                <Menu.Target>
+                  <Button>
+                    <EllipsisVerticalIcon width={16} height={16} color="white" />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item leftSection={<PhotoIcon width={16} height={16} />} onClick={thumbnailPickerModal}>
+                    Change thumbnail
+                  </Menu.Item>
+                  <Menu.Sub>
+                    <Menu.Sub.Target>
+                      <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
+                    </Menu.Sub.Target>
+                    <Menu.Sub.Dropdown>
+                      <Menu.Item
+                        leftSection={<TrashIcon width={16} height={16} />}
+                        c="red"
+                        onClick={() => deleteCluster(id)}
+                      >
+                        Yes, permanently delete this cluster
+                      </Menu.Item>
+                    </Menu.Sub.Dropdown>
+                  </Menu.Sub>
+                </Menu.Dropdown>
+              </Menu>
+            )}
           </div>
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
@@ -266,24 +268,30 @@ export default function ClusterUI({
             <ThemeIcon radius="xl" className="shadow-md">
               <UsersIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={4}>People</Title>
+            <Title order={4}>Followers</Title>
             <Avatar.Group>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Avatar size="md">+5</Avatar>
+              {followers.map((follower) => {
+                console.log("cluster follower: " + follower.username)
+                return (
+                  <Tooltip
+                    label={follower.username}
+                    withArrow
+                    key={follower.id}
+                  >
+                    <Avatar
+                      name={follower.username}
+                      size="md"
+                      component="a"
+                      href={`./${follower.username}`}
+                    />
+                  </Tooltip>
+                )
+              })}
+              {followers.length >= 5 && (
+                <Avatar size="md">
+                  +{followerCount - 5}
+                </Avatar>
+              )}
             </Avatar.Group>
           </div>
           <Divider />
