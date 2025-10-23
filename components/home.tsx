@@ -25,7 +25,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { Cluster } from "@prisma/client";
-import { ClusterWithOwner } from "@/app/lib/cluster-types";
+import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
 export default function Home({
   username,
   projectCount,
@@ -43,7 +43,7 @@ export default function Home({
   followingCount?: number;
   featured: ProjectWithOwner[];
   topLiked: ProjectWithOwner[];
-  iotmClusterInfo?: ClusterWithOwner | null;
+  iotmClusterInfo?: ClusterWithOwnerAndProjects| null;
 }) {
   const [creating, setCreating] = useState(false);
   return (

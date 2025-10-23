@@ -5,6 +5,7 @@ import {
   getProfileReceivedComments,
   getProfileProjects,
   getProfile,
+  cachedGetProfileWithUsername,
 } from "@/app/lib/data";
 import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
@@ -18,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
-  const user = await getProfileWithUsername(id);
+  const user = await cachedGetProfileWithUsername(id);
 
   if (!user) return {};
   return {
@@ -38,7 +39,7 @@ export default async function Profile({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const profileAccessed = await getProfileWithUsername(id);
+  const profileAccessed = await cachedGetProfileWithUsername(id);
   if (!profileAccessed) notFound();
   const followInfo = await getProfileFollowInfo(id);
   const projects = await getProfileProjects(profileAccessed.id);

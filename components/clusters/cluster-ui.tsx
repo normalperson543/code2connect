@@ -404,7 +404,7 @@ export default function ClusterUI({
           </Tabs>
           {activeTab === "projects" && (
             <div className="flex flex-col gap-2">
-              {(allowCollab && currentUser) && (
+              {((allowCollab && currentUser) || canEdit) && (
                 <>
                   <Title order={3}>Add a project</Title>
                   <p>Paste a project URL here to add your project.</p>
