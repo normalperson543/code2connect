@@ -56,6 +56,8 @@ export default async function ProjectPreviewPage({
     "use server";
     await unfeature(id);
   }
+  console.log("Direct");
+  console.log(project.clusters);
 
   return (
     <ProjectPreviewPageUI
@@ -80,6 +82,7 @@ export default async function ProjectPreviewPage({
       project={project}
       projectId={project.id}
       currentUsername={userDb?.username as string}
+      datePublished={project.datePublished}
     />
   );
 }

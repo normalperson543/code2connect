@@ -16,11 +16,13 @@ import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
 import {
   Bars3CenterLeftIcon,
+  CalendarIcon,
   ChatBubbleOvalLeftIcon,
   CheckIcon,
   ExclamationTriangleIcon,
   GlobeAmericasIcon,
   PaperAirplaneIcon,
+  PhotoIcon,
   PlusIcon,
   RectangleStackIcon,
   ShareIcon,
@@ -51,6 +53,9 @@ import CommentTextbox from "../comment-textbox";
 import ProjectCommentModule from "../project-comment-module";
 import { modals } from "@mantine/modals";
 import { validate } from "uuid";
+import ClusterCard from "../clusters/cluster-card";
+import { ClusterWithOwner } from "@/app/lib/cluster-types";
+import ClusterCarousel from "../cluster-carousel";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -74,6 +79,7 @@ export default function ProjectPreviewPageUI({
   project,
   projectId,
   currentUsername,
+  datePublished,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -81,7 +87,7 @@ export default function ProjectPreviewPageUI({
   title: string;
   description: string;
   comments: CommentData[] | null;
-  clusters: Cluster[] | null;
+  clusters: ClusterWithOwner[] | null;
   likes: number;
   id: string;
   thumbnail: string;
@@ -97,12 +103,13 @@ export default function ProjectPreviewPageUI({
   project: Project;
   projectId: string;
   currentUsername: string;
+  datePublished?: Date | null;
 }) {
   const [isForking, setIsForking] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
   const [commentText, setCommentText] = useState("");
-  const [clusterUrl, setClusterUrl] = useState("")
+  const [clusterUrl, setClusterUrl] = useState("");
   const [adding, setAdding] = useState(false);
 
   const searchParams = useSearchParams();
@@ -113,37 +120,37 @@ export default function ProjectPreviewPageUI({
 
   const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
 
+  console.log(clusters);
   async function handleAdd() {
     setAdding(true);
-    
   }
   function AddToClusterModal() {
     return (
       <div className="flex flex-col gap-2">
-            <TextInput
-              type="text"
-              value={clusterUrl}
-              label="What's the link to the cluster?"
-              onChange={(e) => {
-                const target = e.target as HTMLInputElement;
-                setClusterUrl(target.value);
-              }}
-              minLength={1}
-            />
-            <Button
-              fullWidth
-              onClick={() => {
-                handleAdd();
-                modals.closeAll();
-              }}
-            >
-              Done
-            </Button>
-          </div>
-    )
+        <TextInput
+          type="text"
+          value={clusterUrl}
+          label="What's the link to the cluster?"
+          onChange={(e) => {
+            const target = e.target as HTMLInputElement;
+            setClusterUrl(target.value);
+          }}
+          minLength={1}
+        />
+        <Button
+          fullWidth
+          onClick={() => {
+            handleAdd();
+            modals.closeAll();
+          }}
+        >
+          Done
+        </Button>
+      </div>
+    );
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full h-full">
       <Heading>
         <div className="flex flex-row gap-4 items-center">
           <Avatar name={creator} src={creatorImageSrc} size="lg" bg="white" />
@@ -250,6 +257,24 @@ export default function ProjectPreviewPageUI({
               readOnly
             />
           )}
+          {thumbnail && (
+            <div className="flex flex-row gap-2 items-center">
+              <PhotoIcon width={16} height={16} opacity={0.5} />
+
+              <Text c="dimmed">
+                Photo from{" "}
+                <Anchor component={Link} href={thumbnail}>
+                  Pexels
+                </Anchor>
+              </Text>
+            </div>
+          )}
+          {datePublished && isPublic && (
+            <div className="flex flex-row gap-2 items-center">
+              <CalendarIcon width={16} height={16} opacity={0.5} />
+              <Text c="dimmed">Published {datePublished.toLocaleString()}</Text>
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full pl-16 pr-16 flex flex-row gap-2 justify-between">
@@ -312,7 +337,7 @@ export default function ProjectPreviewPageUI({
           </Button>
         </div>
       </div>
-      <Divider orientation="horizontal" className="mt-4 mb-4" />
+      <Divider orientation="horizontal" className="mt-8 mb-8" />
       <div className="w-full pl-16 pr-16 flex flex-col gap-2">
         <div className="flex-1 flex flex-row items-center gap-2">
           <ThemeIcon radius="xl" className="shadow-md">
@@ -331,9 +356,9 @@ export default function ProjectPreviewPageUI({
       </div>
       {forks.length > 0 && (
         <>
-          <Divider orientation="horizontal" className="mt-4 mb-4" />
+          <Divider orientation="horizontal" className="mt-8 mb-8" />
 
-          <div className="w-full pl-16 pr-16 flex flex-col gap-2">
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
             <div className="flex-1 flex flex-row items-center gap-2">
               <ThemeIcon radius="xl" className="shadow-md">
                 <SparklesIcon width={16} height={16} />
@@ -344,16 +369,20 @@ export default function ProjectPreviewPageUI({
           </div>
         </>
       )}
-      <Divider orientation="horizontal" />
-
-      <div className="w-full pl-16 pr-16 flex flex-col gap-2">
-        <div className="flex-1 flex flex-row items-center gap-2">
-          <ThemeIcon radius="xl" className="shadow-md">
-            <RectangleStackIcon width={16} height={16} />
-          </ThemeIcon>
-          <Title order={4}>Clusters</Title>
-        </div>
-      </div>
+      {clusters && (
+        <>
+          <Divider orientation="horizontal" className="mt-8 mb-8" />
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
+            <div className="flex-1 flex flex-row items-center gap-2">
+              <ThemeIcon radius="xl" className="shadow-md">
+                <RectangleStackIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={4}>Clusters</Title>
+            </div>
+            <ClusterCarousel clusters={clusters} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

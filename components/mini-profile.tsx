@@ -13,7 +13,7 @@ export default function MiniProfile({
   topRightComponent?: React.ReactNode;
 }) {
   return (
-    <Paper radius="sm" shadow="md" component="a" href={"./" + username}>
+    <Paper radius="sm" shadow="md">
       <div className="p-4 flex flex-col gap-2 items-center relative">
         <div className="absolute right-0 top-0">{topRightComponent}</div>
         <Link

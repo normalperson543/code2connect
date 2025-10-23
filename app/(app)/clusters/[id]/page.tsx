@@ -19,7 +19,7 @@ export default async function Cluster({
   if (!user) redirect("/auth/login");
 
   const canEditInfo = cluster.owner?.id === (user?.id as string);
-  const isFollower = await isClusterFollower(user.id, id)
+  const isFollower = await isClusterFollower(user.id, id);
 
   return (
     <ClusterUI

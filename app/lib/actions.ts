@@ -616,10 +616,11 @@ export async function addProjectToCluster(
 ) {
   const project = await prisma.project.findUnique({
     where: {
-      id: projectId
-    }
-  })
-  if (!project || !project.isPublic) throw new Error("Project does not exist or is not public.")
+      id: projectId,
+    },
+  });
+  if (!project || !project.isPublic)
+    throw new Error("Project does not exist or is not public.");
   await prisma.project.update({
     where: {
       id: projectId,
@@ -653,24 +654,27 @@ export async function removeProjectFromCluster(
   revalidatePath(`/clusters/${clusterId}`);
 }
 
-export async function changeCollabStatus(clusterId: string, allowCollab: boolean) {
+export async function changeCollabStatus(
+  clusterId: string,
+  allowCollab: boolean,
+) {
   await prisma.cluster.update({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     data: {
-      allowCollab: allowCollab
-    }
-  })
-  revalidatePath(`/clusters/${clusterId}`)
+      allowCollab: allowCollab,
+    },
+  });
+  revalidatePath(`/clusters/${clusterId}`);
 }
 export async function deleteCluster(clusterId: string) {
   await prisma.cluster.delete({
     where: {
-      id: clusterId
-    }
-  })
-  revalidatePath(`/clusters/${clusterId}`)
+      id: clusterId,
+    },
+  });
+  revalidatePath(`/clusters/${clusterId}`);
 }
 export async function setClusterThumbnail(clusterId: string, thumbUrl: string) {
   await prisma.cluster.update({
@@ -681,49 +685,56 @@ export async function setClusterThumbnail(clusterId: string, thumbUrl: string) {
       thumbnail: thumbUrl,
     },
   });
-  revalidatePath(`/clusters/${clusterId}`)
+  revalidatePath(`/clusters/${clusterId}`);
 }
 export async function renameCluster(clusterId: string, newName: string) {
   await prisma.cluster.update({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     data: {
-      title: newName
-    }
-  })
-}export async function addClusterFollower(clusterId: string, followerId: string) {
+      title: newName,
+    },
+  });
+}
+export async function addClusterFollower(
+  clusterId: string,
+  followerId: string,
+) {
   const updatedCluster = await prisma.cluster.update({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     data: {
       followers: {
         connect: {
-          id: followerId
-        }
-      }
-    }
+          id: followerId,
+        },
+      },
+    },
   });
 
-  revalidatePath(`/clusters/${clusterId}`)
-  redirect(`/clusters/${clusterId}`)
+  revalidatePath(`/clusters/${clusterId}`);
+  redirect(`/clusters/${clusterId}`);
 }
 
-export async function removeClusterFollower(clusterId: string, followerId: string) {
+export async function removeClusterFollower(
+  clusterId: string,
+  followerId: string,
+) {
   const updatedCluster = await prisma.cluster.update({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     data: {
       followers: {
         disconnect: {
-          id: followerId
-        }
-      }
-    }
-  })
+          id: followerId,
+        },
+      },
+    },
+  });
 
-  revalidatePath(`/clusters/${clusterId}`)
-  redirect(`/clusters/${clusterId}`)
+  revalidatePath(`/clusters/${clusterId}`);
+  redirect(`/clusters/${clusterId}`);
 }

@@ -112,6 +112,7 @@ export default function CommentModule({
             handleReply={createProfileCommentReply}
             currentUserId={currentUser}
             currentUsername={currentUsername}
+            key={comment.id}
           >
             {comment.replies && comment.replies.length > 0 && (
               <div>
@@ -144,6 +145,7 @@ export default function CommentModule({
                         handleReply={createProfileCommentReply}
                         currentUserId={currentUser}
                         currentUsername={currentUsername}
+                        key={reply.id}
                       />
                     );
                   })}

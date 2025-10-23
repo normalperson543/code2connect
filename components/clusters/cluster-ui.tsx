@@ -69,7 +69,8 @@ export default function ClusterUI({
   allowCollab: allowCollabDb,
   canEdit,
   currentUser,
-  dateCreated
+  dateCreated,
+  isAdmin
 }: {
   id: string;
   title: string;
@@ -85,6 +86,7 @@ export default function ClusterUI({
   canEdit: boolean;
   currentUser: string;
   dateCreated: Date;
+  isAdmin: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -101,8 +103,8 @@ export default function ClusterUI({
     changeCollabStatus(id, allowCollab);
   }, 1000);
   const debounceSaveTitle = useDebouncedCallback(() => {
-    renameCluster(id, title)
-  }, 2000)
+    renameCluster(id, title);
+  }, 2000);
   async function handleAdd() {
     setAdding(true);
     const pathname = new URL(addUrl).pathname;
@@ -146,16 +148,15 @@ export default function ClusterUI({
   }
 
   async function handleFollowingToggle(newStatus: boolean) {
-    if(!newStatus) {
-      console.log("unfollowing")
-      removeClusterFollower(id, currentUser)
+    if (!newStatus) {
+      console.log("unfollowing");
+      removeClusterFollower(id, currentUser);
     } else {
-      console.log("following")
+      console.log("following");
       addClusterFollower(id, currentUser);
     }
-    setIsFollowing(!isFollowing)
+    setIsFollowing(!isFollowing);
   }
-
 
   async function thumbnailPickerModal() {
     const results = await getThumbnailSearchResults(title);
@@ -184,10 +185,19 @@ export default function ClusterUI({
               className="rounded-sm"
             />
           </AspectRatio>
-          {canEdit ?
-          <TextInput value={title} onChange={(e) => {setTitle(e.target.value); debounceSaveTitle()}} size="lg" min={1}/>
-        :
-          <Title order={2}>{title}</Title>}
+          {canEdit ? (
+            <TextInput
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                debounceSaveTitle();
+              }}
+              size="lg"
+              min={1}
+            />
+          ) : (
+            <Title order={2}>{title}</Title>
+          )}
           <div className="flex flex-row gap-2">
             <Button
               fullWidth
@@ -209,11 +219,18 @@ export default function ClusterUI({
               <Menu>
                 <Menu.Target>
                   <Button>
-                    <EllipsisVerticalIcon width={16} height={16} color="white" />
+                    <EllipsisVerticalIcon
+                      width={16}
+                      height={16}
+                      color="white"
+                    />
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item leftSection={<PhotoIcon width={16} height={16} />} onClick={thumbnailPickerModal}>
+                  <Menu.Item
+                    leftSection={<PhotoIcon width={16} height={16} />}
+                    onClick={thumbnailPickerModal}
+                  >
                     Change thumbnail
                   </Menu.Item>
                   <Menu.Sub>
@@ -271,7 +288,7 @@ export default function ClusterUI({
             <Title order={4}>Followers</Title>
             <Avatar.Group>
               {followers.map((follower) => {
-                console.log("cluster follower: " + follower.username)
+                console.log("cluster follower: " + follower.username);
                 return (
                   <Tooltip
                     label={follower.username}
@@ -285,12 +302,10 @@ export default function ClusterUI({
                       href={`./${follower.username}`}
                     />
                   </Tooltip>
-                )
+                );
               })}
               {followers.length >= 5 && (
-                <Avatar size="md">
-                  +{followerCount - 5}
-                </Avatar>
+                <Avatar size="md">+{followerCount - 5}</Avatar>
               )}
             </Avatar.Group>
           </div>
