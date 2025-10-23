@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
 import moment from "moment";
+import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function GET(
   request: Request,
@@ -15,56 +15,52 @@ export async function GET(
   // loaded with the Code2Connect runner.
   // PyScript handles all of the downloading of the files.
 
-  const supabase = await createClient(true);
+  const supabase = await createAdminClient();
 
   const { sessionId, userId, projectId } = await params;
-  console.log("Info");
-  console.log(await params);
   const session = await getProjectSession(sessionId, projectId);
 
   if (!session)
-    return new Response(JSON.stringify({ response: "Invalid ID" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   if (moment(new Date()).isAfter(moment(session?.date).add("10", "m"))) {
     await prisma.projectSessionToken.delete({
       where: {
         id: sessionId,
       },
     });
-    return new Response(JSON.stringify({ response: "Invalidated ID" }), {
-      status: 403,
-    });
+    return Response.json(
+      { response: "Unauthorized" },
+      {
+        status: 403,
+      },
+    );
   }
 
   const { data: projectFiles } = await supabase.storage
     .from("projects")
     .list(`${userId}/${projectId}`);
-  let fileArr: (
-    | string
-    | {
-        name: string;
-        contents: string;
-      }
-  )[][] = [];
 
   let pysConfig = {};
 
   if (!projectFiles) {
-    return {
+    return Response.json({
       packages: [],
-    };
+    });
   }
-  let fileUrls = projectFiles.map((file) => [
-    `http://localhost:3000/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
+  const fileUrls = projectFiles.map((file) => [
+    `${process.env.DEPLOY_URL}/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
     `./${file.name}`,
   ]);
+  console.log(fileUrls);
 
   pysConfig = {
     packages: [],
     files: Object.fromEntries(fileUrls),
   };
-  console.log(projectFiles);
-  console.log(pysConfig);
-  return new Response(JSON.stringify(pysConfig));
+  return Response.json(pysConfig);
 }

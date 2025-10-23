@@ -22,7 +22,8 @@ export default function IdeasMarketing() {
             ?
           </Title>
           <p className="text-white">
-            You've come to the right place. Take a look at the catalog of starter projects and ideas to kickstart your next project.
+            You&apos;ve come to the right place. Take a look at the catalog of
+            starter projects and ideas to kickstart your next project.
           </p>
         </div>
       </div>
@@ -36,7 +37,9 @@ export default function IdeasMarketing() {
               Want to create your own project?
             </Title>
             <Text c="white">
-              If you just wanted to look here for some inspiration, or you want to use your own idea, then click the button below to create a new project.
+              If you just wanted to look here for some inspiration, or you want
+              to use your own idea, then click the button below to create a new
+              project.
             </Text>
             <Button>Make a new project</Button>
           </div>

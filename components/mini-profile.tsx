@@ -1,5 +1,7 @@
-import { Avatar, Paper, Text } from "@mantine/core";
+import { Paper, Text } from "@mantine/core";
 import React from "react";
+import { Avatar } from "@mantine/core";
+import Link from "next/link";
 
 export default function MiniProfile({
   username,
@@ -14,8 +16,13 @@ export default function MiniProfile({
     <Paper radius="sm" shadow="md">
       <div className="p-4 flex flex-col gap-2 items-center relative">
         <div className="absolute right-0 top-0">{topRightComponent}</div>
-        <Avatar size="lg" src={pfpLink} />
-        <Text fw={700}>{username}</Text>
+        <Link
+          href={`/profile/${username}`}
+          className="flex flex-col gap-2 items-center"
+        >
+          <Avatar name={username} size="lg" src={pfpLink} />
+          <Text fw={700}>{username}</Text>
+        </Link>
       </div>
     </Paper>
   );

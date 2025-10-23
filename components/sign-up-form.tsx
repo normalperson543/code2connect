@@ -8,16 +8,22 @@ import {
   Title,
   Text,
   Paper,
-  Input,
-  Anchor,
   TextInput,
   PasswordInput,
   ThemeIcon,
 } from "@mantine/core";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  EnvelopeIcon,
+  IdentificationIcon,
+  KeyIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
+import OAuthButtons from "./auth/oauth-buttons";
+import { createAccount } from "@/app/lib/actions";
+import WarningBanner from "./warning-banner";
 
 export function SignUpForm({
   className,
@@ -28,6 +34,7 @@ export function SignUpForm({
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("");
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -43,14 +50,20 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
       if (error) throw error;
+
+      if (!data.user) {
+        throw new Error("User ID missing after signup when creating profile.");
+      }
+      await createAccount(username, data.user?.id);
+
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -85,7 +98,18 @@ export function SignUpForm({
                 Welcome to Code2Connect
               </Text>
               <Title>Register</Title>
-              {error}
+              {error && <WarningBanner>{error}</WarningBanner>}
+              <TextInput
+                label="Username"
+                placeholder="Your username"
+                required
+                radius="md"
+                id="username"
+                type="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                leftSection={<IdentificationIcon width={16} height={16} />}
+              />
               <TextInput
                 label="Email"
                 description="If you're creating a student account, make sure to enter your school email. Otherwise, you may not be able to enroll into a class!"
@@ -96,6 +120,7 @@ export function SignUpForm({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                leftSection={<EnvelopeIcon width={16} height={16} />}
               />
               <PasswordInput
                 label="Password"
@@ -107,6 +132,7 @@ export function SignUpForm({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                leftSection={<KeyIcon width={16} height={16} />}
               />
               <PasswordInput
                 label="Repeat password"
@@ -118,6 +144,7 @@ export function SignUpForm({
                 type="password"
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
+                leftSection={<KeyIcon width={16} height={16} />}
               />
               <Button
                 fullWidth
@@ -125,9 +152,11 @@ export function SignUpForm({
                 radius="sm"
                 type="submit"
                 loading={isLoading}
+                leftSection={<ArrowRightIcon width={16} height={16} />}
               >
                 Register
               </Button>
+              <OAuthButtons />
             </Paper>
           </form>
         </Container>

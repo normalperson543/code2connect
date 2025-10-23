@@ -46,11 +46,16 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (
-    /*request.nextUrl.pathname !== "/" &&*/ //Remove when in prod
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/api")
+    !request.nextUrl.pathname.startsWith("/ideas") &&
+    !request.nextUrl.pathname.startsWith("/tutorials") &&
+    !request.nextUrl.pathname.startsWith("/about") &&
+    request.nextUrl.pathname !== "/" &&
+    !request.nextUrl.pathname.startsWith("/api") &&
+    !request.nextUrl.pathname.startsWith("/profile") &&
+    !request.nextUrl.pathname.startsWith("/clusters")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();

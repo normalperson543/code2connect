@@ -159,3 +159,7 @@ body {
 body {
   background-color: var(--body-bg-color) !important;
 }
+
+* {
+  box-sizing: border-box;
+}

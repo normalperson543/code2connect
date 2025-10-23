@@ -1,105 +1,98 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Code2Connect
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A platform for students to create Python projects right in their browser and share with others across the world
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+This codebase contains the community site, marketing pages, and IDE.
 
-## Features
+This project uses the Next.js framework and Supabase as the backend.
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## Run locally
 
-## Demo
+You'll need:
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- A Supabase project
+- A Pexels key (for thumbnails)
+- Ideally, the [runner](https://github.com/normalperson543/code2connect-runner) running on your computer
 
-## Deploy to Vercel
+First, see the `.env.local.template` file and rename it to `.env.local`, and change the variables accordingly.
 
-Vercel deployment will guide you through creating a Supabase account and project.
+Install dependencies:
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+```
+pnpm i
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+Then run the development server:
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+```
+pnpm run dev
+```
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+## Building
 
-## Clone and run locally
+```
+pnpm build
+```
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+## Libraries
 
-2. Create a Next.js app using the Supabase Starter template npx command
+Consistent to the CAC Rulesbook, we used the following libraries publicly available on NPM:
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
-
-3. Use `cd` to change into the app's directory
-
-   ```bash
-   cd with-supabase-app
-   ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+```
+"@codemirror/autocomplete": "^6.18.6",
+"@codemirror/commands": "^6.8.1",
+"@codemirror/lang-python": "^6.2.1",
+"@codemirror/language": "^6.11.2",
+"@codemirror/lint": "^6.8.5",
+"@codemirror/search": "^6.5.11",
+"@codemirror/state": "^6.5.2",
+"@codemirror/view": "^6.38.0",
+"@heroicons/react": "^2.2.0",
+"@lezer/highlight": "^1.2.1",
+"@mantine/carousel": "^8.1.3",
+"@mantine/core": "^8.1.3",
+"@mantine/dates": "^8.3.3",
+"@mantine/dropzone": "^8.1.3",
+"@mantine/form": "^8.1.3",
+"@mantine/hooks": "^8.1.3",
+"@mantine/modals": "^8.1.3",
+"@mantine/notifications": "^8.1.3",
+"@mantine/nprogress": "^8.1.3",
+"@prisma/client": "^6.17.1",
+"@pyscript/core": "^0.6.63",
+"@radix-ui/react-checkbox": "^1.3.1",
+"@radix-ui/react-dropdown-menu": "^2.1.14",
+"@radix-ui/react-label": "^2.1.6",
+"@radix-ui/react-slot": "^1.2.2",
+"@react-spring/web": "^10.0.1",
+"@supabase/ssr": "latest",
+"@supabase/supabase-js": "latest",
+"@uiw/codemirror-theme-basic": "^4.25.2",
+"@uiw/react-codemirror": "^4.24.1",
+"@vercel/analytics": "^1.5.0",
+"@webcontainer/api": "^1.6.1",
+"@xterm/addon-fit": "^0.10.0",
+"@xterm/xterm": "^5.5.0",
+"class-variance-authority": "^0.7.1",
+"clsx": "^2.1.1",
+"dayjs": "^1.11.18",
+"dom-to-image": "^2.6.0",
+"embla-carousel": "^8.5.2",
+"embla-carousel-autoplay": "^8.5.2",
+"embla-carousel-react": "^8.5.2",
+"file-saver": "^2.0.5",
+"jszip": "^3.10.1",
+"lucide-react": "^0.511.0",
+"moment": "^2.30.1",
+"next": "15.5.6",
+"next-themes": "^0.4.6",
+"nextjs-toploader": "^3.9.17",
+"pexels": "^1.4.0",
+"react": "^19.0.0",
+"react-dom": "^19.0.0",
+"react-use-measure": "^2.1.7",
+"swr": "^2.3.6",
+"tailwind-merge": "^3.3.0",
+"use-debounce": "^10.0.5",
+"uuid": "^13.0.0"
+```

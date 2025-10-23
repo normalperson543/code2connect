@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -18,8 +17,14 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import Image from "next/image";
-import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  ArrowRightStartOnRectangleIcon,
+  EnvelopeIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
+import OAuthButtons from "../oauth-buttons";
+import WarningBanner from "@/components/warning-banner";
 
 export function LoginForm({
   className,
@@ -44,7 +49,7 @@ export function LoginForm({
       });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      router.push("/");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -79,10 +84,10 @@ export function LoginForm({
               </Text>
               <Title>Sign In</Title>
               <Text>
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Anchor href="/auth/sign-up">Create a new account</Anchor>
               </Text>
-              {error}
+              {error && <WarningBanner>{error}</WarningBanner>}
               <TextInput
                 label="Email"
                 placeholder="name@example.com"
@@ -92,6 +97,7 @@ export function LoginForm({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                leftSection={<EnvelopeIcon width={16} height={16} />}
               />
               <PasswordInput
                 label="Password"
@@ -103,15 +109,13 @@ export function LoginForm({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                leftSection={<KeyIcon width={16} height={16} />}
               />
               <Group justify="space-between" mt="lg">
                 <Checkbox label="Remember me" />
-                <Link
-                  href="/auth/forgot-password"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  <Anchor size="sm">Forgot password?</Anchor>
-                </Link>
+                <Anchor size="sm" href="/auth/forgot-password">
+                  Forgot password?
+                </Anchor>
               </Group>
               <Button
                 fullWidth
@@ -119,9 +123,11 @@ export function LoginForm({
                 radius="sm"
                 type="submit"
                 loading={isLoading}
+                leftSection={<ArrowRightIcon width={16} height={16} />}
               >
                 Sign in
               </Button>
+              <OAuthButtons />
             </Paper>
           </form>
         </Container>

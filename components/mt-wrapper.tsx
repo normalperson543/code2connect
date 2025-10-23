@@ -1,9 +1,9 @@
 // We're using a wrapper for Mantine because the createTheme works better in a client
 // component.
 
-import { Button, createTheme, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import { nprogress, NavigationProgress } from "@mantine/nprogress";
+import { NavigationProgress } from "@mantine/nprogress";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/nprogress/styles.css";
@@ -15,15 +15,19 @@ import theme from "@/app/lib/theme";
 export default function MTWrapper({
   children,
   includeHeader = true,
+  includeExtraPadding = false,
 }: {
   children: React.ReactNode;
   includeHeader?: boolean;
+  includeExtraPadding?: boolean;
 }) {
   return (
     <MantineProvider theme={theme}>
       <ModalsProvider>
         {includeHeader && <HeaderLoggedIn />}
-        <div className={`${includeHeader && "mt-14"} w-full h-full`}>
+        <div
+          className={`${(includeHeader || includeExtraPadding) && "mt-14"} w-full h-full`}
+        >
           {children}
         </div>
         <NavigationProgress />

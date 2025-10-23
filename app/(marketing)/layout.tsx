@@ -1,5 +1,4 @@
 import MTWrapper from "@/components/mt-wrapper";
-import { ColorSchemeScript } from "@mantine/core";
 
 export default function Layout({
   children,
@@ -7,8 +6,8 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="pb-4 w-full h-full">
       <MTWrapper>{children}</MTWrapper>
-    </>
+    </div>
   );
 }

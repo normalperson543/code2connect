@@ -9,7 +9,7 @@ import {
 
 export default function Page() {
   return (
-    <div className="flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-900">
+    <div className="flex flex-row h-full w-full gap-6 bg-gradient-to-br from-offblue-100 to-offblue-700">
       <div className="flex flex-col h-full w-full">
         <Container className="w-full" my={40}>
           <Paper
@@ -34,8 +34,8 @@ export default function Page() {
             <div className="flex flex-col gap-2">
               <Title>Almost There</Title>
               <Text>
-                You've just registered for an account - congratulations! Check
-                your email for instructions to activate your account.
+                You&apos;ve just registered for an account - congratulations!
+                Check your email for instructions to activate your account.
               </Text>
             </div>
           </Paper>

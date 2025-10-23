@@ -1,7 +1,6 @@
 "use client";
 import {
   AspectRatio,
-  Badge,
   Button,
   Divider,
   Menu,
@@ -13,159 +12,390 @@ import {
   Text,
   Avatar,
   Tooltip,
+  Checkbox,
+  TextInput,
+  Anchor,
 } from "@mantine/core";
 import CommentModule from "../comment-module";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
   Bars3CenterLeftIcon,
   CalendarIcon,
   ChatBubbleBottomCenterIcon,
-  ClipboardIcon,
   CodeBracketIcon,
   EllipsisVerticalIcon,
-  ExclamationTriangleIcon,
+  PhotoIcon,
   PlusIcon,
+  TrashIcon,
   UserIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { placeholder } from "@/app/lib/constants";
 import ProjectCard from "../project-card";
-import MiniProfile from "../mini-profile";
 import Image from "next/image";
-
-function MiniProfileManagerWrapper({ username }: { username: string }) {
-  return (
-    <MiniProfile
-      username={username}
-      topRightComponent={
-        <Menu position="bottom-end">
-          <Menu.Target>
-            <Button variant="subtle">
-              <EllipsisVerticalIcon width={16} height={16} />
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<ArrowDownIcon width={16} height={16} />}
-              c="red"
-            >
-              Demote
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<XMarkIcon width={16} height={16} />}
-              c="red"
-            >
-              Remove from cluster
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      }
-    />
-  );
-}
-function MiniProfileMemberWrapper({ username }: { username: string }) {
-  return (
-    <MiniProfile
-      username={username}
-      topRightComponent={
-        <Menu position="bottom-end">
-          <Menu.Target>
-            <Button variant="subtle">
-              <EllipsisVerticalIcon width={16} height={16} />
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item leftSection={<ArrowUpIcon width={16} height={16} />}>
-              Promote
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<XMarkIcon width={16} height={16} />}
-              c="red"
-            >
-              Remove from cluster
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      }
-    />
-  );
-}
-export default function ClusterUI() {
+import { Cluster, Profile } from "@prisma/client";
+import { ProjectWithOwner } from "@/app/lib/projects";
+import { useDebouncedCallback } from "use-debounce";
+import {
+  addClusterFollower,
+  addProjectToCluster,
+  changeClusterDescription,
+  removeClusterFollower,
+  changeCollabStatus,
+  deleteCluster,
+  renameCluster,
+  setClusterThumbnail,
+  createClusterComment,
+  deleteClusterComment,
+  createClusterCommentReply,
+  deleteClusterCommentReply,
+  togglePinClusterComment,
+  setClusterAsIotm,
+  unsetClusterAsIotm,
+} from "@/app/lib/actions";
+import PlaceholderMessage from "../placeholder-message";
+import { validate } from "uuid";
+import { notifications } from "@mantine/notifications";
+import { getThumbnailSearchResults } from "@/app/lib/data";
+import { modals } from "@mantine/modals";
+import ThumbnailPickerModal from "../modals/thumbnail-picker";
+import { PhotosWithTotalResults } from "pexels";
+import Link from "next/link";
+import { CommentWithOwner } from "@/app/lib/comment-types";
+export default function ClusterUI({
+  id,
+  title: titleDb,
+  thumbnailUrl,
+  isFollowingDb,
+  description: descriptionDb,
+  dateModified,
+  followerCount,
+  followers,
+  projects,
+  allowCollab: allowCollabDb,
+  canEdit,
+  currentUser,
+  currentUsername,
+  comments,
+  cluster,
+  dateCreated,
+  isAdmin,
+  ownerUsername,
+  projectCount,
+}: {
+  id: string;
+  title: string;
+  thumbnailUrl: string;
+  isFollowingDb: boolean;
+  description: string;
+  people: Profile[];
+  dateModified: Date;
+  followerCount: number;
+  followers: Profile[];
+  projects: ProjectWithOwner[];
+  allowCollab: boolean;
+  canEdit: boolean;
+  currentUser: string;
+  dateCreated: Date;
+  isAdmin: boolean;
+  ownerUsername: string;
+  currentUsername: string;
+  comments: CommentWithOwner[];
+  cluster: Cluster;
+  projectCount: number;
+}) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
+  const [activePage, setActivePage] = useState(1);
+  const [isFollowing, setIsFollowing] = useState(isFollowingDb);
+  const [description, setDescription] = useState(descriptionDb);
+  const [addUrl, setAddUrl] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [allowCollab, setAllowCollab] = useState(allowCollabDb);
+  const [title, setTitle] = useState(titleDb);
+
+  const startIndex = (activePage - 1) * 9;
+  const endIndex = startIndex + 9;
+  const displayedProjects = projects.slice(startIndex, endIndex);
+
+  const followersToShow = followers.slice(0, 5);
+
+  const debounceSaveDesc = useDebouncedCallback(() => {
+    changeClusterDescription(id, description);
+  }, 2000);
+  const debounceChangeAllowCollab = useDebouncedCallback(() => {
+    changeCollabStatus(id, allowCollab);
+  }, 1000);
+  const debounceSaveTitle = useDebouncedCallback(() => {
+    renameCluster(id, title);
+  }, 2000);
+  async function handleAdd() {
+    setAdding(true);
+    let pathname = "";
+    try {
+      pathname = new URL(addUrl).pathname;
+    } catch {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid project link",
+        message:
+          "It should start with https://code2connect.vercel.app/projects.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      setAdding(false);
+      return;
+    }
+    const pathnamePages = pathname.split("/").filter(Boolean);
+    let projectId;
+    for (let i = pathnamePages.length - 1; i >= 0; i--) {
+      if (validate(pathnamePages[i])) {
+        projectId = pathnamePages[i];
+        break;
+      }
+    }
+    if (!projectId) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid project link",
+        message:
+          "It should start with https://code2connect.vercel.app/projects.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      setAdding(false);
+      return;
+    }
+    try {
+      await addProjectToCluster(id, projectId);
+      setAdding(false);
+      setAddUrl("");
+    } catch (e) {
+      setAdding(false);
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+    }
+  }
+
+  async function handleFollowingToggle(newStatus: boolean) {
+    if (!currentUser) return;
+    if (!newStatus) {
+      console.log("unfollowing");
+      removeClusterFollower(id, currentUser);
+    } else {
+      console.log("following");
+      addClusterFollower(id, currentUser);
+    }
+    setIsFollowing(!isFollowing);
+  }
+
+  async function thumbnailPickerModal() {
+    const results = await getThumbnailSearchResults(title);
+    modals.open({
+      title: "Pick a thumbnail",
+      children: (
+        <ThumbnailPickerModal
+          onComplete={(newUrl: string) => setClusterThumbnail(id, newUrl)}
+          searchResults={results as PhotosWithTotalResults}
+        />
+      ),
+      size: "auto",
+    });
+  }
+
   return (
     <div>
       <div className="flex flex-row pt-3 pb-3 gap-2 w-full h-full">
-        <div className="flex flex-col gap-2 w-1/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md">
+        <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <AspectRatio ratio={16 / 9}>
             <Image
-              src="/assets/default-image.png"
+              src={thumbnailUrl ?? "/assets/placeholder-thumb.jpg"}
               height={135}
               width={240}
               alt="Project thumbnail"
               className="rounded-sm"
             />
           </AspectRatio>
-          <Title order={2}>Number Games</Title>
-          <div className="flex flex-row gap-2">
-            <Button
-              fullWidth
-              leftSection={<PlusIcon width={16} height={16} />}
-              variant="gradient"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }}
-              className="shadow-md"
-            >
-              Follow
-            </Button>
-            <Button
-              color="red"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }}
-              className="shadow-md"
-            >
-              <ExclamationTriangleIcon width={16} height={16} />
-            </Button>
-          </div>
+          {canEdit ? (
+            <TextInput
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                debounceSaveTitle();
+              }}
+              size="lg"
+              min={1}
+            />
+          ) : (
+            <Title order={2}>{title}</Title>
+          )}
+          {currentUser && (
+            <div className="flex flex-row gap-2">
+              <Button
+                fullWidth
+                leftSection={
+                  isFollowing ? (
+                    <XMarkIcon width={16} height={16} />
+                  ) : (
+                    <PlusIcon width={16} height={16} />
+                  )
+                }
+                variant={isFollowing ? "filled" : "gradient"}
+                color="red"
+                gradient={{ from: "blue", to: "cyan", deg: 135 }}
+                className="shadow-md"
+                onClick={() => handleFollowingToggle(!isFollowing)}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </Button>
+              {(canEdit || isAdmin) && (
+                <Menu>
+                  <Menu.Target>
+                    <Button>
+                      <EllipsisVerticalIcon
+                        width={16}
+                        height={16}
+                        color="white"
+                      />
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      leftSection={<PhotoIcon width={16} height={16} />}
+                      onClick={thumbnailPickerModal}
+                    >
+                      Change thumbnail
+                    </Menu.Item>
+                    <Menu.Sub>
+                      <Menu.Sub.Target>
+                        <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
+                      </Menu.Sub.Target>
+                      <Menu.Sub.Dropdown>
+                        <Menu.Item
+                          leftSection={<TrashIcon width={16} height={16} />}
+                          c="red"
+                          onClick={() => deleteCluster(id)}
+                        >
+                          Yes, permanently delete this cluster
+                        </Menu.Item>
+                      </Menu.Sub.Dropdown>
+                    </Menu.Sub>
+                    {isAdmin && (
+                      <>
+                        <Menu.Item onClick={() => setClusterAsIotm(id)}>
+                          Set as Idea of the Month
+                        </Menu.Item>
+                        <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
+                          Unset as Idea of the Month
+                        </Menu.Item>
+                      </>
+                    )}
+                  </Menu.Dropdown>
+                </Menu>
+              )}
+            </div>
+          )}
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />
             </ThemeIcon>
             <Title order={4}>Description</Title>
           </div>
-          <Textarea rows={8}></Textarea>
+          {canEdit ? (
+            <>
+              <Textarea
+                rows={8}
+                value={description ?? ""}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  debounceSaveDesc();
+                }}
+              ></Textarea>
+              <Checkbox
+                label="Anyone can add projects"
+                color="green"
+                checked={allowCollab}
+                onChange={(e) => {
+                  setAllowCollab(e.target.checked);
+                  debounceChangeAllowCollab();
+                }}
+              />
+            </>
+          ) : (
+            <Textarea rows={8} value={description ?? ""} readOnly></Textarea>
+          )}
+
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <UsersIcon width={16} height={16} />
             </ThemeIcon>
-            <Title order={4}>People</Title>
+            <Title order={4}>Followers</Title>
             <Avatar.Group>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Tooltip label="username" withArrow>
-                <Avatar size="md" />
-              </Tooltip>
-              <Avatar size="md">+5</Avatar>
+              {followersToShow.map((follower) => {
+                console.log("cluster follower: " + follower.username);
+                return (
+                  <Tooltip
+                    label={follower.username}
+                    withArrow
+                    key={follower.id}
+                  >
+                    <Avatar
+                      name={follower.username}
+                      size="md"
+                      component="a"
+                      href={`/profile/${follower.username}`}
+                    />
+                  </Tooltip>
+                );
+              })}
+              {followers.length >= 5 && (
+                <Avatar size="md">+{followerCount - 5}</Avatar>
+              )}
             </Avatar.Group>
           </div>
           <Divider />
           <div className="flex flex-row gap-2 items-center">
+            <UserIcon width={16} height={16} />
+            <Text>
+              Created by{" "}
+              <Anchor
+                component={Link}
+                href={`/profile/${ownerUsername}`}
+                c="white"
+              >
+                {ownerUsername}
+              </Anchor>
+            </Text>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
             <CalendarIcon width={16} height={16} />
-            <Text>Last modified {new Date().toLocaleDateString()}</Text>
+            <Text>Created {dateCreated.toLocaleString()}</Text>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <CalendarIcon width={16} height={16} />
+            <Text>Last modified {dateModified.toLocaleString()}</Text>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <CodeBracketIcon width={16} height={16} />
+            <Text>
+              {projectCount} project{projectCount !== 1 && "s"}
+            </Text>
           </div>
           <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
-            <Text>63 followers</Text>
+            <Text>
+              {followerCount} follower{followerCount !== 1 && "s"}
+            </Text>
           </div>
         </div>
         <div className="flex flex-col gap-2 w-4/5 pr-16">
@@ -185,59 +415,75 @@ export default function ClusterUI() {
               >
                 Comments
               </Tabs.Tab>
-              <Tabs.Tab
-                leftSection={<UserIcon width={16} height={16} />}
-                value="members"
-              >
-                Members
-              </Tabs.Tab>
             </Tabs.List>
           </Tabs>
           {activeTab === "projects" && (
-            <div>
-              <div className="flex flex-row gap-4 flex-wrap">
-                {placeholder.map((project) => (
-                  <ProjectCard projectInfo={project} />
+            <div className="flex flex-col gap-2">
+              {((allowCollab && currentUser) || canEdit) && (
+                <>
+                  <Title order={3}>Add a project</Title>
+                  <p>Paste a project URL here to add your project.</p>
+                  <div className="flex flex-row gap-2">
+                    <TextInput
+                      type="text"
+                      className="w-full"
+                      value={addUrl}
+                      onChange={(e) => setAddUrl(e.target.value)}
+                      placeholder="http://code2connect.vercel.app/projects/2d2a4a59-5ad6-4221-a093-c5d99c1cbaad"
+                    />
+                    <Button onClick={handleAdd} loading={adding}>
+                      <PlusIcon width={16} height={16} />
+                    </Button>
+                  </div>
+                </>
+              )}
+              {projects.length === 0 && (
+                <PlaceholderMessage>
+                  <CodeBracketIcon
+                    width={64}
+                    height={64}
+                    className="opacity-50"
+                  />
+                  <p>This cluster doesn&apos;t have any projects.</p>
+                </PlaceholderMessage>
+              )}
+              <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                {displayedProjects.map((project: ProjectWithOwner) => (
+                  <ProjectCard
+                    projectInfo={project}
+                    key={project.id}
+                    clusterId={id}
+                    canRemoveFromCluster={
+                      project.owner?.id === currentUser || canEdit
+                    }
+                  />
                 ))}
               </div>
-
-              <Pagination total={5} />
+              {projectCount <= 9 ? (
+                <div></div>
+              ) : (
+                <Pagination
+                  total={Math.trunc(projectCount / 9) + 1}
+                  value={activePage}
+                  onChange={setActivePage}
+                  mt="lg"
+                />
+              )}
             </div>
           )}
-          {activeTab === "comments" && <CommentModule />}
-          {activeTab === "members" && (
-            <div className="flex flex-col gap-2">
-              <Title order={4} className="flex flex-row gap-2 items-center">
-                Owners <Badge>10</Badge>
-              </Title>
-              <div className="flex flex-row flex-wrap gap-2">
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-                <MiniProfileManagerWrapper username="normalperson543" />
-              </div>
-              <Title order={4} className="flex flex-row gap-2 items-center">
-                Members <Badge>10</Badge>
-              </Title>
-              <div className="flex flex-row flex-wrap gap-2">
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-                <MiniProfileMemberWrapper username="normalperson543" />
-              </div>
-            </div>
+          {activeTab === "comments" && (
+            <CommentModule
+              comments={comments ?? []}
+              currentUser={currentUser}
+              accessedCluster={cluster}
+              commentsPerPage={5}
+              currentUsername={currentUsername}
+              handleCreateComment={createClusterComment}
+              handleDeleteComment={deleteClusterComment}
+              handleCreateCommentReply={createClusterCommentReply}
+              handleDeleteCommentReply={deleteClusterCommentReply}
+              handlePinComment={togglePinClusterComment}
+            />
           )}
         </div>
       </div>

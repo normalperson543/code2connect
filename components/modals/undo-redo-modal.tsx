@@ -1,5 +1,5 @@
 "use client";
-import { Button, Group, Stack, Text, Kbd } from "@mantine/core";
+import { Button, Text, Kbd } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 export default function UndoRedoModal() {

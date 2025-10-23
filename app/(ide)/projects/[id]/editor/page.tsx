@@ -1,11 +1,7 @@
 import { getProject } from "@/app/lib/data";
-import prisma from "@/app/lib/db";
-import { FileInfo, Files } from "@/app/lib/files";
 import Editor from "@/components/projects/editor/editor";
 import { createClient } from "@/lib/supabase/server";
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
 
 export default async function EditorPage({
   params,
@@ -19,9 +15,11 @@ export default async function EditorPage({
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
-  const project = await getProject(id, user.data.user?.id as string);
+  const project = await getProject(id);
 
   if (!project) notFound();
+
+  // now we know that the user is themselves/the project is public!
 
   const canEditInfo = project.owner?.id === (user.data.user?.id as string);
 
@@ -34,6 +32,8 @@ export default async function EditorPage({
         previewUrl={process.env.PREVIEW_URL as string}
         id={id}
         title={project.title as string}
+        isPublic={project.isPublic}
+        creatorId={project.owner?.id as string}
       />
     </>
   );

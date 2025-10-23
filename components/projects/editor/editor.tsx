@@ -4,17 +4,14 @@ import {
   Anchor,
   AppShell,
   Avatar,
-  Badge,
   Burger,
   Button,
-  ButtonGroup,
   Divider,
   Kbd,
   LoadingOverlay,
   Menu,
   Text,
   Textarea,
-  TextInput,
   ThemeIcon,
   Title,
   Tooltip,
@@ -22,27 +19,25 @@ import {
 } from "@mantine/core";
 import styles from "./editor.module.css";
 import {
-  AcademicCapIcon,
   ArrowDownTrayIcon,
   ArrowsPointingInIcon,
   ArrowsPointingOutIcon,
-  ArrowTopRightOnSquareIcon,
   ArrowUpTrayIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   Bars3CenterLeftIcon,
-  CheckIcon,
   CloudArrowUpIcon,
   CodeBracketIcon,
   DocumentIcon,
   EllipsisVerticalIcon,
   EyeIcon,
-  FaceSmileIcon,
   GlobeAmericasIcon,
   MagnifyingGlassIcon,
   PencilIcon,
   PencilSquareIcon,
+  PhotoIcon,
   PlayIcon,
+  PlusCircleIcon,
   PlusIcon,
   ShareIcon,
   StopIcon,
@@ -63,59 +58,56 @@ import FileSaver from "file-saver";
 import NewFileModal from "../../modals/new-file-modal";
 import download from "@/app/lib/downloader";
 import { Dropzone, FileWithPath } from "@mantine/dropzone";
-import { UserPlusIcon } from "lucide-react";
 import { EditorView, ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import UndoRedoModal from "../../modals/undo-redo-modal";
 import CtrlCmd from "../../ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
-import domtoimage from "dom-to-image";
 import StoppedProject from "../../stopped-project";
 import { useDisclosure, useForceUpdate } from "@mantine/hooks";
 import { createClient } from "@/lib/supabase/client";
 import { ProjectSessionToken } from "@prisma/client";
 import {
+  getFileUrl,
   getFirstProjectSession,
   getProjectFiles,
-  getProjectSession,
+  getThumbnailSearchResults,
   newProjectSession,
   renewProjectSession,
 } from "@/app/lib/data";
 import moment from "moment";
 import Image from "next/image";
 import RenameProjectModal from "@/components/modals/rename-project-modal";
-import { createProject, renameProject } from "@/app/lib/actions";
+import {
+  changeDescription,
+  createProject,
+  renameProject,
+  setThumbnail,
+  shareProject,
+  unshareProject,
+} from "@/app/lib/actions";
+import ThumbnailPickerModal from "@/components/modals/thumbnail-picker";
+import { PhotosWithTotalResults } from "pexels";
+import { v4 } from "uuid";
 
-function getExtension(filename: string) {
-  const splitFn = filename.split(".");
-  return splitFn[splitFn.length - 1];
-}
 function SidebarFile({
   desc,
   name,
   selected,
   onClick,
-  onDeleteConfirm,
-  onRename,
-  onDownload,
 }: {
   desc?: string;
   name: string;
   selected?: boolean;
   onClick?: () => void;
-  onDeleteConfirm?: () => void;
-  onRename?: () => void;
-  onDownload?: () => void;
 }) {
-  const [contextMenuShown, setContextMenuShown] = useState(false);
   return (
     <div
-      className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50`}
+      className={`p-1 w-full flex flex-row gap-2 items-center hover:cursor-pointer hover:bg-offblue-50 ${selected && "bg-offblue-100"}`}
       onClick={onClick}
-      onContextMenu={() => setContextMenuShown(true)}
     >
       <div className="flex flex-row w-full gap-2 items-center">
-        <CodeBracketIcon width={16} height={16} />
-        <div className="flex flex-row">
+        <CodeBracketIcon width={16} height={16} className="flex-shrink-0" />
+        <div className="flex flex-row w-max">
           {desc && (
             <div className="flex flex-row gap-2">
               <Text fw={700}>{desc} </Text> <Text>(</Text>
@@ -125,34 +117,6 @@ function SidebarFile({
           {desc && <Text>)</Text>}
         </div>
       </div>
-      <Menu>
-        <Menu.Target>
-          <div>
-            <EllipsisVerticalIcon width={16} height={16} />
-          </div>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item
-            leftSection={<PencilIcon width={16} height={16} />}
-            onClick={onRename}
-          >
-            Rename
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<ArrowDownTrayIcon width={16} height={16} />}
-            onClick={onDownload}
-          >
-            Download
-          </Menu.Item>
-          <Menu.Item
-            leftSection={<TrashIcon width={16} height={16} />}
-            color="red"
-            onClick={onDeleteConfirm}
-          >
-            Delete
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
     </div>
   );
 }
@@ -164,6 +128,8 @@ export default function Editor({
   previewUrl,
   id,
   title: dbTitle,
+  isPublic,
+  creatorId,
 }: {
   creatorImageSrc?: string;
   creator: string;
@@ -172,6 +138,8 @@ export default function Editor({
   previewUrl: string;
   id: string;
   title: string;
+  isPublic: boolean;
+  creatorId: string;
 }) {
   const outputFrame = useRef<HTMLIFrameElement>(null);
   const [description, setDescription] = useState(dbDesc);
@@ -184,9 +152,7 @@ export default function Editor({
   const dropzoneRef = useRef<() => void>(null);
   const cmRef = useRef<ReactCodeMirrorRef>(null);
   const [outputFullScreened, setOutputFullScreened] = useState(false);
-  const [currThumb, setCurrThumb] = useState<Blob>();
   const [isStopped, setIsStopped] = useState(true);
-  const [thumbUrl, setThumbUrl] = useState("");
   const [filesLoaded, setFilesLoaded] = useState(false); // TODO: fix behavior
   const [opened, { toggle }] = useDisclosure();
   const forceUpdate = useForceUpdate();
@@ -198,8 +164,12 @@ export default function Editor({
   const supabase = createClient();
 
   async function loadFiles() {
+    const session = await syncSession();
+    console.log(session);
+    console.log("Done syncing");
     const userId = (await supabase.auth.getUser()).data.user?.id;
-    let fileArr: (
+
+    const fileArr: (
       | string
       | {
           name: string;
@@ -207,47 +177,49 @@ export default function Editor({
         }
     )[][] = [];
 
-    const { data: projectFiles } = await getProjectFiles(userId as string, id);
-
-    console.log(projectFiles);
-    if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true)
+    const pf = await getProjectFiles(creatorId, id, isPublic);
+    console.log(pf);
+    let projectFiles;
+    if (pf) {
+      console.log("Found some data!");
+      projectFiles = pf.data;
+    } else {
+      return;
+    }
+    if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
+    console.log("Proceeding");
+    console.log(pf);
+    console.log(activeSession);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
-        console.log(file);
-        const { data: dataUrl } = supabase.storage
-          .from("projects")
-          .getPublicUrl(`/${userId}/${id}/${file.name}`);
-        console.log("Fetching...");
-        const fileContents = await fetch(
-          `${dataUrl.publicUrl}?cache=${Math.random()}`,
-          { cache: "no-store" }
+        console.log("Getting the files...");
+        const dataUrl = await getFileUrl(
+          userId as string,
+          id,
+          file.name,
+          isPublic,
         );
-        console.log("Fetching complete!");
-        let tempFileArr = [
+        console.log(dataUrl);
+        if (!dataUrl) return;
+        const fileContents = await fetch(
+          `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
+          { cache: "no-store" },
+        );
+        const tempFileArr = [
           file.id,
           { name: file.name, contents: await fileContents.text() },
         ];
-        console.log(tempFileArr);
         fileArr.push(tempFileArr);
         setFiles(Object.fromEntries(fileArr));
-        if (fileArr.length === projectFiles.length - 1) {
-          console.log("Done");
+        if (fileArr.length === projectFiles.length) {
           setFilesLoaded(true);
         }
       }
     });
   }
-  async function saveThumbnail() {
-    console.log("Saving thumb");
-    const dataUrl = await domtoimage.toPng(
-      cmRef.current?.editor as HTMLElement
-    );
-    console.log("Done saving");
-  }
   async function handleDelete(file: FileInfo) {
+    if (!canEditInfo) return;
     const userId = (await supabase.auth.getUser()).data.user?.id;
-    console.log("Deleting");
-    console.log(file);
     try {
       const supabase = await createClient();
       const err = await supabase.storage
@@ -257,7 +229,6 @@ export default function Editor({
         console.error(err);
         saveError(err.error?.message as string);
       }
-      console.log("Deleted.");
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
@@ -271,10 +242,10 @@ export default function Editor({
     popupError(
       "Your project did not save",
       "Check your Internet connection, and try again later.",
-      err
+      err,
     );
   }
-  function popupError(title: string, message: string, err: string) {
+  function popupError(title: string, message: string, err?: string) {
     console.error(`${title}: ${message}`);
     console.error(err);
     notifications.show({
@@ -282,12 +253,13 @@ export default function Editor({
       withCloseButton: true,
       autoClose: false,
       title: title,
-      message: `${message} | Error info: ${err}`,
+      message: `${message}${err && ` | Error info: ${err}`}`,
       color: "red",
       icon: <XMarkIcon />,
     });
   }
   async function handleSave() {
+    if (!canEditInfo) return;
     setIsSaving(true);
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
@@ -319,7 +291,12 @@ export default function Editor({
     handleSave();
   }, 2000);
 
+  const debounceSaveDescription = useDebouncedCallback(() => {
+    changeDescription(id, description);
+  }, 2000);
+
   async function handleChangeTitle(newTitle: string) {
+    if (!canEditInfo) return;
     setIsChanged(true);
     setTitle(newTitle);
     try {
@@ -328,17 +305,34 @@ export default function Editor({
       popupError(
         "Couldn't rename your project",
         "",
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
   function handleChangeDescription(newDesc: string) {
-    setIsChanged(true);
+    if (!canEditInfo) return;
     setDescription(newDesc);
-    debounceSave();
+    debounceSaveDescription();
   }
   function handleChangeCurrentFile(newContent: string) {
-    let newFiles = files;
+    if (!canEditInfo) {
+      modals.open({
+        title: "You cannot modify this file",
+        children: (
+          <div className="flex flex-col gap-2">
+            <p>
+              You don&apos;t own this project, so changes you make will not
+              save. To modify it and make your own changes, fork the project by
+              clicking on the Preview Page button and clicking Fork.
+            </p>
+            <Button fullWidth onClick={() => modals.closeAll()}>
+              Got it
+            </Button>
+          </div>
+        ),
+      });
+    }
+    const newFiles = files;
     newFiles[currentFile].contents = newContent;
     setFiles(newFiles);
     setIsChanged(true);
@@ -348,66 +342,55 @@ export default function Editor({
     setCurrentFile(id);
   }
   function deleteFile(id: string) {
-    let newFiles = files;
+    if (!canEditInfo) return;
+    const newFiles = files;
     handleDelete(files[id]);
     delete newFiles[id];
-    console.log("okay I deleted it from the new dataset");
     setFiles(newFiles);
-    console.log(files);
     setCurrentFile("");
     forceUpdate();
   }
   function checkDuplicateNames(id: string, name: string) {
-    console.log("checking");
     let isDuplicate = false;
     Object.entries(files).forEach((file) => {
       if (file[1].name.toLowerCase() == name.toLowerCase() && file[0] !== id) {
         isDuplicate = true;
       }
     });
-    console.log("I'm returning FALSE");
     return isDuplicate;
   }
   function renameFile(id: string, newName: string) {
+    if (!canEditInfo) return;
     let unduplicatedName = newName;
     if (unduplicatedName.replace(/\s/g, "").length === 0) {
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
       unduplicatedName = "file";
     }
-    console.log("r");
-    console.log(checkDuplicateNames(id, unduplicatedName));
     while (checkDuplicateNames(id, unduplicatedName)) {
-      console.log("b");
-      let splitName = unduplicatedName.split(".");
+      const splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
-      console.log("beep");
-      console.log(splitName.join("."));
     }
-    let newFiles = files;
+    const newFiles = files;
     newFiles[id].name = unduplicatedName;
     setFiles(newFiles);
     setIsChanged(true);
     debounceSave();
   }
   function createFile(filename: string, contents: string = "") {
+    if (!canEditInfo) return;
     let unduplicatedName = filename;
     if (unduplicatedName.replace(/\s/g, "").length === 0) {
       //https://stackoverflow.com/questions/10800355/remove-whitespaces-inside-a-string-in-javascript
       unduplicatedName = "file";
     }
-    console.log("r");
-    console.log(checkDuplicateNames(id, unduplicatedName));
     while (checkDuplicateNames(id, unduplicatedName)) {
-      console.log("b");
-      let splitName = unduplicatedName.split(".");
+      const splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
-      console.log("beep");
-      console.log(splitName.join("."));
     }
-    let newFiles = files;
-    const uuid = crypto.randomUUID();
+    const newFiles = files;
+    const uuid = v4();
     newFiles[uuid] = { name: unduplicatedName, contents: contents };
     setFiles(newFiles);
     setIsChanged(true);
@@ -436,6 +419,19 @@ export default function Editor({
           onComplete={(newName: string) => renameFile(id, newName)}
         />
       ),
+    });
+  }
+  async function thumbnailPickerModal() {
+    const results = await getThumbnailSearchResults(title);
+    modals.open({
+      title: "Pick a thumbnail",
+      children: (
+        <ThumbnailPickerModal
+          onComplete={(newUrl: string) => setThumbnail(id, newUrl)}
+          searchResults={results as PhotosWithTotalResults}
+        />
+      ),
+      size: "auto",
     });
   }
   function newFileModal() {
@@ -469,23 +465,16 @@ export default function Editor({
   async function refreshPreview() {
     setIsStopped(false);
     setIsStarting(true);
-    const userId = (await supabase.auth.getUser()).data.user?.id;
 
     let session = activeSession;
     if (moment(new Date()).isAfter(moment(activeSession?.date).add("0", "m"))) {
       //validate session ID
-      console.log("Renewing");
       const renewedSession = await renewProjectSession(id);
       setActiveSession(renewedSession);
-      console.log("Renewed!");
-      console.log(renewedSession);
       session = renewedSession;
       forceUpdate();
     }
-    console.log("Moving on");
-    console.log(session);
-    frameSrc = `${previewUrl}/?project=${id}&user=${userId}&session=${session?.id}`;
-    console.log(frameSrc);
+    frameSrc = `${previewUrl}/?project=${id}&user=${creatorId}&session=${session?.id}`;
     if (outputFrame.current) {
       const frame = outputFrame.current as HTMLIFrameElement;
       frame.src = frameSrc;
@@ -500,11 +489,15 @@ export default function Editor({
     FileSaver.saveAs(file);
   }
   function handleDrop(dropped: FileWithPath[]) {
+    if (!canEditInfo) return;
     dropped.forEach((file) => {
       const reader = new FileReader(); //https://react-dropzone.js.org/
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
+      reader.onerror = () =>
+        popupError(
+          "There was a problem uploading your file",
+          "Please try uploading again.",
+        );
       reader.onload = () => {
         // Do whatever you want with the file contents
         const data = reader.result;
@@ -524,21 +517,26 @@ export default function Editor({
     // B) the owner or mods are viewing the project.
     // This is to allow the runner to only download files
     // pertaining to that session.
+
     const session = await getFirstProjectSession(id); // gets recent project sessions
     if (session) {
       const newSession = await renewProjectSession(id);
+      console.log(newSession);
       setActiveSession(newSession);
+      return newSession;
     } else {
       const newSession = await newProjectSession(id);
+      console.log(newSession);
       setActiveSession(newSession);
+      return newSession;
     }
   }
 
+  
   useEffect(() => {
-    syncSession();
     loadFiles();
     return;
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <AppShell
@@ -556,20 +554,29 @@ export default function Editor({
               size="sm"
             />
             <div className="hidden items-center flex-row gap-2 md:flex">
-              <Image
-                src="/assets/logo-white.svg"
-                width={48}
-                height={48}
-                alt="Code2Connect logo"
-              />
+              <Link href="/">
+                <Image
+                  src="/assets/logo-white.svg"
+                  width={48}
+                  height={48}
+                  alt="Code2Connect logo"
+                />
+              </Link>
               <Divider orientation="vertical" />
-              <Avatar src={creatorImageSrc} size="md" />
+              <Avatar
+                name={creator}
+                src={creatorImageSrc}
+                size="md"
+                bg="white"
+              />
               <div className={styles.userInfo}>
                 <div className="flex flex-row gap-2">
                   <Title order={5}>{title}</Title>
-                  <UnstyledButton onClick={renameProjectModal}>
-                    <PencilSquareIcon width={16} height={16} />
-                  </UnstyledButton>
+                  {canEditInfo && (
+                    <UnstyledButton onClick={renameProjectModal}>
+                      <PencilSquareIcon width={16} height={16} />
+                    </UnstyledButton>
+                  )}
                 </div>
                 <Text>
                   by{" "}
@@ -583,61 +590,80 @@ export default function Editor({
             </div>
           </div>
           <div className={styles.headerRight}>
-            <Tooltip
-              label={
-                lastSave
-                  ? `Last saved ${lastSave.toLocaleTimeString()}`
-                  : "Last saved never"
-              }
-            >
-              <Button
-                leftSection={<CloudArrowUpIcon width={16} height={16} />}
-                loading={isSaving}
-                onClick={handleSave}
-                disabled={isSaving}
-                variant={isChanged ? "white" : "outline"}
-                color={isChanged ? "" : "white"}
-              >
-                Save
-              </Button>
-            </Tooltip>
-            <Menu shadow="md" width={200} position="bottom-end">
-              <Menu.Target>
-                <Button
-                  color="orange.3"
-                  leftSection={<ShareIcon width={16} height={16} />}
-                  autoContrast
+            {canEditInfo && (
+              <>
+                <Tooltip
+                  label={
+                    lastSave
+                      ? `Last saved ${lastSave.toLocaleTimeString()}`
+                      : "Last saved never"
+                  }
                 >
-                  Share
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<GlobeAmericasIcon width={16} height={16} />}
-                >
-                  Publish to the world
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Label>Education</Menu.Label>
-                <Menu.Item
-                  leftSection={<UserPlusIcon width={16} height={16} />}
-                >
-                  Add collaborator from your class
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<AcademicCapIcon width={16} height={16} />}
-                >
-                  Send to teacher
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+                  <Button
+                    leftSection={<CloudArrowUpIcon width={16} height={16} />}
+                    loading={isSaving}
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    variant={isChanged ? "white" : "outline"}
+                    color={isChanged ? "" : "white"}
+                  >
+                    Save
+                  </Button>
+                </Tooltip>
+                {!isPublic ? (
+                  <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                      <Button
+                        color="orange"
+                        leftSection={<ShareIcon width={16} height={16} />}
+                        autoContrast
+                      >
+                        Share
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={
+                          <GlobeAmericasIcon width={16} height={16} />
+                        }
+                        onClick={() => shareProject(id)}
+                      >
+                        Publish to the world
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                ) : (
+                  <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                      <Button
+                        color="orange"
+                        leftSection={<ShareIcon width={16} height={16} />}
+                        autoContrast
+                      >
+                        Unshare
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={
+                          <GlobeAmericasIcon width={16} height={16} />
+                        }
+                        onClick={() => unshareProject(id)}
+                      >
+                        Unpublish this project
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </>
+            )}
             <Link href={`/projects/${id}`}>
               <Button
                 variant="white"
                 autoContrast
                 leftSection={<EyeIcon width={16} height={16} />}
               >
-                Preview Public Page
+                Preview Page
               </Button>
             </Link>
           </div>
@@ -657,36 +683,52 @@ export default function Editor({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<PlusIcon width={16} height={16} />}
-                    onClick={newFileModal}
-                  >
-                    New file
-                  </Menu.Item>
+                  {canEditInfo && (
                     <Menu.Item
                       leftSection={<PlusIcon width={16} height={16} />}
-                      onClick={createProject}
+                      onClick={newFileModal}
                     >
-                      New project
+                      New file
                     </Menu.Item>
+                  )}
                   <Menu.Item
-                    leftSection={<CloudArrowUpIcon width={16} height={16} />}
-                    onClick={handleSave}
+                    leftSection={<PlusIcon width={16} height={16} />}
+                    onClick={createProject}
                   >
-                    Save to the cloud
+                    New project
                   </Menu.Item>
-                  <Menu.Item
-                    leftSection={<ArrowUpTrayIcon width={16} height={16} />}
-                    onClick={() => dropzoneRef.current?.()}
-                  >
-                    Upload file
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <>
+                      <Menu.Item
+                        leftSection={
+                          <CloudArrowUpIcon width={16} height={16} />
+                        }
+                        onClick={handleSave}
+                      >
+                        Save to the cloud
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<ArrowUpTrayIcon width={16} height={16} />}
+                        onClick={() => dropzoneRef.current?.()}
+                      >
+                        Upload file
+                      </Menu.Item>
+                    </>
+                  )}
                   <Menu.Item
                     leftSection={<ArrowDownTrayIcon width={16} height={16} />}
                     onClick={() => download(files, title)}
                   >
                     Download project
                   </Menu.Item>
+                  {canEditInfo && (
+                    <Menu.Item
+                      leftSection={<PhotoIcon width={16} height={16} />}
+                      onClick={() => thumbnailPickerModal()}
+                    >
+                      Change thumbnail
+                    </Menu.Item>
+                  )}
                 </Menu.Dropdown>
               </Menu>
               <Menu shadow="md" position="bottom-start">
@@ -699,28 +741,36 @@ export default function Editor({
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
-                    onClick={undoRedoModal}
-                    rightSection={
-                      <div>
-                        <CtrlCmd />+<Kbd>Z</Kbd>
-                      </div>
-                    }
-                  >
-                    Undo
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<ArrowUturnRightIcon width={16} height={16} />}
-                    onClick={undoRedoModal}
-                    rightSection={
-                      <div>
-                        <CtrlCmd />+<Kbd>Shift</Kbd>+<Kbd>Z</Kbd>
-                      </div>
-                    }
-                  >
-                    Redo
-                  </Menu.Item>
+                  {canEditInfo && (
+                    <>
+                      <Menu.Item
+                        leftSection={
+                          <ArrowUturnLeftIcon width={16} height={16} />
+                        }
+                        onClick={undoRedoModal}
+                        rightSection={
+                          <div>
+                            <CtrlCmd />+<Kbd>Z</Kbd>
+                          </div>
+                        }
+                      >
+                        Undo
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={
+                          <ArrowUturnRightIcon width={16} height={16} />
+                        }
+                        onClick={undoRedoModal}
+                        rightSection={
+                          <div>
+                            <CtrlCmd />+<Kbd>Shift</Kbd>+<Kbd>Z</Kbd>
+                          </div>
+                        }
+                      >
+                        Redo
+                      </Menu.Item>
+                    </>
+                  )}
                   <Menu.Item
                     leftSection={<MagnifyingGlassIcon width={16} height={16} />}
                     onClick={() =>
@@ -766,32 +816,45 @@ export default function Editor({
                 </ThemeIcon>
                 <Text fw={700}>Files</Text>
               </div>
-              <div className="flex flex-row gap-2">
-                <Button variant="outline">
-                  <ArrowUpTrayIcon
-                    onClick={() => dropzoneRef.current?.()}
-                    width={16}
-                    height={16}
-                  />
-                </Button>
-                <Button onClick={() => newFileModal()}>
-                  <PlusIcon width={16} height={16} />
-                </Button>
-              </div>
+              {canEditInfo && (
+                <div className="flex flex-row gap-2">
+                  <Button variant="outline">
+                    <ArrowUpTrayIcon
+                      onClick={() => dropzoneRef.current?.()}
+                      width={16}
+                      height={16}
+                    />
+                  </Button>
+                  <Button onClick={() => newFileModal()}>
+                    <PlusIcon width={16} height={16} />
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="h-3/4 overflow-y-auto">
               <Dropzone
                 onDrop={handleDrop}
                 openRef={dropzoneRef}
-                activateOnClick={false}
+                activateOnClick={Object.entries(files).length === 0}
+                className="h-full"
+                styles={{
+                  inner: {
+                    height: "100%",
+                  },
+                }}
               >
-                <div className="flex flex-col gap-2 flex-1">
+                <div className="flex flex-col gap-2 flex-1 h-full w-full">
                   {Object.entries(files).length === 0 && (
-                    <div className="flex flex-1 flex-col gap-2 items-center text-center">
-                      <p>
-                        Drag files here, or click the plus button to create a
-                        new file.
-                      </p>
+                    <div className="flex flex-1 flex-col gap-2 items-center justify-center text-center p-2 border-dashed border-offblue-200 border-4 bg-offblue-50 rounded-sm h-full cursor-pointer">
+                      <PlusCircleIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <Text c="dimmed">
+                        Drag files here, click here to upload, or click the plus
+                        button to create a new file.
+                      </Text>
                     </div>
                   )}
                   {Object.entries(files).map((file) => {
@@ -806,9 +869,6 @@ export default function Editor({
                         }}
                         selected={fileId === currentFile}
                         key={fileId}
-                        onDeleteConfirm={() => deleteConfirm(fileId)}
-                        onRename={() => renameModal(fileId)}
-                        onDownload={() => saveFile(fileId)}
                       />
                     );
                   })}
@@ -827,7 +887,7 @@ export default function Editor({
               <Textarea
                 rows={6}
                 placeholder="What is your project about? What are the instructions? Any credits?"
-                value={description}
+                value={description ?? ""}
                 onChange={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   handleChangeDescription(target.value);
@@ -841,13 +901,50 @@ export default function Editor({
       <AppShell.Main>
         <div className={styles.workspace}>
           <div className="flex flex-row gap-2 items-center">
-            <div className="flex flex-row gap-2 flex-1">
+            <div className="flex flex-row gap-2 flex-1 items-center">
               <ThemeIcon radius="xl" className="shadow-md">
                 <CodeBracketIcon width={16} height={16} />
               </ThemeIcon>
               <Text fw={700}>Code</Text>
               {files[currentFile] && (
-                <Text fw={400}>({files[currentFile].name})</Text>
+                <>
+                  <Text fw={400}>({files[currentFile].name})</Text>
+
+                  <Menu>
+                    <Menu.Target>
+                      <UnstyledButton>
+                        <EllipsisVerticalIcon width={16} height={16} />
+                      </UnstyledButton>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {canEditInfo && (
+                        <Menu.Item
+                          leftSection={<PencilIcon width={16} height={16} />}
+                          onClick={() => renameModal(currentFile)}
+                        >
+                          Rename
+                        </Menu.Item>
+                      )}
+                      <Menu.Item
+                        leftSection={
+                          <ArrowDownTrayIcon width={16} height={16} />
+                        }
+                        onClick={() => saveFile(currentFile)}
+                      >
+                        Download
+                      </Menu.Item>
+                      {canEditInfo && (
+                        <Menu.Item
+                          leftSection={<TrashIcon width={16} height={16} />}
+                          color="red"
+                          onClick={() => deleteConfirm(currentFile)}
+                        >
+                          Delete
+                        </Menu.Item>
+                      )}
+                    </Menu.Dropdown>
+                  </Menu>
+                </>
               )}
             </div>
 
@@ -929,13 +1026,6 @@ export default function Editor({
                 <ArrowsPointingOutIcon width={16} height={16} />
               </Button>
             )}
-          </div>
-          <div className="flex flex-row gap-2 w-full flex-nowrap items-center">
-            <GlobeAmericasIcon width={16} height={16} />
-            <TextInput value={frameSrc} disabled className="flex-1" />
-            <Link href={frameSrc} target="_blank">
-              <ArrowTopRightOnSquareIcon width={16} height={16} />
-            </Link>
           </div>
           {isStopped && <StoppedProject />}
           <iframe

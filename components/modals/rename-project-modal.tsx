@@ -1,5 +1,5 @@
 "use client";
-import { Button, Stack, TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useState } from "react";
 

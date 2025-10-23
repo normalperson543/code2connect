@@ -7,6 +7,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/outline";
+import { getProfile } from "@/app/lib/data";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -15,10 +16,17 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return user ? (
+  const profile = user ? await getProfile(user.id) : null;
+
+  return user && profile ? (
     <div className="flex items-center gap-2">
-      <Avatar size="sm" bg="white" />
-      <div className="flex items-center gap-4">{user.email}</div>
+      <Link
+        href={`/profile/${profile.username}`}
+        className="flex items-center gap-2"
+      >
+        <Avatar name={profile.username} src={null} size="sm" bg="white" />
+        <div className="flex items-center gap-4">{profile.username}</div>
+      </Link>
       <AuthLogoutButton />
     </div>
   ) : (
@@ -29,14 +37,16 @@ export default async function AuthButton() {
       >
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button
-        size="sm"
-        variant="gradient"
-        gradient={{ from: "blue", to: "cyan", deg: 135 }}
-        leftSection={<UserPlusIcon width={16} height={16} />}
-      >
-        <Link href="/auth/sign-up">Sign up</Link>
-      </Button>
+      <Link href="/auth/sign-up">
+        <Button
+          size="sm"
+          variant="gradient"
+          gradient={{ from: "blue", to: "cyan", deg: 135 }}
+          leftSection={<UserPlusIcon width={16} height={16} />}
+        >
+          Sign up
+        </Button>
+      </Link>
     </div>
   );
 }
