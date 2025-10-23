@@ -115,7 +115,6 @@ export async function fork(projectId: string) {
   const { data: projectFiles } = await supabaseAdmin.storage
     .from("projects")
     .list(`${old.owner?.id}/${old.id}`);
-  console.log(projectFiles);
   if (projectFiles) {
     for (const file of projectFiles) {
       await supabaseAdmin.storage

@@ -104,7 +104,6 @@ export default function CommentModule({
         sending={isSending}
       />
       {paginatedComments.map((comment) => {
-        console.log(`comment replies: ${comment.replies}`);
         return (
           <CommentComponent
             id={comment.id}

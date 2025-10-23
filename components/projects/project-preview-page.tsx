@@ -121,7 +121,6 @@ export default function ProjectPreviewPageUI({
 
   const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
 
-  console.log(clusters);
   async function handleAdd(clusterUrl: string) {
     let pathname;
     try {

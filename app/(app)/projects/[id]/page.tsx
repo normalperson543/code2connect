@@ -46,9 +46,6 @@ export default async function ProjectPreviewPage({
     if (liked) await decrementLikes(id);
     else await incrementLikes(id);
   }
-  console.log("Direct");
-  console.log(project.clusters);
-
   return (
     <ProjectPreviewPageUI
       creator={project.owner?.username as string}

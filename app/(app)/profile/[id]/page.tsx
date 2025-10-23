@@ -46,13 +46,9 @@ export default async function Profile({
   let isFollowing = false;
   let currentProfile;
   if (user && user.id) {
-    console.log("going");
-    console.log(user.id);
     isFollowing = await getIsFollowing(id, user?.id as string);
     currentProfile = await getProfile(user?.id as string);
   }
-
-  console.log("projects: " + projects);
 
   if (profileAccessed) {
     return (

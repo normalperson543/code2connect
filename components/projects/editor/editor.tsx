@@ -165,8 +165,6 @@ export default function Editor({
 
   async function loadFiles() {
     const session = await syncSession();
-    console.log(session);
-    console.log("Done syncing");
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
     const fileArr: (
@@ -178,28 +176,21 @@ export default function Editor({
     )[][] = [];
 
     const pf = await getProjectFiles(creatorId, id, isPublic);
-    console.log(pf);
     let projectFiles;
     if (pf) {
-      console.log("Found some data!");
       projectFiles = pf.data;
     } else {
       return;
     }
     if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
-    console.log("Proceeding");
-    console.log(pf);
-    console.log(activeSession);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
-        console.log("Getting the files...");
         const dataUrl = await getFileUrl(
           userId as string,
           id,
           file.name,
           isPublic,
         );
-        console.log(dataUrl);
         if (!dataUrl) return;
         const fileContents = await fetch(
           `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
@@ -521,18 +512,15 @@ export default function Editor({
     const session = await getFirstProjectSession(id); // gets recent project sessions
     if (session) {
       const newSession = await renewProjectSession(id);
-      console.log(newSession);
       setActiveSession(newSession);
       return newSession;
     } else {
       const newSession = await newProjectSession(id);
-      console.log(newSession);
       setActiveSession(newSession);
       return newSession;
     }
   }
 
-  
   useEffect(() => {
     loadFiles();
     return;

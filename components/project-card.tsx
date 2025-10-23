@@ -28,8 +28,6 @@ export default function ProjectCard({
   canRemoveFromCluster?: boolean;
 }) {
   const [deleting, setDeleting] = useState(false);
-  console.log("from pc");
-  console.log(projectInfo);
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>

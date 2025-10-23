@@ -17,7 +17,6 @@ export default function AddToClusterModal({
         label="What's the link to the cluster?"
         onChange={(e) => {
           const target = e.target as HTMLInputElement;
-          console.log(e.target.value);
           setClusterUrl(target.value);
         }}
       />

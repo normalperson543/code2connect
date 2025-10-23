@@ -4,6 +4,7 @@ import "./globals.css";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 import NextTopLoader from "nextjs-toploader";
+import { Analytics } from "@vercel/analytics/next";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -19,32 +20,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
 };
 
-const manrope = Manrope({
-  display: "swap",
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
-
-const publicSans = Public_Sans({
-  display: "swap",
-  subsets: ["latin"],
-  variable: "--font-public-sans",
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${manrope.className} ${publicSans.className} antialiased`}
-      {...mantineHtmlProps}
-    >
+    <html lang="en" className="antialiased" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
         <NextTopLoader />
+        <Analytics />
         <link
           rel="icon"
           href="/icon?<generated>"

@@ -100,9 +100,6 @@ importers:
       "@vercel/analytics":
         specifier: ^1.5.0
         version: 1.5.0(next@15.5.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
-      "@webcontainer/api":
-        specifier: ^1.6.1
-        version: 1.6.1
       "@xterm/addon-fit":
         specifier: ^0.10.0
         version: 0.10.0(@xterm/xterm@5.5.0)
@@ -136,9 +133,6 @@ importers:
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
-      lucide-react:
-        specifier: ^0.511.0
-        version: 0.511.0(react@19.1.0)
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -2064,12 +2058,6 @@ packages:
       vue-router:
         optional: true
 
-  "@webcontainer/api@1.6.1":
-    resolution:
-      {
-        integrity: sha512-2RS2KiIw32BY1Icf6M1DvqSmcon9XICZCDgS29QJb2NmF12ZY2V5Ia+949hMKB3Wno+P/Y8W+sPP59PZeXSELg==,
-      }
-
   "@webreflection/fetch@0.1.5":
     resolution:
       {
@@ -3710,14 +3698,6 @@ packages:
         integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==,
       }
     hasBin: true
-
-  lucide-react@0.511.0:
-    resolution:
-      {
-        integrity: sha512-VK5a2ydJ7xm8GvBeKLS9mu1pVK6ucef9780JVUjw6bAjJL/QXnd4Y0p7SPeOUMC27YhzNCZvm5d/QX0Tp3rc0w==,
-      }
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   magic-string@0.30.17:
     resolution:
@@ -6223,8 +6203,6 @@ snapshots:
       next: 15.5.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
 
-  "@webcontainer/api@1.6.1": {}
-
   "@webreflection/fetch@0.1.5": {}
 
   "@webreflection/idb-map@0.3.2": {}
@@ -7329,10 +7307,6 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
-
-  lucide-react@0.511.0(react@19.1.0):
-    dependencies:
-      react: 19.1.0
 
   magic-string@0.30.17:
     dependencies:
