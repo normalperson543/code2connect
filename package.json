@@ -39,6 +39,7 @@
     "@supabase/supabase-js": "latest",
     "@uiw/codemirror-theme-basic": "^4.25.2",
     "@uiw/react-codemirror": "^4.24.1",
+    "@vercel/analytics": "^1.5.0",
     "@webcontainer/api": "^1.6.1",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",

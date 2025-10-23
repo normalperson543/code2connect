@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server-admin";
 import { Project } from "@prisma/client";
 import { createClient as createPexelsClient } from "pexels";
+import { cache } from "react";
 export async function getFirstProjectSession(projectId: string) {
   const session = await prisma.projectSessionToken.findFirst({
     where: {
@@ -204,6 +205,8 @@ export async function getProfileWithUsername(userName: string) {
 
   return profile;
 }
+
+export const cachedGetProfileWithUsername = cache(getProfileWithUsername);
 
 export async function getProfileFollowInfo(username: string) {
   const followInfo = await prisma.profile.findUnique({
