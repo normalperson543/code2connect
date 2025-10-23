@@ -43,7 +43,7 @@ export default function Home({
   followingCount?: number;
   featured: ProjectWithOwner[];
   topLiked: ProjectWithOwner[];
-  iotmClusterInfo?: ClusterWithOwner;
+  iotmClusterInfo?: ClusterWithOwner | null;
 }) {
   const [creating, setCreating] = useState(false);
   return (

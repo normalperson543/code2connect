@@ -29,6 +29,7 @@ import {
   PhotoIcon,
   PlusIcon,
   TrashIcon,
+  UserIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -89,7 +90,7 @@ export default function ClusterUI({
   projects: ProjectWithOwner[];
   allowCollab: boolean;
   canEdit: boolean;
-  currentUser: string;
+  currentUser?: string;
   dateCreated: Date;
   isAdmin: boolean;
   ownerUsername: string;
@@ -172,6 +173,7 @@ export default function ClusterUI({
   }
 
   async function handleFollowingToggle(newStatus: boolean) {
+    if (!currentUser) return;
     if (!newStatus) {
       console.log("unfollowing");
       removeClusterFollower(id, currentUser);
@@ -222,70 +224,72 @@ export default function ClusterUI({
           ) : (
             <Title order={2}>{title}</Title>
           )}
-          <div className="flex flex-row gap-2">
-            <Button
-              fullWidth
-              leftSection={
-                isFollowing ? (
-                  <XMarkIcon width={16} height={16} />
-                ) : (
-                  <PlusIcon width={16} height={16} />
-                )
-              }
-              variant={isFollowing ? "filled" : "gradient"}
-              color="red"
-              gradient={{ from: "blue", to: "cyan", deg: 135 }}
-              className="shadow-md"
-              onClick={() => handleFollowingToggle(!isFollowing)}
-            >
-              {isFollowing ? "Unfollow" : "Follow"}
-            </Button>
-            {(canEdit || isAdmin) && (
-              <Menu>
-                <Menu.Target>
-                  <Button>
-                    <EllipsisVerticalIcon
-                      width={16}
-                      height={16}
-                      color="white"
-                    />
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<PhotoIcon width={16} height={16} />}
-                    onClick={thumbnailPickerModal}
-                  >
-                    Change thumbnail
-                  </Menu.Item>
-                  <Menu.Sub>
-                    <Menu.Sub.Target>
-                      <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
-                    </Menu.Sub.Target>
-                    <Menu.Sub.Dropdown>
-                      <Menu.Item
-                        leftSection={<TrashIcon width={16} height={16} />}
-                        c="red"
-                        onClick={() => deleteCluster(id)}
-                      >
-                        Yes, permanently delete this cluster
-                      </Menu.Item>
-                    </Menu.Sub.Dropdown>
-                  </Menu.Sub>
-                  {isAdmin && (
-                    <>
-                      <Menu.Item onClick={() => setClusterAsIotm(id)}>
-                        Set as Idea of the Month
-                      </Menu.Item>
-                      <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
-                        Unset as Idea of the Month
-                      </Menu.Item>
-                    </>
-                  )}
-                </Menu.Dropdown>
-              </Menu>
-            )}
-          </div>
+          {currentUser && (
+            <div className="flex flex-row gap-2">
+              <Button
+                fullWidth
+                leftSection={
+                  isFollowing ? (
+                    <XMarkIcon width={16} height={16} />
+                  ) : (
+                    <PlusIcon width={16} height={16} />
+                  )
+                }
+                variant={isFollowing ? "filled" : "gradient"}
+                color="red"
+                gradient={{ from: "blue", to: "cyan", deg: 135 }}
+                className="shadow-md"
+                onClick={() => handleFollowingToggle(!isFollowing)}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </Button>
+              {(canEdit || isAdmin) && (
+                <Menu>
+                  <Menu.Target>
+                    <Button>
+                      <EllipsisVerticalIcon
+                        width={16}
+                        height={16}
+                        color="white"
+                      />
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      leftSection={<PhotoIcon width={16} height={16} />}
+                      onClick={thumbnailPickerModal}
+                    >
+                      Change thumbnail
+                    </Menu.Item>
+                    <Menu.Sub>
+                      <Menu.Sub.Target>
+                        <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
+                      </Menu.Sub.Target>
+                      <Menu.Sub.Dropdown>
+                        <Menu.Item
+                          leftSection={<TrashIcon width={16} height={16} />}
+                          c="red"
+                          onClick={() => deleteCluster(id)}
+                        >
+                          Yes, permanently delete this cluster
+                        </Menu.Item>
+                      </Menu.Sub.Dropdown>
+                    </Menu.Sub>
+                    {isAdmin && (
+                      <>
+                        <Menu.Item onClick={() => setClusterAsIotm(id)}>
+                          Set as Idea of the Month
+                        </Menu.Item>
+                        <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
+                          Unset as Idea of the Month
+                        </Menu.Item>
+                      </>
+                    )}
+                  </Menu.Dropdown>
+                </Menu>
+              )}
+            </div>
+          )}
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />
@@ -346,10 +350,14 @@ export default function ClusterUI({
           </div>
           <Divider />
           <div className="flex flex-row gap-2 items-center">
-            <CalendarIcon width={16} height={16} />
+            <UserIcon width={16} height={16} />
             <Text>
               Created by{" "}
-              <Anchor component={Link} href={`/profile/${ownerUsername}`}>
+              <Anchor
+                component={Link}
+                href={`/profile/${ownerUsername}`}
+                c="white"
+              >
                 {ownerUsername}
               </Anchor>
             </Text>
@@ -396,7 +404,7 @@ export default function ClusterUI({
           </Tabs>
           {activeTab === "projects" && (
             <div className="flex flex-col gap-2">
-              {allowCollab && (
+              {(allowCollab && currentUser) && (
                 <>
                   <Title order={3}>Add a project</Title>
                   <p>Paste a project URL here to add your project.</p>

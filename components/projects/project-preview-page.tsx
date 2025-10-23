@@ -56,10 +56,10 @@ import { validate } from "uuid";
 import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
 import ClusterCarousel from "../cluster-carousel";
-import { handleAddToCluster } from "@/app/lib/clusters";
 import { notifications } from "@mantine/notifications";
 import AddToClusterModal from "../modals/add-to-cluster-modal";
 import { getCluster } from "@/app/lib/data";
+import { CommentWithOwner } from "@/app/lib/comment-types";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -90,7 +90,7 @@ export default function ProjectPreviewPageUI({
   canEditInfo: boolean;
   title: string;
   description: string;
-  comments: CommentData[] | null;
+  comments: CommentWithOwner[] | null;
   clusters: ClusterWithOwner[] | null;
   likes: number;
   id: string;

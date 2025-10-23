@@ -25,7 +25,6 @@ type CommentWithOwnerAndReplies = Prisma.CommentGetPayload<{
     replies: { include: { owner: true; Comment: true } };
   };
 }>;
-import { getCommentReplies } from "@/app/lib/data";
 import CommentTextbox from "./comment-textbox";
 
 export default function ProjectCommentModule({

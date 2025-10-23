@@ -16,7 +16,6 @@ export default async function Cluster({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login");
 
   let canEditInfo = false;
   let isFollower = false;
@@ -44,7 +43,7 @@ export default async function Cluster({
       followers={cluster.followers}
       allowCollab={cluster.allowCollab}
       canEdit={canEditInfo}
-      currentUser={user.id}
+      currentUser={user?.id}
       dateCreated={cluster.dateCreated}
       isAdmin={isAdmin}
       ownerUsername={cluster.owner?.username}
