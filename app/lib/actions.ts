@@ -634,6 +634,7 @@ export async function addProjectToCluster(
     },
   });
   revalidatePath(`/clusters/${clusterId}`);
+  return;
 }
 export async function removeProjectFromCluster(
   clusterId: string,
@@ -722,7 +723,7 @@ export async function removeClusterFollower(
   clusterId: string,
   followerId: string,
 ) {
-  const updatedCluster = await prisma.cluster.update({
+  await prisma.cluster.update({
     where: {
       id: clusterId,
     },
@@ -737,4 +738,26 @@ export async function removeClusterFollower(
 
   revalidatePath(`/clusters/${clusterId}`);
   redirect(`/clusters/${clusterId}`);
+}
+export async function setClusterAsIotm(clusterId: string) {
+  const cluster = await prisma.cluster.update({
+    where: {
+      id: clusterId,
+    },
+    data: {
+      isIotm: true,
+    },
+  });
+  return cluster;
+}
+export async function unsetClusterAsIotm(clusterId: string) {
+  const cluster = await prisma.cluster.update({
+    where: {
+      id: clusterId,
+    },
+    data: {
+      isIotm: false,
+    },
+  });
+  return cluster;
 }

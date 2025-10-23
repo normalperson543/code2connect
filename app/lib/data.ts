@@ -498,14 +498,21 @@ export async function getCluster(id: string) {
     include: {
       owner: true,
       projects: {
+        where: {
+          isPublic: true,
+        },
         include: {
           owner: true,
+        },
+        orderBy: {
+          datePublished: "desc",
         },
       },
       followers: true,
       _count: {
         select: {
           followers: true,
+          projects: true,
         },
       },
     },
@@ -566,4 +573,33 @@ export async function getClusterFollowers(clusterId: string) {
   });
 
   return followers?.followers;
+}
+export async function getIotm() {
+  const cluster = await prisma.cluster.findFirst({
+    where: {
+      isIotm: true,
+    },
+    include: {
+      owner: true,
+      projects: {
+        where: {
+          isPublic: true,
+        },
+        include: {
+          owner: true,
+        },
+        orderBy: {
+          datePublished: "desc",
+        },
+        take: 5,
+      },
+      followers: true,
+      _count: {
+        select: {
+          projects: true,
+        },
+      },
+    },
+  });
+  return cluster;
 }

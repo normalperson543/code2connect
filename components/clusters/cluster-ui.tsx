@@ -16,6 +16,7 @@ import {
   Checkbox,
   Input,
   TextInput,
+  Anchor,
 } from "@mantine/core";
 import CommentModule from "../comment-module";
 import {
@@ -46,6 +47,8 @@ import {
   deleteCluster,
   renameCluster,
   setClusterThumbnail,
+  setClusterAsIotm,
+  unsetClusterAsIotm,
 } from "@/app/lib/actions";
 import PlaceholderMessage from "../placeholder-message";
 import { validate } from "uuid";
@@ -55,13 +58,13 @@ import { getThumbnailSearchResults } from "@/app/lib/data";
 import { modals } from "@mantine/modals";
 import ThumbnailPickerModal from "../modals/thumbnail-picker";
 import { PhotosWithTotalResults } from "pexels";
+import Link from "next/link";
 export default function ClusterUI({
   id,
   title: titleDb,
   thumbnailUrl,
   isFollowingDb,
   description: descriptionDb,
-  people,
   dateModified,
   followerCount,
   followers,
@@ -70,7 +73,9 @@ export default function ClusterUI({
   canEdit,
   currentUser,
   dateCreated,
-  isAdmin
+  isAdmin,
+  ownerUsername,
+  projectCount,
 }: {
   id: string;
   title: string;
@@ -87,6 +92,8 @@ export default function ClusterUI({
   currentUser: string;
   dateCreated: Date;
   isAdmin: boolean;
+  ownerUsername: string;
+  projectCount: number;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
@@ -107,7 +114,23 @@ export default function ClusterUI({
   }, 2000);
   async function handleAdd() {
     setAdding(true);
-    const pathname = new URL(addUrl).pathname;
+    let pathname = "";
+    try {
+      pathname = new URL(addUrl).pathname;
+    } catch {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid project link",
+        message:
+          "It should start with https://code2connect.vercel.app/projects.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      setAdding(false);
+      return;
+    }
     const pathnamePages = pathname.split("/").filter(Boolean);
     let projectId;
     for (let i = pathnamePages.length - 1; i >= 0; i--) {
@@ -127,6 +150,7 @@ export default function ClusterUI({
         color: "red",
         icon: <XMarkIcon />,
       });
+      setAdding(false);
       return;
     }
     try {
@@ -136,7 +160,7 @@ export default function ClusterUI({
     } catch (e) {
       setAdding(false);
       notifications.show({
-        position: "top-center",
+        position: "top-right",
         withCloseButton: true,
         autoClose: false,
         title: "There was a problem adding your project",
@@ -212,10 +236,11 @@ export default function ClusterUI({
               color="red"
               gradient={{ from: "blue", to: "cyan", deg: 135 }}
               className="shadow-md"
+              onClick={() => handleFollowingToggle(!isFollowing)}
             >
               {isFollowing ? "Unfollow" : "Follow"}
             </Button>
-            {canEdit && (
+            {(canEdit || isAdmin) && (
               <Menu>
                 <Menu.Target>
                   <Button>
@@ -247,6 +272,16 @@ export default function ClusterUI({
                       </Menu.Item>
                     </Menu.Sub.Dropdown>
                   </Menu.Sub>
+                  {isAdmin && (
+                    <>
+                      <Menu.Item onClick={() => setClusterAsIotm(id)}>
+                        Set as Idea of the Month
+                      </Menu.Item>
+                      <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
+                        Unset as Idea of the Month
+                      </Menu.Item>
+                    </>
+                  )}
                 </Menu.Dropdown>
               </Menu>
             )}
@@ -312,6 +347,15 @@ export default function ClusterUI({
           <Divider />
           <div className="flex flex-row gap-2 items-center">
             <CalendarIcon width={16} height={16} />
+            <Text>
+              Created by{" "}
+              <Anchor component={Link} href={`/profile/${ownerUsername}`}>
+                {ownerUsername}
+              </Anchor>
+            </Text>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <CalendarIcon width={16} height={16} />
             <Text>Created {dateCreated.toLocaleString()}</Text>
           </div>
           <div className="flex flex-row gap-2 items-center">
@@ -319,8 +363,16 @@ export default function ClusterUI({
             <Text>Last modified {dateModified.toLocaleString()}</Text>
           </div>
           <div className="flex flex-row gap-2 items-center">
+            <CodeBracketIcon width={16} height={16} />
+            <Text>
+              {projectCount} project{projectCount !== 1 && "s"}
+            </Text>
+          </div>
+          <div className="flex flex-row gap-2 items-center">
             <UsersIcon width={16} height={16} />
-            <Text>{followerCount} followers</Text>
+            <Text>
+              {followerCount} follower{followerCount !== 1 && "s"}
+            </Text>
           </div>
         </div>
         <div className="flex flex-col gap-2 w-4/5 pr-16">

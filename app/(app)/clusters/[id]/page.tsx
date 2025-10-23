@@ -1,4 +1,4 @@
-import { getCluster, isClusterFollower } from "@/app/lib/data";
+import { getCluster, getProfile, isClusterFollower } from "@/app/lib/data";
 import ClusterUI from "@/components/clusters/cluster-ui";
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
@@ -18,8 +18,17 @@ export default async function Cluster({
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const canEditInfo = cluster.owner?.id === (user?.id as string);
-  const isFollower = await isClusterFollower(user.id, id);
+  let canEditInfo = false;
+  let isFollower = false;
+  let isAdmin = false;
+  if (user && user.id) {
+    const currentProfile = await getProfile(user?.id as string);
+    if (currentProfile) {
+      isAdmin = currentProfile.isAdmin;
+    }
+    canEditInfo = cluster.owner?.id === (user?.id as string) || isAdmin;
+    isFollower = await isClusterFollower(user.id, id);
+  }
 
   return (
     <ClusterUI
@@ -37,6 +46,9 @@ export default async function Cluster({
       canEdit={canEditInfo}
       currentUser={user.id}
       dateCreated={cluster.dateCreated}
+      isAdmin={isAdmin}
+      ownerUsername={cluster.owner?.username}
+      projectCount={cluster._count.projects}
     />
   );
 }

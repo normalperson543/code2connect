@@ -56,6 +56,10 @@ import { validate } from "uuid";
 import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
 import ClusterCarousel from "../cluster-carousel";
+import { handleAddToCluster } from "@/app/lib/clusters";
+import { notifications } from "@mantine/notifications";
+import AddToClusterModal from "../modals/add-to-cluster-modal";
+import { getCluster } from "@/app/lib/data";
 
 export default function ProjectPreviewPageUI({
   creatorImageSrc,
@@ -109,7 +113,6 @@ export default function ProjectPreviewPageUI({
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
   const [commentText, setCommentText] = useState("");
-  const [clusterUrl, setClusterUrl] = useState("");
   const [adding, setAdding] = useState(false);
 
   const searchParams = useSearchParams();
@@ -121,34 +124,95 @@ export default function ProjectPreviewPageUI({
   const debounceLike = useDebouncedCallback(() => handleLike(), 1000);
 
   console.log(clusters);
-  async function handleAdd() {
+  async function handleAdd(clusterUrl: string) {
     setAdding(true);
+    let pathname;
+    try {
+      pathname = new URL(clusterUrl).pathname;
+    } catch {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid cluster link",
+        message:
+          "It should start with https://code2connect.vercel.app/clusters.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    const pathnamePages = pathname.split("/").filter(Boolean);
+    let clusterId;
+    for (let i = pathnamePages.length - 1; i >= 0; i--) {
+      if (validate(pathnamePages[i])) {
+        clusterId = pathnamePages[i];
+        break;
+      }
+    }
+    if (!clusterId) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "Please specify a valid cluster link",
+        message:
+          "It should start with https://code2connect.vercel.app/clusters.",
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    try {
+      const cluster = await getCluster(clusterId);
+      if (!cluster) {
+        notifications.show({
+          position: "top-right",
+          withCloseButton: true,
+          autoClose: false,
+          title: "This cluster doesn't exist",
+          message: "Please confirm if the cluster link is correct.",
+          color: "red",
+          icon: <XMarkIcon />,
+        });
+        return;
+      }
+    } catch (e) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+    }
+    try {
+      await addProjectToCluster(clusterId, projectId);
+    } catch (e) {
+      notifications.show({
+        position: "top-right",
+        withCloseButton: true,
+        autoClose: false,
+        title: "There was a problem adding your project",
+        message: `Please try again later. Error info: ${e instanceof Error ? e.message : "Unknown error"}`,
+        color: "red",
+        icon: <XMarkIcon />,
+      });
+      return;
+    }
+    notifications.show({
+      position: "top-right",
+      withCloseButton: true,
+      autoClose: true,
+      title: "Project added successfully",
+      message: "Your project has been added to the cluster.",
+      color: "green",
+      icon: <CheckIcon />,
+    });
   }
-  function AddToClusterModal() {
-    return (
-      <div className="flex flex-col gap-2">
-        <TextInput
-          type="text"
-          value={clusterUrl}
-          label="What's the link to the cluster?"
-          onChange={(e) => {
-            const target = e.target as HTMLInputElement;
-            setClusterUrl(target.value);
-          }}
-          minLength={1}
-        />
-        <Button
-          fullWidth
-          onClick={() => {
-            handleAdd();
-            modals.closeAll();
-          }}
-        >
-          Done
-        </Button>
-      </div>
-    );
-  }
+
   return (
     <div className="flex flex-col gap-2 w-full h-full">
       <Heading>
@@ -315,26 +379,42 @@ export default function ProjectPreviewPageUI({
               </Menu.Dropdown>
             </Menu>
           )}
-          <Button
-            leftSection={<SparklesIcon width={16} height={16} />}
-            onClick={() => {
-              fork(id);
-              setIsForking(true);
-            }}
-            loading={isForking}
-          >
-            Fork
-          </Button>
-          <Button leftSection={<PlusIcon width={16} height={16} />}>
-            Add to cluster
-          </Button>
-          <Button
-            leftSection={<ExclamationTriangleIcon width={16} height={16} />}
-            color="orange"
-            autoContrast
-          >
-            Report
-          </Button>
+          {isPublic && (
+            <>
+              <Button
+                leftSection={<SparklesIcon width={16} height={16} />}
+                onClick={() => {
+                  fork(id);
+                  setIsForking(true);
+                }}
+                loading={isForking}
+              >
+                Fork
+              </Button>
+              <Button
+                leftSection={<PlusIcon width={16} height={16} />}
+                onClick={() =>
+                  modals.open({
+                    title: `Add to cluster`,
+                    children: (
+                      <AddToClusterModal
+                        onComplete={(url: string) => handleAdd(url)}
+                      />
+                    ),
+                  })
+                }
+              >
+                Add to cluster
+              </Button>
+              <Button
+                leftSection={<ExclamationTriangleIcon width={16} height={16} />}
+                color="orange"
+                autoContrast
+              >
+                Report
+              </Button>
+            </>
+          )}
         </div>
       </div>
       <Divider orientation="horizontal" className="mt-8 mb-8" />
@@ -369,7 +449,7 @@ export default function ProjectPreviewPageUI({
           </div>
         </>
       )}
-      {clusters && (
+      {clusters && clusters.length > 0 && (
         <>
           <Divider orientation="horizontal" className="mt-8 mb-8" />
           <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">

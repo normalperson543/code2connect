@@ -48,14 +48,6 @@ export default async function ProjectPreviewPage({
     if (liked) await decrementLikes(id);
     else await incrementLikes(id);
   }
-  async function handleFeature() {
-    "use server";
-    await feature(id);
-  }
-  async function handleUnfeature() {
-    "use server";
-    await unfeature(id);
-  }
   console.log("Direct");
   console.log(project.clusters);
 

@@ -24,6 +24,8 @@ import { createProject } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
 import { ProjectWithOwner } from "@/app/lib/projects";
+import { Cluster } from "@prisma/client";
+import { ClusterWithOwner } from "@/app/lib/cluster-types";
 export default function Home({
   username,
   projectCount,
@@ -32,6 +34,7 @@ export default function Home({
   followingCount,
   featured,
   topLiked,
+  iotmClusterInfo,
 }: {
   username?: string;
   projectCount?: number;
@@ -40,10 +43,11 @@ export default function Home({
   followingCount?: number;
   featured: ProjectWithOwner[];
   topLiked: ProjectWithOwner[];
+  iotmClusterInfo?: ClusterWithOwner;
 }) {
   const [creating, setCreating] = useState(false);
   return (
-    <div className="flex flex-col gap-2 justify-center">
+    <div className="flex flex-col gap-2 justify-center pb-4">
       {username ? (
         <div className="flex flex-col gap-4 pt-24 pb-24 pl-12 pr-12 bg-radial-[at_50%] from-offblue-200 to-white rounded-b-xl">
           <div className="flex flex-row gap-2">
@@ -246,38 +250,39 @@ export default function Home({
         </div>
         <ProjectCarousel projects={featured} />
       </div>
-      <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
-        <div className="flex flex-col gap-2 w-1/2">
-          <div className="flex flex-row gap-2 items-center">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <PaintBrushIcon width={16} height={16} />
-            </ThemeIcon>
-            <Title order={3}>Idea of the Month</Title>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Title order={4}>Code Canvas</Title>
-            <Text>
-              Ever thought drawing on paper was boring? Did you know that your
-              next great piece of art can be made with just a few lines of code?
-            </Text>
-            <Text>
-              In this Idea of the Month, we inspire you to create something that
-              can create a magnificent piece of art. Use your imagination! Maybe
-              you can be the next Picasso... with code.
-            </Text>
+      {iotmClusterInfo && (
+        <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
+          <div className="flex flex-col gap-2 w-1/2">
             <div className="flex flex-row gap-2 items-center">
-              <CodeBracketIcon width={16} height={16} />
-              <Text c="dimmed">1,828 projects</Text>
+              <ThemeIcon radius="xl" className="shadow-md">
+                <PaintBrushIcon width={16} height={16} />
+              </ThemeIcon>
+              <Title order={3}>Idea of the Month</Title>
             </div>
-            <Button rightSection={<ArrowRightIcon width={16} height={16} />}>
-              Go to cluster
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Title order={4}>{iotmClusterInfo.title}</Title>
+              <p>{iotmClusterInfo.description}</p>
+              <div className="flex flex-row gap-2 items-center">
+                <CodeBracketIcon width={16} height={16} />
+                <Text c="dimmed">
+                  {iotmClusterInfo._count.projects} project
+                  {iotmClusterInfo._count.projects !== 1 && "s"}
+                </Text>
+              </div>
+              <Link href={`/clusters/${iotmClusterInfo.id}`}>
+                <Button
+                  rightSection={<ArrowRightIcon width={16} height={16} />}
+                >
+                  Go to cluster
+                </Button>
+              </Link>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 w-1/2">
+            <ProjectCarousel projects={iotmClusterInfo.projects} />
           </div>
         </div>
-        <div className="flex flex-col gap-2 w-1/2">
-          <ProjectCarousel projects={placeholder} />
-        </div>
-      </div>
+      )}
       <div className="flex flex-col gap-2 pl-30 pr-30">
         <div className="flex flex-row gap-2 items-center">
           <ThemeIcon radius="xl" className="shadow-md">

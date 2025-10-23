@@ -1,5 +1,10 @@
 import Home from "@/components/home";
-import { getFeatured, getHomeProfileInfo, getTopLiked } from "../lib/data";
+import {
+  getFeatured,
+  getHomeProfileInfo,
+  getIotm,
+  getTopLiked,
+} from "../lib/data";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
@@ -15,6 +20,8 @@ export default async function HomePage() {
 
   const profile = await getHomeProfileInfo(authUserId);
 
+  const iotm = await getIotm();
+
   if (!profile) return <Home featured={featured} topLiked={topLiked} />;
 
   return (
@@ -26,6 +33,7 @@ export default async function HomePage() {
       followingCount={profile._count.following}
       featured={featured}
       topLiked={topLiked}
+      iotmClusterInfo={iotm}
     />
   );
 }
