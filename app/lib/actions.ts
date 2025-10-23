@@ -156,7 +156,7 @@ export async function addProfileFollower(targetId: string, followerId: string) {
     },
   });
 
-  const updatedFollowing = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: followerId,
     },
@@ -190,7 +190,7 @@ export async function removeProfileFollower(
     },
   });
 
-  const updatedFollowing = await prisma.profile.update({
+  await prisma.profile.update({
     where: {
       id: followerId,
     },
@@ -232,8 +232,8 @@ export async function createProfileComment(
       contents: content,
     },
     include: {
-      targetProf: true
-    }
+      targetProf: true,
+    },
   });
 
   revalidatePath(`/profile/${comment.targetProf?.username}`);
@@ -306,18 +306,18 @@ export async function deleteProfileComment(id: string) {
     },
     include: {
       targetProf: true,
-      replies: true
+      replies: true,
     },
   });
 
-  if(comment.replies && comment.replies.length > 0) {
+  if (comment.replies && comment.replies.length > 0) {
     comment.replies.forEach(async (reply) => {
       await prisma.reply.delete({
         where: {
-          id: reply.id
-        }
-      })
-    })
+          id: reply.id,
+        },
+      });
+    });
   }
 
   revalidatePath(`/profile/${comment.targetProf?.username}`);
@@ -513,18 +513,18 @@ export async function deleteProjectComment(commentId: string) {
       id: commentId,
     },
     include: {
-      replies: true
-    }
+      replies: true,
+    },
   });
 
-  if(comment.replies && comment.replies.length > 0) {
+  if (comment.replies && comment.replies.length > 0) {
     comment.replies.forEach(async (reply) => {
       await prisma.reply.delete({
         where: {
-          id: reply.id
-        }
-      })
-    })
+          id: reply.id,
+        },
+      });
+    });
   }
 
   revalidatePath(`/projects/${comment.projectId}`);
@@ -728,7 +728,7 @@ export async function addClusterFollower(
   clusterId: string,
   followerId: string,
 ) {
-  const updatedCluster = await prisma.cluster.update({
+  await prisma.cluster.update({
     where: {
       id: clusterId,
     },
@@ -788,114 +788,126 @@ export async function unsetClusterAsIotm(clusterId: string) {
   return cluster;
 }
 
-
-export async function createClusterComment(commenterId: string, clusterId: string, content: string) {
-  const comment = await prisma.comment.create({
+export async function createClusterComment(
+  commenterId: string,
+  clusterId: string,
+  content: string,
+) {
+  await prisma.comment.create({
     data: {
       profileId: commenterId,
       clusterId: clusterId,
-      contents: content
-    }
-  })
+      contents: content,
+    },
+  });
 
-  revalidatePath(`/clusters/${clusterId}`)
-  redirect(`/clusters/${clusterId}`)
+  revalidatePath(`/clusters/${clusterId}`);
+  redirect(`/clusters/${clusterId}`);
 }
 
 export async function deleteClusterComment(commentId: string) {
   const comment = await prisma.comment.delete({
     where: {
-      id: commentId
+      id: commentId,
     },
     include: {
-      replies: true
-    }
-  })
+      replies: true,
+    },
+  });
 
-  if(comment.replies && comment.replies.length > 0) {
+  if (comment.replies && comment.replies.length > 0) {
     comment.replies.forEach(async (reply) => {
       await prisma.reply.delete({
         where: {
-          id: reply.id
-        }
-      })
-    })
+          id: reply.id,
+        },
+      });
+    });
   }
 
-  revalidatePath(`/clusters/${comment.clusterId}`)
-  redirect(`/clusters/${comment.clusterId}`)
+  revalidatePath(`/clusters/${comment.clusterId}`);
+  redirect(`/clusters/${comment.clusterId}`);
 }
 
-export async function createClusterCommentReply(commentId: string, replierId: string, content: string) {
+export async function createClusterCommentReply(
+  commentId: string,
+  replierId: string,
+  content: string,
+) {
   const replier = await prisma.profile.findUnique({
     where: {
-      id: replierId
-    }
-  })
+      id: replierId,
+    },
+  });
 
-  if(!replier) {
-    throw new Error( "Could not find replier's profile when making cluster comment reply")
+  if (!replier) {
+    throw new Error(
+      "Could not find replier's profile when making cluster comment reply",
+    );
   }
 
   const reply = await prisma.reply.create({
     data: {
       profileId: replierId,
       commentId: commentId,
-      contents: content
+      contents: content,
     },
     include: {
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  revalidatePath(`/clusters/${reply.Comment?.clusterId}`)
-  redirect(`/clusters/${reply.Comment?.clusterId}`)
+  revalidatePath(`/clusters/${reply.Comment?.clusterId}`);
+  redirect(`/clusters/${reply.Comment?.clusterId}`);
 }
 
 export async function deleteClusterCommentReply(id: string) {
   const reply = await prisma.reply.delete({
     where: {
-      id: id
+      id: id,
     },
     include: {
-      Comment: true
-    }
-  })
+      Comment: true,
+    },
+  });
 
-  revalidatePath(`/clusters/${reply.Comment?.clusterId}`)
-  redirect(`/clusters/${reply.Comment?.clusterId}`)
+  revalidatePath(`/clusters/${reply.Comment?.clusterId}`);
+  redirect(`/clusters/${reply.Comment?.clusterId}`);
 }
 
-export async function togglePinClusterComment(id: string, currentPinStatus: boolean) {
+export async function togglePinClusterComment(
+  id: string,
+  currentPinStatus: boolean,
+) {
   const selectedComment = await prisma.comment.findUnique({
     where: {
-      id: id
-    }
-  })
+      id: id,
+    },
+  });
 
-  if(!currentPinStatus && selectedComment?.clusterId) {
+  if (!currentPinStatus && selectedComment?.clusterId) {
     await prisma.comment.updateMany({
       where: {
         clusterId: selectedComment.clusterId,
         NOT: {
-          id: id
-        }
+          id: id,
+        },
       },
       data: {
-        isPinned: false
-      }
-    })
+        isPinned: false,
+      },
+    });
   }
 
   const comment = await prisma.comment.update({
     where: {
-      id: id
+      id: id,
     },
     data: {
-      isPinned: !currentPinStatus
-    }
-  })
+      isPinned: !currentPinStatus,
+    },
+  });
 
-  revalidatePath(`/clusters/${comment.clusterId}`)
-  redirect(`/clusters/${comment.clusterId}`)
+  revalidatePath(`/clusters/${comment.clusterId}`);
+  redirect(`/clusters/${comment.clusterId}`);
 }

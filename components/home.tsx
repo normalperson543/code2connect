@@ -19,12 +19,10 @@ import {
   StarIcon,
 } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import { placeholder } from "@/app/lib/constants";
 import { createProject } from "@/app/lib/actions";
 import { useState } from "react";
 import Link from "next/link";
 import { ProjectWithOwner } from "@/app/lib/projects";
-import { Cluster } from "@prisma/client";
 import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
 export default function Home({
   username,
@@ -43,7 +41,7 @@ export default function Home({
   followingCount?: number;
   featured: ProjectWithOwner[];
   topLiked: ProjectWithOwner[];
-  iotmClusterInfo?: ClusterWithOwnerAndProjects| null;
+  iotmClusterInfo?: ClusterWithOwnerAndProjects | null;
 }) {
   const [creating, setCreating] = useState(false);
   return (

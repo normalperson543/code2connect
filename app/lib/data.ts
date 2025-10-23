@@ -2,7 +2,6 @@
 import prisma from "./db";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server-admin";
-import { Project } from "@prisma/client";
 import { createClient as createPexelsClient } from "pexels";
 import { cache } from "react";
 export async function getFirstProjectSession(projectId: string) {
@@ -103,7 +102,7 @@ export async function getProject(projectId: string) {
           replies: {
             include: {
               owner: true,
-              Comment: true
+              Comment: true,
             },
             orderBy: {
               dateCreated: "asc",
@@ -177,7 +176,7 @@ export async function getProfile(userId: string) {
   return profile;
 }
 
-export async function getProfileBio(userId: string, bio: string) {
+export async function getProfileBio(userId: string) {
   const profile = await prisma.profile.findUnique({
     where: {
       id: userId,
@@ -187,10 +186,7 @@ export async function getProfileBio(userId: string, bio: string) {
   return profile;
 }
 
-export async function getThumbnailSearchResults(
-  searchQuery: string,
-  page: number = 1,
-) {
+export async function getThumbnailSearchResults(searchQuery: string) {
   const client = createPexelsClient(process.env.PEXELS_API_KEY as string);
   const res = await client.photos.search({ query: searchQuery });
   return res;
@@ -525,17 +521,17 @@ export async function getCluster(id: string) {
           replies: {
             include: {
               owner: true,
-              Comment: true
+              Comment: true,
             },
             orderBy: {
-              dateCreated: "asc"
-            }
-          }
+              dateCreated: "asc",
+            },
+          },
         },
         orderBy: {
-          dateCreated: "desc"
-        }
-      }
+          dateCreated: "desc",
+        },
+      },
     },
   });
   return cluster;

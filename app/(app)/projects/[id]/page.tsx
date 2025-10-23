@@ -1,9 +1,7 @@
 import {
   changeDescription,
   decrementLikes,
-  feature,
   incrementLikes,
-  unfeature,
 } from "@/app/lib/actions";
 import {
   getProfile,

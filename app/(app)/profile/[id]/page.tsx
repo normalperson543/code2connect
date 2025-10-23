@@ -7,7 +7,6 @@ import {
   getProfile,
   cachedGetProfileWithUsername,
 } from "@/app/lib/data";
-import { getProfileWithUsername } from "@/app/lib/data";
 import { getProfileFollowInfo } from "@/app/lib/data";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";

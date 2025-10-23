@@ -10,7 +10,6 @@ import {
   Divider,
   ThemeIcon,
   Menu,
-  TextInput,
 } from "@mantine/core";
 import Link from "next/link";
 import ThumbPreview from "../thumb-preview";
@@ -21,7 +20,6 @@ import {
   CheckIcon,
   ExclamationTriangleIcon,
   GlobeAmericasIcon,
-  PaperAirplaneIcon,
   PhotoIcon,
   PlusIcon,
   RectangleStackIcon,
@@ -33,8 +31,7 @@ import {
 import SolidHandThumbUpIcon from "@heroicons/react/24/solid/HandThumbUpIcon";
 import ProjectCarousel from "../project-carousel";
 import Heading from "../heading";
-import { Cluster, Comment as CommentData, Project } from "@prisma/client";
-import Comment from "../comment";
+import { Project } from "@prisma/client";
 import {
   addProjectToCluster,
   createProjectComment,
@@ -54,11 +51,9 @@ import { useState } from "react";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import CommentTextbox from "../comment-textbox";
 import { modals } from "@mantine/modals";
 import { validate } from "uuid";
 import CommentModule from "../comment-module";
-import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
 import ClusterCarousel from "../cluster-carousel";
 import { notifications } from "@mantine/notifications";
@@ -117,8 +112,6 @@ export default function ProjectPreviewPageUI({
   const [isForking, setIsForking] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedDb);
   const [sessionDesc, setSessionDesc] = useState(description);
-  const [commentText, setCommentText] = useState("");
-  const [adding, setAdding] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -130,7 +123,6 @@ export default function ProjectPreviewPageUI({
 
   console.log(clusters);
   async function handleAdd(clusterUrl: string) {
-    setAdding(true);
     let pathname;
     try {
       pathname = new URL(clusterUrl).pathname;

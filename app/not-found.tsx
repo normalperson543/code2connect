@@ -20,8 +20,8 @@ export default function Error() {
             </ThemeIcon>
             <Title order={1}>404 Not Found</Title>
             <p>
-              We couldn't find what you were looking for... Maybe you can try
-              searching what you need?
+              We couldn&apos;t find what you were looking for... Maybe you can
+              try searching what you need?
             </p>
           </Paper>
         </div>

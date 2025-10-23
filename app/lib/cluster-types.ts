@@ -12,8 +12,8 @@ export type ClusterWithOwnerAndProjects = Prisma.ClusterGetPayload<{
     owner: true;
     projects: {
       include: {
-        owner: true
-      }
+        owner: true;
+      };
     };
     _count: { select: { projects: true } };
   };

@@ -2,7 +2,6 @@ import { countSearchProjects, searchProjects } from "@/app/lib/data";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import ProjectCard from "@/components/project-card";
 import SearchUI from "@/components/search/search";
-import { Pagination } from "@mantine/core";
 
 export default async function Search(props: {
   searchParams?: Promise<{
@@ -29,7 +28,10 @@ export default async function Search(props: {
       {query && (
         <>
           {projects.map((project) => (
-            <ProjectCard projectInfo={project as ProjectWithOwner} />
+            <ProjectCard
+              projectInfo={project as ProjectWithOwner}
+              key={project.id}
+            />
           ))}
         </>
       )}

@@ -1,6 +1,5 @@
 import FakeLoadingTerminal from "@/components/fake-loading-terminal";
 import MTWrapper from "@/components/mt-wrapper";
-import { Loader } from "@mantine/core";
 
 export default function Loading() {
   return (

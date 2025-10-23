@@ -1,10 +1,9 @@
 import { Button } from "@mantine/core";
-import { BoltIcon, FlagIcon, LightBulbIcon } from "@heroicons/react/24/outline";
+import { FlagIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 import SearchBar from "./search-bar";
 import AuthLoginButton from "./auth/auth-login-button";
 import Image from "next/image";
 import Link from "next/link";
-import { createProject } from "@/app/lib/actions";
 import CreateButton from "./create";
 export default function HeaderLoggedIn() {
   return (

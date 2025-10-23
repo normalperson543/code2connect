@@ -12,7 +12,6 @@ import {
   Menu,
   Text,
   Textarea,
-  TextInput,
   ThemeIcon,
   Title,
   Tooltip,
@@ -23,7 +22,6 @@ import {
   ArrowDownTrayIcon,
   ArrowsPointingInIcon,
   ArrowsPointingOutIcon,
-  ArrowTopRightOnSquareIcon,
   ArrowUpTrayIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -171,7 +169,7 @@ export default function Editor({
     console.log("Done syncing");
     const userId = (await supabase.auth.getUser()).data.user?.id;
 
-    let fileArr: (
+    const fileArr: (
       | string
       | {
           name: string;
@@ -207,7 +205,7 @@ export default function Editor({
           `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
           { cache: "no-store" },
         );
-        let tempFileArr = [
+        const tempFileArr = [
           file.id,
           { name: file.name, contents: await fileContents.text() },
         ];
@@ -334,7 +332,7 @@ export default function Editor({
         ),
       });
     }
-    let newFiles = files;
+    const newFiles = files;
     newFiles[currentFile].contents = newContent;
     setFiles(newFiles);
     setIsChanged(true);
@@ -345,7 +343,7 @@ export default function Editor({
   }
   function deleteFile(id: string) {
     if (!canEditInfo) return;
-    let newFiles = files;
+    const newFiles = files;
     handleDelete(files[id]);
     delete newFiles[id];
     setFiles(newFiles);
@@ -369,11 +367,11 @@ export default function Editor({
       unduplicatedName = "file";
     }
     while (checkDuplicateNames(id, unduplicatedName)) {
-      let splitName = unduplicatedName.split(".");
+      const splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
     }
-    let newFiles = files;
+    const newFiles = files;
     newFiles[id].name = unduplicatedName;
     setFiles(newFiles);
     setIsChanged(true);
@@ -387,11 +385,11 @@ export default function Editor({
       unduplicatedName = "file";
     }
     while (checkDuplicateNames(id, unduplicatedName)) {
-      let splitName = unduplicatedName.split(".");
+      const splitName = unduplicatedName.split(".");
       splitName[0] += " copy";
       unduplicatedName = splitName.join(".");
     }
-    let newFiles = files;
+    const newFiles = files;
     const uuid = v4();
     newFiles[uuid] = { name: unduplicatedName, contents: contents };
     setFiles(newFiles);
@@ -534,10 +532,11 @@ export default function Editor({
     }
   }
 
+  
   useEffect(() => {
     loadFiles();
     return;
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <AppShell

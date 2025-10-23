@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
 import moment from "moment";

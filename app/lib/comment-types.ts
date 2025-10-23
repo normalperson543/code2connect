@@ -2,12 +2,12 @@ import { Prisma } from "@prisma/client";
 
 export type CommentWithOwner = Prisma.CommentGetPayload<{
   include: {
-    owner: true,
+    owner: true;
     replies: {
       include: {
-        owner: true,
-        Comment: true
-      }
-    }
-  }
+        owner: true;
+        Comment: true;
+      };
+    };
+  };
 }>;

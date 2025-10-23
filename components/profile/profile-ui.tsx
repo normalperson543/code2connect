@@ -2,7 +2,6 @@
 import ProjectCard from "../project-card";
 import {
   Avatar,
-  Text,
   Pagination,
   Title,
   Button,
@@ -24,7 +23,7 @@ import {
   CalendarIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import { Comment, Profile, Project } from "@prisma/client";
+import { Profile } from "@prisma/client";
 import {
   addProfileFollower,
   createProfileComment,
@@ -36,7 +35,6 @@ import {
   togglePinProfileComment,
 } from "@/app/lib/actions";
 import { useDebouncedCallback } from "use-debounce";
-import Link from "next/link";
 import { notifications } from "@mantine/notifications";
 import MiniProfile from "../mini-profile";
 import PlaceholderMessage from "../placeholder-message";

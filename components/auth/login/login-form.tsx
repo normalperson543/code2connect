@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -10,7 +9,6 @@ import {
   Button,
   Checkbox,
   Container,
-  Divider,
   Group,
   Paper,
   PasswordInput,
@@ -18,7 +16,6 @@ import {
   TextInput,
   ThemeIcon,
   Title,
-  UnstyledButton,
 } from "@mantine/core";
 import {
   ArrowRightIcon,
@@ -26,8 +23,6 @@ import {
   EnvelopeIcon,
   KeyIcon,
 } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import signInWithGoogle from "@/app/lib/oauth";
 import OAuthButtons from "../oauth-buttons";
 import WarningBanner from "@/components/warning-banner";
 

@@ -9,7 +9,7 @@ export default function CommentTextbox({
   profilePfpSrc,
   stopReplying = false,
   handleStopReplying,
-  sending
+  sending,
 }: {
   value: string;
   handleChangeValue: (newString: string) => void;
@@ -33,14 +33,14 @@ export default function CommentTextbox({
         <div className="flex flex-row gap-2 w-full">
           <Button
             leftSection={<PaperAirplaneIcon width={16} height={16} />}
-            onClick={(e) => (value && !sending) && handleSubmit()}
+            onClick={() => value && !sending && handleSubmit()}
           >
             Send
           </Button>
           {stopReplying && (
             <Button
               leftSection={<XMarkIcon width={16} height={16} />}
-              onClick={(e) => handleStopReplying && handleStopReplying()}
+              onClick={() => handleStopReplying && handleStopReplying()}
             >
               Stop Replying
             </Button>

@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import type { Files, FileInfo } from "./files";
+import type { Files } from "./files";
 import saveAs from "file-saver";
 
 export default function download(files: Files, filename: string) {

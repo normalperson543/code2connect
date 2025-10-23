@@ -1,7 +1,6 @@
 "use client";
 import {
   AspectRatio,
-  Badge,
   Button,
   Divider,
   Menu,
@@ -14,7 +13,6 @@ import {
   Avatar,
   Tooltip,
   Checkbox,
-  Input,
   TextInput,
   Anchor,
 } from "@mantine/core";
@@ -25,7 +23,6 @@ import {
   ChatBubbleBottomCenterIcon,
   CodeBracketIcon,
   EllipsisVerticalIcon,
-  PencilIcon,
   PhotoIcon,
   PlusIcon,
   TrashIcon,
@@ -36,7 +33,7 @@ import {
 import { useState } from "react";
 import ProjectCard from "../project-card";
 import Image from "next/image";
-import { Cluster, Comment, Profile } from "@prisma/client";
+import { Cluster, Profile } from "@prisma/client";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { useDebouncedCallback } from "use-debounce";
 import {
@@ -59,7 +56,6 @@ import {
 import PlaceholderMessage from "../placeholder-message";
 import { validate } from "uuid";
 import { notifications } from "@mantine/notifications";
-import { isClusterFollower } from "@/app/lib/data";
 import { getThumbnailSearchResults } from "@/app/lib/data";
 import { modals } from "@mantine/modals";
 import ThumbnailPickerModal from "../modals/thumbnail-picker";
@@ -104,8 +100,8 @@ export default function ClusterUI({
   isAdmin: boolean;
   ownerUsername: string;
   currentUsername: string;
-  comments: CommentWithOwner[],
-  cluster: Cluster
+  comments: CommentWithOwner[];
+  cluster: Cluster;
   projectCount: number;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
@@ -118,10 +114,10 @@ export default function ClusterUI({
   const [title, setTitle] = useState(titleDb);
 
   const startIndex = (activePage - 1) * 9;
-  const endIndex = startIndex + 9
-  const displayedProjects = projects.slice(startIndex, endIndex)
+  const endIndex = startIndex + 9;
+  const displayedProjects = projects.slice(startIndex, endIndex);
 
-  const followersToShow = followers.slice(0,5);
+  const followersToShow = followers.slice(0, 5);
 
   const debounceSaveDesc = useDebouncedCallback(() => {
     changeClusterDescription(id, description);
@@ -448,7 +444,7 @@ export default function ClusterUI({
                     height={64}
                     className="opacity-50"
                   />
-                  <p>This cluster doesn't have any projects.</p>
+                  <p>This cluster doesn&apos;t have any projects.</p>
                 </PlaceholderMessage>
               )}
               <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
@@ -465,7 +461,7 @@ export default function ClusterUI({
               </div>
               {projectCount <= 9 ? (
                 <div></div>
-              ): (
+              ) : (
                 <Pagination
                   total={Math.trunc(projectCount / 9) + 1}
                   value={activePage}

@@ -1,6 +1,5 @@
 "use client";
 import {
-  ChevronDownIcon,
   EllipsisHorizontalIcon,
   ExclamationTriangleIcon,
   TrashIcon,
@@ -17,18 +16,10 @@ import {
   Button,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import React from "react";
 import CommentTextbox from "./comment-textbox";
-import { createProfileCommentReply } from "@/app/lib/actions";
-import {
-  getCommentReplies,
-  getProfile,
-  getProfileWithUsername,
-  getReply,
-} from "@/app/lib/data";
 
 export default function Comment({
   id,
@@ -38,7 +29,6 @@ export default function Comment({
   dateCreated,
   pinned = false,
   isCreator = false,
-  isWriter = false,
   isReply = false,
   handleDelete,
   handleReport,
@@ -69,7 +59,7 @@ export default function Comment({
 }) {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
-  const [isSending, setIsSending] = useState(false)
+  const [isSending, setIsSending] = useState(false);
 
   function deleteModal() {
     modals.openConfirmModal({
@@ -125,7 +115,7 @@ export default function Comment({
     });
   }
   async function handleSubmitReply() {
-    setIsSending(true)
+    setIsSending(true);
     if (isReply) {
       if (!commentId) {
         throw new Error(
@@ -138,11 +128,11 @@ export default function Comment({
     }
     setReplyContent("");
     setReplying(false);
-    setIsSending(false)
+    setIsSending(false);
   }
 
   function handleStopReplying() {
-    setReplying(false)
+    setReplying(false);
   }
   return (
     <div>
@@ -172,7 +162,9 @@ export default function Comment({
                 <Menu.Dropdown>
                   {!replying && (
                     <Menu.Item
-                      leftSection={<ArrowUturnLeftIcon width={16} height={16} />}
+                      leftSection={
+                        <ArrowUturnLeftIcon width={16} height={16} />
+                      }
                       onClick={() => setReplying(!replying)}
                     >
                       Reply
