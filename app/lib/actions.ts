@@ -702,6 +702,20 @@ export async function deleteCluster(clusterId: string) {
   });
   revalidatePath(`/clusters/${clusterId}`);
 }
+export async function deleteClusterFromProfilePage(clusterId: string) {
+  const cluster = await prisma.cluster.delete({
+    where: {
+      id: clusterId
+    },
+    include: {
+      owner: true
+    }
+  })
+
+  revalidatePath(`/profile/${cluster.owner.username}`)
+  redirect(`/profile/${cluster.owner.username}`)
+}
+
 export async function setClusterThumbnail(clusterId: string, thumbUrl: string) {
   await prisma.cluster.update({
     where: {

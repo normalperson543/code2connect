@@ -10,6 +10,7 @@ import {
   Tooltip,
   Textarea,
   Tabs,
+  NativeSelect
 } from "@mantine/core";
 import { useState } from "react";
 import {
@@ -21,9 +22,10 @@ import {
   XMarkIcon,
   CheckIcon,
   CalendarIcon,
+  RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import { Profile } from "@prisma/client";
+import { Cluster, Profile } from "@prisma/client";
 import {
   addProfileFollower,
   createProfileComment,
@@ -40,6 +42,9 @@ import MiniProfile from "../mini-profile";
 import PlaceholderMessage from "../placeholder-message";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { CommentWithOwner } from "@/app/lib/comment-types";
+import ClusterCard from "../clusters/cluster-card";
+import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
+import { getClusterProjectCount } from "@/app/lib/data";
 
 export default function ProfileUI({
   accessedUserName,
@@ -53,6 +58,8 @@ export default function ProfileUI({
   accessedProfileComments,
   isFollowingDb,
   currentUsername,
+  accessedProfileClusters,
+  accessedProfileFollowingClusters,
 }: {
   accessedUserName: string;
   accessedProfile: Profile;
@@ -65,16 +72,29 @@ export default function ProfileUI({
   accessedProfileComments: CommentWithOwner[];
   isFollowingDb: boolean;
   currentUsername: string;
+  accessedProfileClusters: ClusterWithOwnerAndProjects[];
+  accessedProfileFollowingClusters: ClusterWithOwnerAndProjects[]
 }) {
   const [bio, setBio] = useState(accessedProfile.bio);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
+  const [activeClusterPage, setActiveClusterPage] = useState(1);
+  const [activeFollowingClusterPage, setActiveFollowingClusterPage] = useState(1)
+  const [clusterView, setClusterView] = useState("Owned")
 
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
   const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
   const followersToShow = accessedProfileFollowers.slice(0, 5);
   const followingToShow = accessedProfileFollowing.slice(0, 5);
+
+  const startClusterIndex = (activeClusterPage - 1) * 9;
+  const endClusterIndex = startClusterIndex + 9;
+  const displayedClusters = accessedProfileClusters.slice(startClusterIndex, endClusterIndex)
+
+  const startFollowingClusterIndex = (activeFollowingClusterPage - 1) * 9
+  const endFollowingClusterIndex = startFollowingClusterIndex + 9
+  const displayedFollowingClusters = accessedProfileFollowingClusters.slice(startFollowingClusterIndex, endFollowingClusterIndex)
 
   async function handleSaveBio() {
     const userId = currentUser;
@@ -254,6 +274,12 @@ export default function ProfileUI({
                 Projects
               </Tabs.Tab>
               <Tabs.Tab
+                leftSection={<RectangleStackIcon width={16} height={16} />}
+                value="clusters"
+              >
+                Clusters
+              </Tabs.Tab>
+              <Tabs.Tab
                 leftSection={
                   <ChatBubbleBottomCenterIcon width={16} height={16} />
                 }
@@ -364,6 +390,81 @@ export default function ProfileUI({
                   );
                 })}
               </div>
+            </Tabs.Panel>
+            <Tabs.Panel value="clusters" mt="sm">
+              <NativeSelect
+                value={clusterView}
+                onChange={(e) => setClusterView(e.currentTarget.value)}
+                data={['Owned', 'Following']}
+                mb="sm"
+              />
+              {clusterView === "Owned" ? (
+                <>
+                  {accessedProfileClusters.length === 0 && (
+                    <PlaceholderMessage>
+                      <RectangleStackIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <p>This user doesn&apos;t have any owned clusters.</p>
+                    </PlaceholderMessage>
+                  )}
+                  <div>
+                    <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                      {displayedClusters.map((cluster: ClusterWithOwnerAndProjects) => (
+                        <ClusterCard
+                          clusterInfo={cluster}
+                          projectCount={cluster._count.projects}
+                          canDelete={currentUser === cluster.owner.id}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {accessedProfileClusters.length <= 9 ? (
+                    <div></div>
+                  ) : (
+                    <Pagination
+                      total={Math.trunc(accessedProfileClusters.length / 9) + 1}
+                      value={activeClusterPage}
+                      onChange={setActiveClusterPage}
+                      mt="lg"
+                    />
+                  )}
+                </>
+              ): (
+                <>
+                  {accessedProfileFollowingClusters.length === 0 && (
+                    <PlaceholderMessage>
+                      <RectangleStackIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <p>This user isn&apos;t following any clusters.</p>
+                    </PlaceholderMessage>
+                  )}
+                  <div>
+                    <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                      {displayedFollowingClusters.map((cluster: ClusterWithOwnerAndProjects) => (
+                        <ClusterCard
+                          clusterInfo={cluster}
+                          projectCount={cluster._count.projects}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {accessedProfileFollowingClusters.length <= 9 ? (
+                    <div></div>
+                  ): (
+                    <Pagination
+                      total={Math.trunc(accessedProfileFollowingClusters.length / 9) + 1}
+                      value={activeFollowingClusterPage}
+                      mt="lg"
+                    />
+                  )}
+                </>
+              )}
             </Tabs.Panel>
           </Tabs>
         </div>

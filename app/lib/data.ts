@@ -612,3 +612,74 @@ export async function getIotm() {
   });
   return cluster;
 }
+
+export async function getProfileClusters(profileId: string) {
+  const clusters = await prisma.profile.findUnique({
+    where: {
+      id: profileId
+    },
+    select: {
+      clusters: {
+        include: {
+          owner: true,
+          projects: {
+            include: {
+              owner: true
+            }
+          },
+          _count: {
+            select: {
+              projects: true
+            }
+          }
+        }
+      },
+    }
+  })
+
+  return clusters?.clusters
+}
+
+export async function getClusterProjectCount(clusterId: string) {
+  const cluster = await prisma.cluster.findUnique({
+    where: {
+      id: clusterId
+    },
+    include: {
+      _count: {
+        select: {
+          projects: true
+        }
+      }
+    }
+  })
+
+  return cluster?._count.projects
+}
+
+export async function getProfileFollowingClusters(username: string) {
+  const clusters = await prisma.profile.findUnique({
+    where: {
+      username: username
+    },
+    select: {
+      followingClusters: {
+        include: {
+          owner: true,
+          projects: {
+            include: {
+              owner: true
+            }
+          },
+          _count: {
+            select: {
+              projects: true
+            }
+          }
+        }
+      }
+    }
+  })
+
+  return clusters?.followingClusters
+}

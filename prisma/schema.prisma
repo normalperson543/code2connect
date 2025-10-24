@@ -30,8 +30,7 @@ model Profile {
   writtenComments   Comment[] @relation("CommentOwner")
   receivedComments  Comment[] @relation("CommentTarget")
   likedProjects     Like[]
-  followingClusters Cluster?  @relation(fields: [clusterId], references: [id])
-  clusterId         String?
+  followingClusters Cluster[] @relation("ProfileFollowsCluster")
 }
 
 model Project {
@@ -70,7 +69,7 @@ model Cluster {
   isIotm       Boolean   @default(false)
   thumbnail    String?
   projects     Project[]
-  followers    Profile[]
+  followers    Profile[] @relation("ProfileFollowsCluster")
   allowCollab  Boolean   @default(true)
 
   profileId String
