@@ -21,9 +21,10 @@ import {
   XMarkIcon,
   CheckIcon,
   CalendarIcon,
+  RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import { Profile } from "@prisma/client";
+import { Cluster, Profile } from "@prisma/client";
 import {
   addProfileFollower,
   createProfileComment,
@@ -40,6 +41,9 @@ import MiniProfile from "../mini-profile";
 import PlaceholderMessage from "../placeholder-message";
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { CommentWithOwner } from "@/app/lib/comment-types";
+import ClusterCard from "../clusters/cluster-card";
+import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
+import { getClusterProjectCount } from "@/app/lib/data";
 
 export default function ProfileUI({
   accessedUserName,
@@ -53,6 +57,7 @@ export default function ProfileUI({
   accessedProfileComments,
   isFollowingDb,
   currentUsername,
+  accessedProfileClusters,
 }: {
   accessedUserName: string;
   accessedProfile: Profile;
@@ -65,16 +70,22 @@ export default function ProfileUI({
   accessedProfileComments: CommentWithOwner[];
   isFollowingDb: boolean;
   currentUsername: string;
+  accessedProfileClusters: ClusterWithOwnerAndProjects[];
 }) {
   const [bio, setBio] = useState(accessedProfile.bio);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
+  const [activeClusterPage, setActiveClusterPage] = useState(1);
 
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
   const displayedProjects = accessedProfileProjects.slice(startIndex, endIndex);
   const followersToShow = accessedProfileFollowers.slice(0, 5);
   const followingToShow = accessedProfileFollowing.slice(0, 5);
+
+  const startClusterIndex = (activeClusterPage - 1) * 9;
+  const endClusterIndex = startClusterIndex + 9;
+  const displayedClusters = accessedProfileClusters.slice(startClusterIndex, endClusterIndex)
 
   async function handleSaveBio() {
     const userId = currentUser;
@@ -273,6 +284,12 @@ export default function ProfileUI({
               >
                 Following
               </Tabs.Tab>
+              <Tabs.Tab
+                leftSection={<RectangleStackIcon width={16} height={16} />}
+                value="clusters"
+              >
+                Clusters
+              </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="projects" mt="md">
@@ -364,6 +381,38 @@ export default function ProfileUI({
                   );
                 })}
               </div>
+            </Tabs.Panel>
+            <Tabs.Panel value="clusters" mt="sm">
+              {accessedProfileClusters.length === 0 && (
+                <PlaceholderMessage>
+                  <CodeBracketIcon
+                    width={64}
+                    height={64}
+                    className="opacity-50"
+                  />
+                  <p>This user doesn&apos;t have any clusters.</p>
+                </PlaceholderMessage>
+              )}
+              <div>
+                <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                  {displayedClusters.map((cluster: ClusterWithOwnerAndProjects) => (
+                    <ClusterCard
+                      clusterInfo={cluster}
+                      projectCount={cluster._count.projects}
+                    />
+                  ))}
+                </div>
+              </div>
+              {accessedProfileClusters.length <= 9 ? (
+                <div></div>
+              ) : (
+                <Pagination
+                  total={Math.trunc(accessedProfileClusters.length / 9) + 1}
+                  value={activeClusterPage}
+                  onChange={setActiveClusterPage}
+                  mt="lg"
+                />
+              )}
             </Tabs.Panel>
           </Tabs>
         </div>

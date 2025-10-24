@@ -69,7 +69,7 @@ export default function CommentModule({
   const endIndex = startIndex + COMMENTS_PER_PAGE;
   const paginatedComments = commentsToDisplay.slice(startIndex, endIndex);
 
-  function handleSubmitComment() {
+  async function handleSubmitComment() {
     setIsSending(true);
     if (accessedProfile) {
       handleCreateComment(currentUser, accessedProfile.id, comment);

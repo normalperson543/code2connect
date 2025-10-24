@@ -5,13 +5,17 @@ import { CodeBracketIcon } from "@heroicons/react/24/outline";
 import { Anchor, AspectRatio, Avatar, Card, Title } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 export default function ClusterCard({
   clusterInfo,
   projectCount,
+  canDelete = false
 }: {
   clusterInfo: ClusterWithOwner;
   projectCount: number;
+  canDelete?: boolean;
 }) {
+  const [deleting, setDeleting] = useState(false)
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
@@ -21,7 +25,7 @@ export default function ClusterCard({
               src={clusterInfo.thumbnail as string}
               height={135}
               width={240}
-              alt="Project thumbnail"
+              alt="Cluster thumbnail"
             />
           </AspectRatio>
         </Link>
