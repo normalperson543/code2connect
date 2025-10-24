@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+  : ((process.env.DEPLOY_URL as string) ?? "http://localhost:35049");
 
 export const metadata: Metadata = {
   title: {
