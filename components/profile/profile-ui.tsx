@@ -10,6 +10,7 @@ import {
   Tooltip,
   Textarea,
   Tabs,
+  NativeSelect
 } from "@mantine/core";
 import { useState } from "react";
 import {
@@ -58,6 +59,7 @@ export default function ProfileUI({
   isFollowingDb,
   currentUsername,
   accessedProfileClusters,
+  accessedProfileFollowingClusters,
 }: {
   accessedUserName: string;
   accessedProfile: Profile;
@@ -71,11 +73,14 @@ export default function ProfileUI({
   isFollowingDb: boolean;
   currentUsername: string;
   accessedProfileClusters: ClusterWithOwnerAndProjects[];
+  accessedProfileFollowingClusters: ClusterWithOwnerAndProjects[]
 }) {
   const [bio, setBio] = useState(accessedProfile.bio);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
   const [activeClusterPage, setActiveClusterPage] = useState(1);
+  const [activeFollowingClusterPage, setActiveFollowingClusterPage] = useState(1)
+  const [clusterView, setClusterView] = useState("Owned")
 
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
@@ -86,6 +91,10 @@ export default function ProfileUI({
   const startClusterIndex = (activeClusterPage - 1) * 9;
   const endClusterIndex = startClusterIndex + 9;
   const displayedClusters = accessedProfileClusters.slice(startClusterIndex, endClusterIndex)
+
+  const startFollowingClusterIndex = (activeFollowingClusterPage - 1) * 9
+  const endFollowingClusterIndex = startFollowingClusterIndex + 9
+  const displayedFollowingClusters = accessedProfileFollowingClusters.slice(startFollowingClusterIndex, endFollowingClusterIndex)
 
   async function handleSaveBio() {
     const userId = currentUser;
@@ -383,35 +392,78 @@ export default function ProfileUI({
               </div>
             </Tabs.Panel>
             <Tabs.Panel value="clusters" mt="sm">
-              {accessedProfileClusters.length === 0 && (
-                <PlaceholderMessage>
-                  <CodeBracketIcon
-                    width={64}
-                    height={64}
-                    className="opacity-50"
-                  />
-                  <p>This user doesn&apos;t have any clusters.</p>
-                </PlaceholderMessage>
-              )}
-              <div>
-                <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
-                  {displayedClusters.map((cluster: ClusterWithOwnerAndProjects) => (
-                    <ClusterCard
-                      clusterInfo={cluster}
-                      projectCount={cluster._count.projects}
+              <NativeSelect
+                value={clusterView}
+                onChange={(e) => setClusterView(e.currentTarget.value)}
+                data={['Owned', 'Followed']}
+                mb="sm"
+              />
+              {clusterView === "Owned" ? (
+                <>
+                  {accessedProfileClusters.length === 0 && (
+                    <PlaceholderMessage>
+                      <CodeBracketIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <p>This user doesn&apos;t have any owned clusters.</p>
+                    </PlaceholderMessage>
+                  )}
+                  <div>
+                    <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                      {displayedClusters.map((cluster: ClusterWithOwnerAndProjects) => (
+                        <ClusterCard
+                          clusterInfo={cluster}
+                          projectCount={cluster._count.projects}
+                          canDelete={currentUser === cluster.owner.id}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {accessedProfileClusters.length <= 9 ? (
+                    <div></div>
+                  ) : (
+                    <Pagination
+                      total={Math.trunc(accessedProfileClusters.length / 9) + 1}
+                      value={activeClusterPage}
+                      onChange={setActiveClusterPage}
+                      mt="lg"
                     />
-                  ))}
-                </div>
-              </div>
-              {accessedProfileClusters.length <= 9 ? (
-                <div></div>
-              ) : (
-                <Pagination
-                  total={Math.trunc(accessedProfileClusters.length / 9) + 1}
-                  value={activeClusterPage}
-                  onChange={setActiveClusterPage}
-                  mt="lg"
-                />
+                  )}
+                </>
+              ): (
+                <>
+                  {accessedProfileFollowingClusters.length === 0 && (
+                    <PlaceholderMessage>
+                      <CodeBracketIcon
+                        width={64}
+                        height={64}
+                        className="opacity-50"
+                      />
+                      <p>This user doesn&apos;t have any followed clusters.</p>
+                    </PlaceholderMessage>
+                  )}
+                  <div>
+                    <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
+                      {displayedFollowingClusters.map((cluster: ClusterWithOwnerAndProjects) => (
+                        <ClusterCard
+                          clusterInfo={cluster}
+                          projectCount={cluster._count.projects}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {accessedProfileFollowingClusters.length <= 9 ? (
+                    <div></div>
+                  ): (
+                    <Pagination
+                      total={Math.trunc(accessedProfileFollowingClusters.length / 9) + 1}
+                      value={activeFollowingClusterPage}
+                      mt="lg"
+                    />
+                  )}
+                </>
               )}
             </Tabs.Panel>
           </Tabs>

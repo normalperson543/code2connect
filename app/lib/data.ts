@@ -656,3 +656,30 @@ export async function getClusterProjectCount(clusterId: string) {
 
   return cluster?._count.projects
 }
+
+export async function getProfileFollowingClusters(username: string) {
+  const clusters = await prisma.profile.findUnique({
+    where: {
+      username: username
+    },
+    select: {
+      followingClusters: {
+        include: {
+          owner: true,
+          projects: {
+            include: {
+              owner: true
+            }
+          },
+          _count: {
+            select: {
+              projects: true
+            }
+          }
+        }
+      }
+    }
+  })
+
+  return clusters?.followingClusters
+}

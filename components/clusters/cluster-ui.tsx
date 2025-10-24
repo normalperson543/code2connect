@@ -82,6 +82,7 @@ export default function ClusterUI({
   isAdmin,
   ownerUsername,
   projectCount,
+  ownerId
 }: {
   id: string;
   title: string;
@@ -103,6 +104,7 @@ export default function ClusterUI({
   comments: CommentWithOwner[];
   cluster: Cluster;
   projectCount: number;
+  ownerId: string
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [activePage, setActivePage] = useState(1);
@@ -239,23 +241,25 @@ export default function ClusterUI({
           )}
           {currentUser && (
             <div className="flex flex-row gap-2">
-              <Button
-                fullWidth
-                leftSection={
-                  isFollowing ? (
-                    <XMarkIcon width={16} height={16} />
-                  ) : (
-                    <PlusIcon width={16} height={16} />
-                  )
-                }
-                variant={isFollowing ? "filled" : "gradient"}
-                color="red"
-                gradient={{ from: "blue", to: "cyan", deg: 135 }}
-                className="shadow-md"
-                onClick={() => handleFollowingToggle(!isFollowing)}
-              >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </Button>
+              {currentUser !== ownerId && (
+                <Button
+                  fullWidth
+                  leftSection={
+                    isFollowing ? (
+                      <XMarkIcon width={16} height={16} />
+                    ) : (
+                      <PlusIcon width={16} height={16} />
+                    )
+                  }
+                  variant={isFollowing ? "filled" : "gradient"}
+                  color="red"
+                  gradient={{ from: "blue", to: "cyan", deg: 135 }}
+                  className="shadow-md"
+                  onClick={() => handleFollowingToggle(!isFollowing)}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </Button>
+              )}
               {(canEdit || isAdmin) && (
                 <Menu>
                   <Menu.Target>
