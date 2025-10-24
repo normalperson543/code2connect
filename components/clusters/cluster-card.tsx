@@ -1,8 +1,9 @@
 "use client";
 
+import { deleteClusterFromProfilePage } from "@/app/lib/actions";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
-import { CodeBracketIcon } from "@heroicons/react/24/outline";
-import { Anchor, AspectRatio, Avatar, Card, Title } from "@mantine/core";
+import { CodeBracketIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Anchor, AspectRatio, Avatar, Button, Card, Menu, Title } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -45,6 +46,31 @@ export default function ClusterCard({
           <p>{projectCount}</p>
         </div>
       </div>
+      {canDelete && (
+        <Menu>
+          <Menu.Target>
+            <Button
+              color="red"
+              leftSection={<TrashIcon width={16} height={16}/>}
+              loading={deleting}
+            >
+              Delete
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<TrashIcon width={16} height={16}/>}
+              c="red"
+              onClick={() => {
+                deleteClusterFromProfilePage(clusterInfo.id)
+                setDeleting(true)
+              }}
+            >
+              Yes, delete this cluster
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      )}
     </Card>
   );
 }

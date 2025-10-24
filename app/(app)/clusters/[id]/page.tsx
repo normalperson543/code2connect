@@ -52,6 +52,7 @@ export default async function Cluster({
       dateCreated={cluster.dateCreated}
       isAdmin={isAdmin}
       ownerUsername={cluster.owner?.username}
+      ownerId = {cluster.owner.id}
       projectCount={cluster._count.projects}
     />
   );
