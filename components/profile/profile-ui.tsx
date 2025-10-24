@@ -274,6 +274,12 @@ export default function ProfileUI({
                 Projects
               </Tabs.Tab>
               <Tabs.Tab
+                leftSection={<RectangleStackIcon width={16} height={16} />}
+                value="clusters"
+              >
+                Clusters
+              </Tabs.Tab>
+              <Tabs.Tab
                 leftSection={
                   <ChatBubbleBottomCenterIcon width={16} height={16} />
                 }
@@ -292,12 +298,6 @@ export default function ProfileUI({
                 value="following"
               >
                 Following
-              </Tabs.Tab>
-              <Tabs.Tab
-                leftSection={<RectangleStackIcon width={16} height={16} />}
-                value="clusters"
-              >
-                Clusters
               </Tabs.Tab>
             </Tabs.List>
 
@@ -395,14 +395,14 @@ export default function ProfileUI({
               <NativeSelect
                 value={clusterView}
                 onChange={(e) => setClusterView(e.currentTarget.value)}
-                data={['Owned', 'Followed']}
+                data={['Owned', 'Following']}
                 mb="sm"
               />
               {clusterView === "Owned" ? (
                 <>
                   {accessedProfileClusters.length === 0 && (
                     <PlaceholderMessage>
-                      <CodeBracketIcon
+                      <RectangleStackIcon
                         width={64}
                         height={64}
                         className="opacity-50"
@@ -436,12 +436,12 @@ export default function ProfileUI({
                 <>
                   {accessedProfileFollowingClusters.length === 0 && (
                     <PlaceholderMessage>
-                      <CodeBracketIcon
+                      <RectangleStackIcon
                         width={64}
                         height={64}
                         className="opacity-50"
                       />
-                      <p>This user doesn&apos;t have any followed clusters.</p>
+                      <p>This user isn&apos;t following any clusters.</p>
                     </PlaceholderMessage>
                   )}
                   <div>
