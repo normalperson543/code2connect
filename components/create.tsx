@@ -5,7 +5,7 @@ import {
   BoltIcon,
   CodeBracketIcon,
   RectangleStackIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/24/solid";
 import { Button, Menu } from "@mantine/core";
 import { useState } from "react";
 

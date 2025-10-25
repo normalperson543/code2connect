@@ -82,7 +82,7 @@ export default function ClusterUI({
   isAdmin,
   ownerUsername,
   projectCount,
-  ownerId
+  ownerId,
 }: {
   id: string;
   title: string;
@@ -104,7 +104,7 @@ export default function ClusterUI({
   comments: CommentWithOwner[];
   cluster: Cluster;
   projectCount: number;
-  ownerId: string
+  ownerId: string;
 }) {
   const [activeTab, setActiveTab] = useState<string | null>("projects");
   const [activePage, setActivePage] = useState(1);
@@ -219,94 +219,97 @@ export default function ClusterUI({
         <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <AspectRatio ratio={16 / 9}>
             <Image
-              src={thumbnailUrl ?? "/assets/placeholder-thumb.jpg"}
+              src={thumbnailUrl !== "" ? thumbnailUrl : "/assets/placeholder-thumb.jpg"}
               height={135}
               width={240}
               alt="Project thumbnail"
               className="rounded-sm"
             />
           </AspectRatio>
-          {canEdit ? (
-            <TextInput
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                debounceSaveTitle();
-              }}
-              size="lg"
-              min={1}
-            />
-          ) : (
-            <Title order={2}>{title}</Title>
-          )}
-          {currentUser && (
-            <div className="flex flex-row gap-2">
-              {currentUser !== ownerId && (
-                <Button
-                  fullWidth
-                  leftSection={
-                    isFollowing ? (
-                      <XMarkIcon width={16} height={16} />
-                    ) : (
-                      <PlusIcon width={16} height={16} />
-                    )
-                  }
-                  variant={isFollowing ? "filled" : "gradient"}
-                  color="red"
-                  gradient={{ from: "blue", to: "cyan", deg: 135 }}
-                  className="shadow-md"
-                  onClick={() => handleFollowingToggle(!isFollowing)}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </Button>
-              )}
-              {(canEdit || isAdmin) && (
-                <Menu>
-                  <Menu.Target>
-                    <Button>
-                      <EllipsisVerticalIcon
-                        width={16}
-                        height={16}
-                        color="white"
-                      />
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      leftSection={<PhotoIcon width={16} height={16} />}
-                      onClick={thumbnailPickerModal}
-                    >
-                      Change thumbnail
-                    </Menu.Item>
-                    <Menu.Sub>
-                      <Menu.Sub.Target>
-                        <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
-                      </Menu.Sub.Target>
-                      <Menu.Sub.Dropdown>
-                        <Menu.Item
-                          leftSection={<TrashIcon width={16} height={16} />}
-                          c="red"
-                          onClick={() => deleteCluster(id)}
-                        >
-                          Yes, permanently delete this cluster
-                        </Menu.Item>
-                      </Menu.Sub.Dropdown>
-                    </Menu.Sub>
-                    {isAdmin && (
-                      <>
-                        <Menu.Item onClick={() => setClusterAsIotm(id)}>
-                          Set as Idea of the Month
-                        </Menu.Item>
-                        <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
-                          Unset as Idea of the Month
-                        </Menu.Item>
-                      </>
-                    )}
-                  </Menu.Dropdown>
-                </Menu>
-              )}
-            </div>
-          )}
+          <div className="flex flex-row gap-2 w-full items-center">
+            {canEdit ? (
+              <TextInput
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  debounceSaveTitle();
+                }}
+                size="lg"
+                min={1}
+                className="w-full"
+              />
+            ) : (
+              <Title order={2}>{title}</Title>
+            )}
+            {currentUser && (
+              <div className="flex flex-row gap-2">
+                {currentUser !== ownerId && (
+                  <Button
+                    fullWidth
+                    leftSection={
+                      isFollowing ? (
+                        <XMarkIcon width={16} height={16} />
+                      ) : (
+                        <PlusIcon width={16} height={16} />
+                      )
+                    }
+                    variant={isFollowing ? "filled" : "gradient"}
+                    color="red"
+                    gradient={{ from: "blue", to: "cyan", deg: 135 }}
+                    className="shadow-md"
+                    onClick={() => handleFollowingToggle(!isFollowing)}
+                  >
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </Button>
+                )}
+                {(canEdit || isAdmin) && (
+                  <Menu>
+                    <Menu.Target>
+                      <Button>
+                        <EllipsisVerticalIcon
+                          width={16}
+                          height={16}
+                          color="white"
+                        />
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        leftSection={<PhotoIcon width={16} height={16} />}
+                        onClick={thumbnailPickerModal}
+                      >
+                        Change thumbnail
+                      </Menu.Item>
+                      <Menu.Sub>
+                        <Menu.Sub.Target>
+                          <Menu.Sub.Item c="red">Delete cluster</Menu.Sub.Item>
+                        </Menu.Sub.Target>
+                        <Menu.Sub.Dropdown>
+                          <Menu.Item
+                            leftSection={<TrashIcon width={16} height={16} />}
+                            c="red"
+                            onClick={() => deleteCluster(id)}
+                          >
+                            Yes, permanently delete this cluster
+                          </Menu.Item>
+                        </Menu.Sub.Dropdown>
+                      </Menu.Sub>
+                      {isAdmin && (
+                        <>
+                          <Menu.Item onClick={() => setClusterAsIotm(id)}>
+                            Set as Idea of the Month
+                          </Menu.Item>
+                          <Menu.Item onClick={() => unsetClusterAsIotm(id)}>
+                            Unset as Idea of the Month
+                          </Menu.Item>
+                        </>
+                      )}
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </div>
+            )}
+          </div>
           <div className="flex-1 flex flex-row items-center gap-2">
             <ThemeIcon radius="xl" className="shadow-md">
               <Bars3CenterLeftIcon width={16} height={16} />

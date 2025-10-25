@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import { FlagIcon, LightBulbIcon } from "@heroicons/react/24/outline";
+import { FlagIcon, LightBulbIcon } from "@heroicons/react/20/solid";
 import SearchBar from "./search-bar";
 import AuthLoginButton from "./auth/auth-login-button";
 import Image from "next/image";

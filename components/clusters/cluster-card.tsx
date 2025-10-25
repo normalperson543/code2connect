@@ -3,27 +3,40 @@
 import { deleteClusterFromProfilePage } from "@/app/lib/actions";
 import { ClusterWithOwner } from "@/app/lib/cluster-types";
 import { CodeBracketIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Anchor, AspectRatio, Avatar, Button, Card, Menu, Title } from "@mantine/core";
+import {
+  Anchor,
+  AspectRatio,
+  Avatar,
+  Button,
+  Card,
+  Menu,
+  Title,
+} from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 export default function ClusterCard({
   clusterInfo,
   projectCount,
-  canDelete = false
+  canDelete = false,
 }: {
   clusterInfo: ClusterWithOwner;
   projectCount: number;
   canDelete?: boolean;
 }) {
-  const [deleting, setDeleting] = useState(false)
+  const [deleting, setDeleting] = useState(false);
+  console.log(clusterInfo.thumbnail);
   return (
     <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
         <Link href={`/clusters/${clusterInfo.id}`}>
           <AspectRatio ratio={16 / 9}>
             <Image
-              src={clusterInfo.thumbnail as string}
+              src={
+                clusterInfo.thumbnail && clusterInfo.thumbnail !== ""
+                  ? (clusterInfo.thumbnail as string)
+                  : "/assets/placeholder-thumb.jpg"
+              }
               height={135}
               width={240}
               alt="Cluster thumbnail"
@@ -45,32 +58,32 @@ export default function ClusterCard({
           <CodeBracketIcon width={16} height={16} />
           <p>{projectCount}</p>
         </div>
+        {canDelete && (
+          <Menu>
+            <Menu.Target>
+              <Button
+                color="red"
+                leftSection={<TrashIcon width={16} height={16} />}
+                loading={deleting}
+              >
+                Delete
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<TrashIcon width={16} height={16} />}
+                c="red"
+                onClick={() => {
+                  deleteClusterFromProfilePage(clusterInfo.id);
+                  setDeleting(true);
+                }}
+              >
+                Yes, delete this cluster
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
       </div>
-      {canDelete && (
-        <Menu>
-          <Menu.Target>
-            <Button
-              color="red"
-              leftSection={<TrashIcon width={16} height={16}/>}
-              loading={deleting}
-            >
-              Delete
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<TrashIcon width={16} height={16}/>}
-              c="red"
-              onClick={() => {
-                deleteClusterFromProfilePage(clusterInfo.id)
-                setDeleting(true)
-              }}
-            >
-              Yes, delete this cluster
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      )}
     </Card>
   );
 }

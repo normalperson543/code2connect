@@ -228,7 +228,7 @@ export default function ProjectPreviewPageUI({
         </div>
       </Heading>
       {!isPublic && (
-        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-orange-700 border-orange-800 text-white border-1 items-center">
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-orange-700 border-orange-800 text-white border-1 items-center -mt-4">
           <div className="flex flex-row gap-2 flex-1 items-center">
             <ExclamationTriangleIcon width={16} height={16} />{" "}
             <p>
@@ -257,13 +257,13 @@ export default function ProjectPreviewPageUI({
         </div>
       )}
       {searchParams.get("shared") === "1" && isPublic && (
-        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center">
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center -mt-4">
           <CheckIcon width={16} height={16} />{" "}
           <p>You&apos;ve successfully shared your project!</p>
         </div>
       )}
 
-      <div className="w-full h-full pl-16 pr-16 pt-4 pb-4 flex-row flex gap-2">
+      <div className="w-full h-full pl-16 pr-16 pt-4 pb-4 flex-row flex gap-6">
         <div className="h-full flex flex-col gap-2 w-1/2 stretch">
           <ThumbPreview
             projectId={id}

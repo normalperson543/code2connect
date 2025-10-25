@@ -417,6 +417,7 @@ export default function ProfileUI({
                           clusterInfo={cluster}
                           projectCount={cluster._count.projects}
                           canDelete={currentUser === cluster.owner.id}
+                          key={cluster.id}
                         />
                       ))}
                     </div>

@@ -110,11 +110,11 @@ function SidebarFile({
         <div className="flex flex-row w-max">
           {desc && (
             <div className="flex flex-row gap-2">
-              <Text fw={700}>{desc} </Text> <Text>(</Text>
+              <b>{desc}</b> <p>(</p>
             </div>
           )}
-          <Text fw={400}>{name}</Text>
-          {desc && <Text>)</Text>}
+          <p>{name}</p>
+          {desc && <p>)</p>}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import {
   BoltIcon,
   CheckIcon,
   CodeBracketIcon,
+  QuestionMarkCircleIcon,
   RectangleStackIcon,
   UserGroupIcon,
   UserIcon,
@@ -47,9 +48,10 @@ export default function Home({
   return (
     <div className="flex flex-col gap-2 justify-center pb-4">
       {username ? (
-        <div className="flex flex-col gap-4 pt-24 pb-24 pl-12 pr-12 bg-radial-[at_50%] from-offblue-200 to-white rounded-b-xl">
+        <div className="flex flex-col gap-4 pt-24 pb-24 pl-12 pr-12 bg-linear-180 from-offblue-200 to-white rounded-b-xl">
           <div className="flex flex-row gap-2">
-            <div className="flex flex-col gap-2 flex-1">
+            <div className="flex flex-col gap-6 flex-1">
+              <div className="flex flex-col gap-1">
               <Title>
                 Hi,{" "}
                 <Text
@@ -65,6 +67,7 @@ export default function Home({
               <Text className="text-2xl!" c="dimmed">
                 Welcome to your account
               </Text>
+              </div>
               <div className="flex flex-row gap-6">
                 <div className="flex flex-col gap-1">
                   <ThemeIcon radius="xl">
@@ -101,7 +104,6 @@ export default function Home({
               variant="gradient"
               gradient={{ from: "blue", to: "cyan", deg: 135 }}
               className="shadow-2xl shadow-teal-300"
-              size="lg"
               onClick={() => {
                 createProject();
                 setCreating(true);
@@ -113,7 +115,6 @@ export default function Home({
             <Link href={`/profile/${username}`}>
               <Button
                 leftSection={<UserIcon width={16} height={16} />}
-                size="lg"
               >
                 My profile
               </Button>
@@ -170,14 +171,20 @@ export default function Home({
                   gradient={{ from: "blue", to: "cyan", deg: 135 }}
                   className="shadow-2xl shadow-teal-300"
                   size="lg"
+                  component={Link}
+                  href="/auth/login"
                 >
                   Get started
                 </Button>
                 <Button
-                  leftSection={<UserPlusIcon width={16} height={16} />}
+                  leftSection={
+                    <QuestionMarkCircleIcon width={16} height={16} />
+                  }
                   size="lg"
+                  component={Link}
+                  href="/ideas"
                 >
-                  Join the community
+                  What can I create?
                 </Button>
               </div>
             </div>
@@ -249,7 +256,7 @@ export default function Home({
         <ProjectCarousel projects={featured} />
       </div>
       {iotmClusterInfo && (
-        <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
+        <div className="flex flex-row gap-6 pl-30 pr-30 pt-8 pb-8 w-full">
           <div className="flex flex-col gap-2 w-1/2">
             <div className="flex flex-row gap-2 items-center">
               <ThemeIcon radius="xl" className="shadow-md">

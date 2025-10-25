@@ -21,7 +21,7 @@ export default function LogoutButton() {
   return (
     <Menu>
       <Menu.Target>
-        <Button>
+        <Button p='xs'>
           <ChevronDownIcon width={16} height={16} />
         </Button>
       </Menu.Target>
