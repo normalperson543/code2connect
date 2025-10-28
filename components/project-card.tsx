@@ -53,7 +53,7 @@ export default function ProjectCard({
       </Card.Section>
       <div className="flex flex-col gap-2 mt-4">
         <Link href={`/projects/${projectInfo.id}`} key={projectInfo.id}>
-          <Title order={5}>{projectInfo.title}</Title>
+          <Title order={5}>{(projectInfo.title && projectInfo.title.length <= 20) ? projectInfo.title : `${projectInfo.title?.slice(0,20)}...`}</Title>
         </Link>
         <Link
           href={`/profile/${projectInfo.owner?.username}`}
