@@ -78,8 +78,7 @@ export default function ProfileUI({
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
   const [activeClusterPage, setActiveClusterPage] = useState(1);
-  const [activeFollowingClusterPage] =
-    useState(1);
+  const [activeFollowingClusterPage] = useState(1);
   const [clusterView, setClusterView] = useState("Owned");
 
   const startIndex = (activePage - 1) * 9;
