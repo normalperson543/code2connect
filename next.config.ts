@@ -37,7 +37,6 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["images.pexels.com", "www.pexels.com"],
   },
-  output: "standalone",
 };
 
 export default nextConfig;
