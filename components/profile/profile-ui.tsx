@@ -25,7 +25,6 @@ import {
   RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import { Cluster, Profile } from "@prisma/client";
 import {
   addProfileFollower,
   createProfileComment,
@@ -44,7 +43,7 @@ import { ProjectWithOwner } from "@/app/lib/projects";
 import { CommentWithOwner } from "@/app/lib/comment-types";
 import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
-import { getClusterProjectCount } from "@/app/lib/data";
+import { Profile } from "@prisma/client";
 
 export default function ProfileUI({
   accessedUserName,
@@ -79,7 +78,7 @@ export default function ProfileUI({
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
   const [activeClusterPage, setActiveClusterPage] = useState(1);
-  const [activeFollowingClusterPage, setActiveFollowingClusterPage] =
+  const [activeFollowingClusterPage] =
     useState(1);
   const [clusterView, setClusterView] = useState("Owned");
 
@@ -461,6 +460,7 @@ export default function ProfileUI({
                           <ClusterCard
                             clusterInfo={cluster}
                             projectCount={cluster._count.projects}
+                            key={cluster.id}
                           />
                         ),
                       )}

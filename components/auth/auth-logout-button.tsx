@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/client";
 import {
-  AdjustmentsHorizontalIcon,
   ArrowLeftStartOnRectangleIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";

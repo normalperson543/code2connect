@@ -1,8 +1,7 @@
 import { ProjectWithOwner } from "@/app/lib/projects";
 import { SparklesIcon } from "@heroicons/react/24/outline";
-import { Title, Text, ThemeIcon, Button } from "@mantine/core";
+import { Title, Text, ThemeIcon } from "@mantine/core";
 import ProjectCard from "../project-card";
-import { BoltIcon } from "@heroicons/react/20/solid";
 import CreateButton from "../create-wrapper";
 
 export default function IdeasMarketingUI({

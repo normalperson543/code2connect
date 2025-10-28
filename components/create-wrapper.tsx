@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { BoltIcon } from "@heroicons/react/24/solid";
-import { Button, Menu } from "@mantine/core";
+import { Button } from "@mantine/core";
 import Link from "next/link";
 import CreateButton from "./create-button";
 
