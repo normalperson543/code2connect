@@ -5,6 +5,7 @@ import {
   BoltIcon,
   CheckIcon,
   CodeBracketIcon,
+  QuestionMarkCircleIcon,
   RectangleStackIcon,
   UserGroupIcon,
   UserIcon,
@@ -45,26 +46,28 @@ export default function Home({
 }) {
   const [creating, setCreating] = useState(false);
   return (
-    <div className="flex flex-col gap-2 justify-center pb-4">
+    <div className="flex flex-col gap-8 justify-center">
       {username ? (
-        <div className="flex flex-col gap-4 pt-24 pb-24 pl-12 pr-12 bg-radial-[at_50%] from-offblue-200 to-white rounded-b-xl">
+        <div className="flex flex-col gap-4 pt-24 pb-24 pl-12 pr-12 bg-linear-180 from-offblue-50 to-white rounded-b-xl">
           <div className="flex flex-row gap-2">
-            <div className="flex flex-col gap-2 flex-1">
-              <Title>
-                Hi,{" "}
-                <Text
-                  variant="gradient"
-                  gradient={{ from: "blue", to: "turquoise", deg: 90 }}
-                  inherit
-                  span
-                >
-                  {username}
+            <div className="flex flex-col gap-6 flex-1">
+              <div className="flex flex-col gap-1">
+                <Title>
+                  Hi,{" "}
+                  <Text
+                    variant="gradient"
+                    gradient={{ from: "blue", to: "turquoise", deg: 90 }}
+                    inherit
+                    span
+                  >
+                    {username}
+                  </Text>
+                  !
+                </Title>
+                <Text className="text-2xl!" c="dimmed">
+                  Welcome to your account
                 </Text>
-                !
-              </Title>
-              <Text className="text-2xl!" c="dimmed">
-                Welcome to your account
-              </Text>
+              </div>
               <div className="flex flex-row gap-6">
                 <div className="flex flex-col gap-1">
                   <ThemeIcon radius="xl">
@@ -101,7 +104,6 @@ export default function Home({
               variant="gradient"
               gradient={{ from: "blue", to: "cyan", deg: 135 }}
               className="shadow-2xl shadow-teal-300"
-              size="lg"
               onClick={() => {
                 createProject();
                 setCreating(true);
@@ -111,10 +113,7 @@ export default function Home({
               New project
             </Button>
             <Link href={`/profile/${username}`}>
-              <Button
-                leftSection={<UserIcon width={16} height={16} />}
-                size="lg"
-              >
+              <Button leftSection={<UserIcon width={16} height={16} />}>
                 My profile
               </Button>
             </Link>
@@ -122,7 +121,7 @@ export default function Home({
         </div>
       ) : (
         <>
-          <div className="pt-24 pb-24 pl-12 pr-12 spacing-between gap-4 bg-radial-[at_50%] from-offblue-200 to-white to-90% rounded-b-xl flex flex-row">
+          <div className="pt-24 pb-24 pl-12 pr-12 spacing-between gap-4  rounded-b-xl flex flex-row">
             <div className="flex flex-col gap-4 w-1/2">
               <Text className="uppercase text-black!">
                 Welcome to Code2Connect
@@ -169,15 +168,19 @@ export default function Home({
                   variant="gradient"
                   gradient={{ from: "blue", to: "cyan", deg: 135 }}
                   className="shadow-2xl shadow-teal-300"
-                  size="lg"
+                  component={Link}
+                  href="/auth/login"
                 >
                   Get started
                 </Button>
                 <Button
-                  leftSection={<UserPlusIcon width={16} height={16} />}
-                  size="lg"
+                  leftSection={
+                    <QuestionMarkCircleIcon width={16} height={16} />
+                  }
+                  component={Link}
+                  href="/ideas"
                 >
-                  Join the community
+                  What can I create?
                 </Button>
               </div>
             </div>
@@ -190,30 +193,46 @@ export default function Home({
               />
             </div>
           </div>
-          <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 ml-2 mr-2 rounded-lg backdrop-blur-sm shadow-2xs bg-offblue-800">
+          <div className="flex flex-row gap-8 pl-30 pr-30 pt-24 pb-24 w-full h-full items-center rounded-lg">
             <div className="flex flex-col gap-2 w-1/2">
               <ThemeIcon radius="xl" className="shadow-md">
                 <SparklesIcon width={16} height={16} />
               </ThemeIcon>
-              <Text c="off-blue.1" className="uppercase">
+              <Text c="dimmed" className="uppercase">
                 Ease of use
               </Text>
-              <Title order={2} c="white">
-                Ridiculously easy to use
-              </Title>
-              <Text c="white">
+              <Title order={2}>Ridiculously easy to use</Title>
+              <p>
                 Code2Connect is designed to be easy to get started and start
                 using, even if you don&apos;t have programming experience. We
                 simplified the IDE so we put only the things you need, and
                 nothing you don&apos;t. Just pure, blissful coding.
-              </Text>
-              <Button leftSection={<BoltIcon width={16} height={16} />}>
+              </p>
+              <Button
+                leftSection={<BoltIcon width={16} height={16} />}
+                className="self-start"
+                component={Link}
+                href="/auth/login"
+              >
                 I want an easy IDE, let&apos;s get started
               </Button>
             </div>
+            <Image
+              src="/assets/ide.png"
+              alt="Code2Connect IDE"
+              className="w-1/2 h-full"
+              width={480}
+              height={360}
+            />
           </div>
-          <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 ml-2 mr-2 rounded-lg w-full bg-offblue-50">
-            <div className="flex flex-col gap-2 w-1/2"></div>
+          <div className="flex flex-row gap-2 pl-30 pr-30 pt-24 pb-24 w-full items-center">
+            <Image
+              src="/assets/shared.png"
+              alt="Code2Connect IDE"
+              className="w-1/2 h-full"
+              width={480}
+              height={360}
+            />
             <div className="flex flex-col gap-2 w-1/2">
               <ThemeIcon radius="xl" className="shadow-md">
                 <GlobeAmericasIcon width={16} height={16} />
@@ -240,22 +259,31 @@ export default function Home({
         </>
       )}
       <div className="flex flex-col gap-2 pl-30 pr-30">
-        <div className="flex flex-row gap-2 items-center">
-          <ThemeIcon radius="xl" className="shadow-md">
-            <StarIcon width={16} height={16} />
+        <div className="flex flex-row gap-3 items-center">
+          <ThemeIcon radius="xl" className="shadow-md" size="xl">
+            <StarIcon width={20} height={20} />
           </ThemeIcon>
-          <Title order={3}>Featured by Code2Connect</Title>
+          <div className="flex flex-col">
+            <Title order={3}>Featured by Code2Connect</Title>
+            <p>
+              Cool projects that were shared by the community and curated by
+              Code2Connect
+            </p>
+          </div>
         </div>
         <ProjectCarousel projects={featured} />
       </div>
       {iotmClusterInfo && (
-        <div className="flex flex-row gap-2 pl-30 pr-30 pt-8 pb-8 w-full">
+        <div className="flex flex-row gap-6 pl-30 pr-30 pt-8 pb-8 w-full items-center">
           <div className="flex flex-col gap-2 w-1/2">
-            <div className="flex flex-row gap-2 items-center">
-              <ThemeIcon radius="xl" className="shadow-md">
-                <PaintBrushIcon width={16} height={16} />
+            <div className="flex flex-row gap-3 items-center">
+              <ThemeIcon radius="xl" className="shadow-md" size="xl">
+                <PaintBrushIcon width={20} height={20} />
               </ThemeIcon>
-              <Title order={3}>Idea of the Month</Title>
+              <div className="flex flex-col">
+                <Title order={3}>Idea of the Month</Title>
+                <p>Try out this idea for your next project</p>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <Title order={4}>{iotmClusterInfo.title}</Title>
@@ -282,11 +310,17 @@ export default function Home({
         </div>
       )}
       <div className="flex flex-col gap-2 pl-30 pr-30">
-        <div className="flex flex-row gap-2 items-center">
-          <ThemeIcon radius="xl" className="shadow-md">
-            <HandThumbUpIcon width={16} height={16} />
+        <div className="flex flex-row gap-3 items-center">
+          <ThemeIcon radius="xl" className="shadow-md" size="xl">
+            <HandThumbUpIcon width={20} height={20} />
           </ThemeIcon>
-          <Title order={3}>Top liked</Title>
+          <div className="flex flex-col">
+            <Title order={3}>Top liked</Title>
+            <p>
+              The top projects that currently have the most likes, selected by
+              the community
+            </p>
+          </div>
         </div>
         <ProjectCarousel projects={topLiked} />
       </div>
@@ -296,7 +330,11 @@ export default function Home({
             Ready to join our community of Python coders?
           </Title>
           <div className="flex flex-row gap-2 justify-center">
-            <Button leftSection={<BoltIcon width={16} height={16} />}>
+            <Button
+              leftSection={<BoltIcon width={16} height={16} />}
+              component={Link}
+              href="/auth/login"
+            >
               Get started for free
             </Button>
           </div>

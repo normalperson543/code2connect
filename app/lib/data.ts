@@ -616,7 +616,7 @@ export async function getIotm() {
 export async function getProfileClusters(profileId: string) {
   const clusters = await prisma.profile.findUnique({
     where: {
-      id: profileId
+      id: profileId,
     },
     select: {
       clusters: {
@@ -624,43 +624,43 @@ export async function getProfileClusters(profileId: string) {
           owner: true,
           projects: {
             include: {
-              owner: true
-            }
+              owner: true,
+            },
           },
           _count: {
             select: {
-              projects: true
-            }
-          }
-        }
+              projects: true,
+            },
+          },
+        },
       },
-    }
-  })
+    },
+  });
 
-  return clusters?.clusters
+  return clusters?.clusters;
 }
 
 export async function getClusterProjectCount(clusterId: string) {
   const cluster = await prisma.cluster.findUnique({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     include: {
       _count: {
         select: {
-          projects: true
-        }
-      }
-    }
-  })
+          projects: true,
+        },
+      },
+    },
+  });
 
-  return cluster?._count.projects
+  return cluster?._count.projects;
 }
 
 export async function getProfileFollowingClusters(username: string) {
   const clusters = await prisma.profile.findUnique({
     where: {
-      username: username
+      username: username,
     },
     select: {
       followingClusters: {
@@ -668,18 +668,18 @@ export async function getProfileFollowingClusters(username: string) {
           owner: true,
           projects: {
             include: {
-              owner: true
-            }
+              owner: true,
+            },
           },
           _count: {
             select: {
-              projects: true
-            }
-          }
-        }
-      }
-    }
-  })
+              projects: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-  return clusters?.followingClusters
+  return clusters?.followingClusters;
 }

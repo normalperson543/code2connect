@@ -10,7 +10,7 @@ import {
   Tooltip,
   Textarea,
   Tabs,
-  NativeSelect
+  NativeSelect,
 } from "@mantine/core";
 import { useState } from "react";
 import {
@@ -25,7 +25,6 @@ import {
   RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import CommentModule from "../comment-module";
-import { Cluster, Profile } from "@prisma/client";
 import {
   addProfileFollower,
   createProfileComment,
@@ -44,7 +43,7 @@ import { ProjectWithOwner } from "@/app/lib/projects";
 import { CommentWithOwner } from "@/app/lib/comment-types";
 import ClusterCard from "../clusters/cluster-card";
 import { ClusterWithOwnerAndProjects } from "@/app/lib/cluster-types";
-import { getClusterProjectCount } from "@/app/lib/data";
+import { Profile } from "@prisma/client";
 
 export default function ProfileUI({
   accessedUserName,
@@ -73,14 +72,15 @@ export default function ProfileUI({
   isFollowingDb: boolean;
   currentUsername: string;
   accessedProfileClusters: ClusterWithOwnerAndProjects[];
-  accessedProfileFollowingClusters: ClusterWithOwnerAndProjects[]
+  accessedProfileFollowingClusters: ClusterWithOwnerAndProjects[];
 }) {
   const [bio, setBio] = useState(accessedProfile.bio);
   const [isFollowing, setIsFollowing] = useState(isFollowingDb);
   const [activePage, setPage] = useState(1);
   const [activeClusterPage, setActiveClusterPage] = useState(1);
-  const [activeFollowingClusterPage, setActiveFollowingClusterPage] = useState(1)
-  const [clusterView, setClusterView] = useState("Owned")
+  const [activeFollowingClusterPage] =
+    useState(1);
+  const [clusterView, setClusterView] = useState("Owned");
 
   const startIndex = (activePage - 1) * 9;
   const endIndex = startIndex + 9;
@@ -90,11 +90,17 @@ export default function ProfileUI({
 
   const startClusterIndex = (activeClusterPage - 1) * 9;
   const endClusterIndex = startClusterIndex + 9;
-  const displayedClusters = accessedProfileClusters.slice(startClusterIndex, endClusterIndex)
+  const displayedClusters = accessedProfileClusters.slice(
+    startClusterIndex,
+    endClusterIndex,
+  );
 
-  const startFollowingClusterIndex = (activeFollowingClusterPage - 1) * 9
-  const endFollowingClusterIndex = startFollowingClusterIndex + 9
-  const displayedFollowingClusters = accessedProfileFollowingClusters.slice(startFollowingClusterIndex, endFollowingClusterIndex)
+  const startFollowingClusterIndex = (activeFollowingClusterPage - 1) * 9;
+  const endFollowingClusterIndex = startFollowingClusterIndex + 9;
+  const displayedFollowingClusters = accessedProfileFollowingClusters.slice(
+    startFollowingClusterIndex,
+    endFollowingClusterIndex,
+  );
 
   async function handleSaveBio() {
     const userId = currentUser;
@@ -395,7 +401,7 @@ export default function ProfileUI({
               <NativeSelect
                 value={clusterView}
                 onChange={(e) => setClusterView(e.currentTarget.value)}
-                data={['Owned', 'Following']}
+                data={["Owned", "Following"]}
                 mb="sm"
               />
               {clusterView === "Owned" ? (
@@ -412,13 +418,16 @@ export default function ProfileUI({
                   )}
                   <div>
                     <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
-                      {displayedClusters.map((cluster: ClusterWithOwnerAndProjects) => (
-                        <ClusterCard
-                          clusterInfo={cluster}
-                          projectCount={cluster._count.projects}
-                          canDelete={currentUser === cluster.owner.id}
-                        />
-                      ))}
+                      {displayedClusters.map(
+                        (cluster: ClusterWithOwnerAndProjects) => (
+                          <ClusterCard
+                            clusterInfo={cluster}
+                            projectCount={cluster._count.projects}
+                            canDelete={currentUser === cluster.owner.id}
+                            key={cluster.id}
+                          />
+                        ),
+                      )}
                     </div>
                   </div>
                   {accessedProfileClusters.length <= 9 ? (
@@ -432,7 +441,7 @@ export default function ProfileUI({
                     />
                   )}
                 </>
-              ): (
+              ) : (
                 <>
                   {accessedProfileFollowingClusters.length === 0 && (
                     <PlaceholderMessage>
@@ -446,19 +455,26 @@ export default function ProfileUI({
                   )}
                   <div>
                     <div className="grid [grid-template-columns:repeat(3,auto)] gap-4 mt-3 justify-start">
-                      {displayedFollowingClusters.map((cluster: ClusterWithOwnerAndProjects) => (
-                        <ClusterCard
-                          clusterInfo={cluster}
-                          projectCount={cluster._count.projects}
-                        />
-                      ))}
+                      {displayedFollowingClusters.map(
+                        (cluster: ClusterWithOwnerAndProjects) => (
+                          <ClusterCard
+                            clusterInfo={cluster}
+                            projectCount={cluster._count.projects}
+                            key={cluster.id}
+                          />
+                        ),
+                      )}
                     </div>
                   </div>
                   {accessedProfileFollowingClusters.length <= 9 ? (
                     <div></div>
-                  ): (
+                  ) : (
                     <Pagination
-                      total={Math.trunc(accessedProfileFollowingClusters.length / 9) + 1}
+                      total={
+                        Math.trunc(
+                          accessedProfileFollowingClusters.length / 9,
+                        ) + 1
+                      }
                       value={activeFollowingClusterPage}
                       mt="lg"
                     />

@@ -141,7 +141,7 @@ export default function CommentModule({
               </div>
             )}
             <Collapse in={!!openedReplies[comment.id]}>
-              <Stack>
+              <Stack gap={0}>
                 {comment.replies &&
                   comment.replies.map((reply) => {
                     return (

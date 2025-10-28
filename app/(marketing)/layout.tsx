@@ -6,7 +6,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="pb-4 w-full h-full">
+    <div className="w-full h-full">
       <MTWrapper>{children}</MTWrapper>
     </div>
   );
