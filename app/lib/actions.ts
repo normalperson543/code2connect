@@ -924,3 +924,7 @@ export async function togglePinClusterComment(
   revalidatePath(`/clusters/${comment.clusterId}`);
   redirect(`/clusters/${comment.clusterId}`);
 }
+export default async function revalidateRoot() {
+  revalidatePath("/");
+  redirect("/");
+}
