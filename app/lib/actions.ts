@@ -705,15 +705,15 @@ export async function deleteCluster(clusterId: string) {
 export async function deleteClusterFromProfilePage(clusterId: string) {
   const cluster = await prisma.cluster.delete({
     where: {
-      id: clusterId
+      id: clusterId,
     },
     include: {
-      owner: true
-    }
-  })
+      owner: true,
+    },
+  });
 
-  revalidatePath(`/profile/${cluster.owner.username}`)
-  redirect(`/profile/${cluster.owner.username}`)
+  revalidatePath(`/profile/${cluster.owner.username}`);
+  redirect(`/profile/${cluster.owner.username}`);
 }
 
 export async function setClusterThumbnail(clusterId: string, thumbUrl: string) {

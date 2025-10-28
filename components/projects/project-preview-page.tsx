@@ -228,7 +228,7 @@ export default function ProjectPreviewPageUI({
         </div>
       </Heading>
       {!isPublic && (
-        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-orange-700 border-orange-800 text-white border-1 items-center -mt-4">
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-orange-700 border-orange-800 text-white border-1 items-center -mt-2">
           <div className="flex flex-row gap-2 flex-1 items-center">
             <ExclamationTriangleIcon width={16} height={16} />{" "}
             <p>
@@ -257,7 +257,7 @@ export default function ProjectPreviewPageUI({
         </div>
       )}
       {searchParams.get("shared") === "1" && isPublic && (
-        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center -mt-4">
+        <div className="flex flex-row gap-2 pl-16 pr-16 pt-4 pb-4 bg-green-50 border-green-200 border-1 items-center -mt-2">
           <CheckIcon width={16} height={16} />{" "}
           <p>You&apos;ve successfully shared your project!</p>
         </div>
@@ -291,10 +291,16 @@ export default function ProjectPreviewPageUI({
             </div>
           )}
           <div className="flex-1 flex flex-row items-center gap-2">
-            <ThemeIcon radius="xl" className="shadow-md">
-              <Bars3CenterLeftIcon width={16} height={16} />
+            <ThemeIcon radius="xl" className="shadow-md" size="xl">
+              <Bars3CenterLeftIcon width={20} height={20} />
             </ThemeIcon>
-            <Title order={4}>Description</Title>
+            <div className="flex-1 flex flex-col ">
+              <Title order={4}>Description</Title>
+              <p>
+                Information about the project, instructions on how to play, and
+                credits
+              </p>
+            </div>
           </div>
           {canEdit ? (
             <Textarea
@@ -317,7 +323,7 @@ export default function ProjectPreviewPageUI({
               readOnly
             />
           )}
-          {thumbnail && (
+          {thumbnail !== "" && (
             <div className="flex flex-row gap-2 items-center">
               <PhotoIcon width={16} height={16} opacity={0.5} />
 
@@ -404,8 +410,7 @@ export default function ProjectPreviewPageUI({
               </Button>
               <Button
                 leftSection={<ExclamationTriangleIcon width={16} height={16} />}
-                color="orange"
-                autoContrast
+                color="red"
               >
                 Report
               </Button>
@@ -414,7 +419,7 @@ export default function ProjectPreviewPageUI({
         </div>
       </div>
       <Divider orientation="horizontal" className="mt-8 mb-8" />
-      <div className="w-full pl-16 pr-16 flex flex-col gap-2">
+      <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-10">
         <div className="flex-1 flex flex-row items-center gap-2">
           <ThemeIcon radius="xl" className="shadow-md">
             <ChatBubbleOvalLeftIcon width={16} height={16} />
@@ -436,7 +441,7 @@ export default function ProjectPreviewPageUI({
       </div>
       {forks.length > 0 && (
         <>
-          <Divider orientation="horizontal" className="mt-8 mb-8" />
+          <Divider orientation="horizontal" className="mt-2 mb-8" />
 
           <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
             <div className="flex-1 flex flex-row items-center gap-2">
@@ -452,7 +457,7 @@ export default function ProjectPreviewPageUI({
       {clusters && clusters.length > 0 && (
         <>
           <Divider orientation="horizontal" className="mt-8 mb-8" />
-          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-4">
+          <div className="w-full pl-16 pr-16 flex flex-col gap-2 pb-12">
             <div className="flex-1 flex flex-row items-center gap-2">
               <ThemeIcon radius="xl" className="shadow-md">
                 <RectangleStackIcon width={16} height={16} />

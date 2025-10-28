@@ -44,9 +44,9 @@ export default async function Profile({
   if (!profileAccessed) notFound();
   const followInfo = await getProfileFollowInfo(id);
   const projects = await getProfileProjects(profileAccessed.id);
-  const clusters = await getProfileClusters(profileAccessed.id)
+  const clusters = await getProfileClusters(profileAccessed.id);
   const receivedComments = await getProfileReceivedComments(id);
-  const followingClusters = await getProfileFollowingClusters(id)
+  const followingClusters = await getProfileFollowingClusters(id);
   let isFollowing = false;
   let currentProfile;
   if (user && user.id) {
@@ -77,7 +77,9 @@ export default async function Profile({
         isFollowingDb={isFollowing}
         currentUsername={currentProfile?.username as string}
         accessedProfileClusters={clusters ? clusters : []}
-        accessedProfileFollowingClusters={followingClusters ? followingClusters : []}
+        accessedProfileFollowingClusters={
+          followingClusters ? followingClusters : []
+        }
       />
     );
   } else {

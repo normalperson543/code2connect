@@ -39,18 +39,16 @@ export default async function AuthButton() {
       >
         Sign in
       </Button>
-      <Link href="/auth/sign-up">
-        <Button
-          size="sm"
-          variant="gradient"
-          gradient={{ from: "blue", to: "cyan", deg: 135 }}
-          leftSection={<UserPlusIcon width={16} height={16} />}
-          component={Link}
-          href="/auth/sign-up"
-        >
-          Sign up
-        </Button>
-      </Link>
+      <Button
+        size="sm"
+        variant="gradient"
+        gradient={{ from: "blue", to: "cyan", deg: 135 }}
+        leftSection={<UserPlusIcon width={16} height={16} />}
+        component={Link}
+        href="/auth/sign-up"
+      >
+        Sign up
+      </Button>
     </div>
   );
 }

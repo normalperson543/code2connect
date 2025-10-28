@@ -7,16 +7,14 @@ import {
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import { Button, Menu } from "@mantine/core";
-import { useState } from "react";
 
 export default function CreateButton() {
-  const [creating, setCreating] = useState(false);
   return (
     <Menu>
       <Menu.Target>
         <Button
           leftSection={<BoltIcon width={16} height={16} />}
-          loading={creating}
+          className="self-start"
         >
           Create
         </Button>
@@ -26,7 +24,6 @@ export default function CreateButton() {
           leftSection={<CodeBracketIcon width={16} height={16} />}
           onClick={() => {
             createProject();
-            setCreating(true);
           }}
         >
           New project
@@ -35,7 +32,6 @@ export default function CreateButton() {
           leftSection={<RectangleStackIcon width={16} height={16} />}
           onClick={() => {
             createCluster();
-            setCreating(true);
           }}
         >
           New cluster
