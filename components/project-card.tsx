@@ -29,7 +29,7 @@ export default function ProjectCard({
 }) {
   const [deleting, setDeleting] = useState(false);
   return (
-    <Card shadow="md" padding="lg" radius="md" className="min-w-60" withBorder>
+    <Card padding="lg" radius="md" className="min-w-60" withBorder>
       <Card.Section>
         <Link
           href={`/projects/${projectInfo.id}`}
@@ -53,7 +53,11 @@ export default function ProjectCard({
       </Card.Section>
       <div className="flex flex-col gap-2 mt-4">
         <Link href={`/projects/${projectInfo.id}`} key={projectInfo.id}>
-          <Title order={5}>{(projectInfo.title && projectInfo.title.length <= 20) ? projectInfo.title : `${projectInfo.title?.slice(0,20)}...`}</Title>
+          <Title order={5}>
+            {projectInfo.title && projectInfo.title.length > 20
+              ? projectInfo.title?.slice(0, 20) + "..."
+              : projectInfo.title}
+          </Title>
         </Link>
         <Link
           href={`/profile/${projectInfo.owner?.username}`}

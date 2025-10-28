@@ -135,7 +135,7 @@ export default function Comment({
     setReplying(false);
   }
   return (
-    <div>
+    <div className="pt-3">
       <div className="flex flex-row gap-2 w-full">
         <Avatar src={profilePicture} name={username} size="md" />
         <div className="flex flex-col gap-1 w-full">

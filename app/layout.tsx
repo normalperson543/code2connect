@@ -29,7 +29,6 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
         <NextTopLoader />
-        <Analytics />
         <link
           rel="icon"
           href="/icon?<generated>"

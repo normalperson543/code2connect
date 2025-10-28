@@ -219,7 +219,11 @@ export default function ClusterUI({
         <div className="flex flex-col gap-2 w-2/5 p-4 ml-16 h-full rounded-sm bg-offblue-700 border-r-1 border-offblue-800 text-white shadow-md shadow-offblue-900">
           <AspectRatio ratio={16 / 9}>
             <Image
-              src={thumbnailUrl !== "" ? thumbnailUrl : "/assets/placeholder-thumb.jpg"}
+              src={
+                thumbnailUrl !== ""
+                  ? thumbnailUrl
+                  : "/assets/placeholder-thumb.jpg"
+              }
               height={135}
               width={240}
               alt="Project thumbnail"

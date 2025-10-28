@@ -21,16 +21,11 @@ export default function LogoutButton() {
   return (
     <Menu>
       <Menu.Target>
-        <Button p='xs'>
+        <Button p="xs">
           <ChevronDownIcon width={16} height={16} />
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item
-          leftSection={<AdjustmentsHorizontalIcon width={16} height={16} />}
-        >
-          Settings
-        </Menu.Item>
         <Menu.Item
           leftSection={<ArrowLeftStartOnRectangleIcon width={16} height={16} />}
           c="red"
