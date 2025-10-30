@@ -31,7 +31,6 @@ export default function Comment({
   isCreator = false,
   isReply = false,
   handleDelete,
-  handleReport,
   handleTogglePin,
   handleReply,
   children,
@@ -49,7 +48,6 @@ export default function Comment({
   isWriter?: boolean;
   isReply?: boolean;
   handleDelete: (id: string) => void;
-  handleReport?: (id: string) => void;
   handleTogglePin?: (id: string) => void;
   handleReply: (id: string, replier: string, text: string) => void;
   children?: React.ReactNode;
@@ -73,19 +71,6 @@ export default function Comment({
       labels: { confirm: "Yes, delete", cancel: "Cancel" },
       confirmProps: { color: "red" },
       onConfirm: () => handleDelete(id),
-    });
-  }
-  function reportModal() {
-    modals.openConfirmModal({
-      title: `Report ${username}'s comment?`,
-      children: (
-        <Text size="sm">
-          Are you sure you would like to report {username}&apos;s comment?
-        </Text>
-      ),
-      labels: { confirm: "Yes, report", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: () => handleReport && handleReport(id),
     });
   }
   function pinModal() {
@@ -197,7 +182,8 @@ export default function Comment({
                       <ExclamationTriangleIcon width={16} height={16} />
                     }
                     color="red"
-                    onClick={reportModal}
+                    component={Link}
+                    href={`mailto:octotwelve@hackclub.app?subject=Comment%20Report%3A%20${encodeURIComponent(id)}&body=ID%3A%20${id}.%20Please%20describe%20the%20reason%20why%20you%20are%20reporting%20this%20comment%20below.`}
                   >
                     Report
                   </Menu.Item>

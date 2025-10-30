@@ -423,6 +423,8 @@ export default function ProjectPreviewPageUI({
               <Button
                 leftSection={<ExclamationTriangleIcon width={16} height={16} />}
                 color="red"
+                component={Link}
+                href={`mailto:octotwelve@hackclub.app?subject=Project%20Report%3A%20${encodeURIComponent(title)}&body=ID%3A%20${id}.%20Please%20describe%20the%20reason%20why%20you%20are%20reporting%20this%20project%20below.`}
               >
                 Report
               </Button>
