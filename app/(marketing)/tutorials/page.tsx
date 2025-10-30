@@ -20,8 +20,8 @@ export default function Tutorials() {
           </Title>
           <p>
             Confused on a feature? Want to get started using Code2Connect?
-            You're at the right place. We have guides on Code2Connect that help
-            you get going in no time.
+            You&apos;re at the right place. We have guides on Code2Connect that
+            help you get going in no time.
           </p>
         </div>
       </div>
@@ -31,8 +31,8 @@ export default function Tutorials() {
           <p>Learn how to use the Code2Connect code editor.</p>
           <Title order={3}>File, Edit, and View</Title>
           <p>
-            On the upper left hand of the editor, you'll see three buttons -
-            File, Edit and View. <b>File</b> allows you to create new files
+            On the upper left hand of the editor, you&apos;ll see three buttons
+            - File, Edit and View. <b>File</b> allows you to create new files
             (which will be saved to your computer), create new projects (this
             will not overwrite your changes to the current project), save to the
             cloud immediately, upload files from your computer (which will save
@@ -74,13 +74,13 @@ export default function Tutorials() {
           <Title order={3}>The Output pane</Title>
           <p>
             This is the output of your project code. When you run your project,
-            you'll see the output of your Python code. You can click the
+            you&apos;ll see the output of your Python code. You can click the
             fullscreen button to take your project output fullscreen.
           </p>
           <p>
-            <b>Note that HTML may also be rendered inside the output.</b> Don't
-            click on any links, enter any personal information, or press
-            suspicious buttons inside the output pane.
+            <b>Note that HTML may also be rendered inside the output.</b>{" "}
+            Don&apos;t click on any links, enter any personal information, or
+            press suspicious buttons inside the output pane.
           </p>
           <Title order={3}>Sharing and saving</Title>
           <p>
@@ -96,21 +96,22 @@ export default function Tutorials() {
         <div>
           <Title order={2}>Your first Python code</Title>
           <p>
-            When you create a new project, you'll see that code has already been
-            created for you - <code>print('Hello, World!')</code>. This prints
-            the line "Hello, World!" in the output pane.
+            When you create a new project, you&apos;ll see that code has already
+            been created for you - <code>print(&apos;Hello, World!&apos;)</code>
+            . This prints the line &quot;Hello, World!&quot; in the output pane.
           </p>
           <p>
-            To print something in the output, type <code>print("</code>,
-            followed by the text you want to print, then <code>")</code>.
+            To print something in the output, type <code>print(&quot;</code>,
+            followed by the text you want to print, then <code>&quot;)</code>.
           </p>
         </div>
         <div>
           <Title order={2}>Share your first project</Title>
           <p>
-            First, go to your project page, and click "See Inside to Run". Then,
-            click "Share", and "Publish to the world". Your project will then be
-            visible using the project URL or the search bar.
+            First, go to your project page, and click &quot;See Inside to
+            Run&quot;. Then, click &quot;Share&quot;, and &quot;Publish to the
+            world&quot;. Your project will then be visible using the project URL
+            or the search bar.
           </p>
           <p>
             At any time, you can click the Unshare button inside your project to
@@ -122,7 +123,7 @@ export default function Tutorials() {
           <p>
             You can also add your project to a cluster. Clusters are groups of
             projects under a specific project. To do this, go to your project
-            page, click "Add to cluster", and paste the link to the
+            page, click &quot;Add to cluster&quot;, and paste the link to the
             cluster.{" "}
           </p>
         </div>

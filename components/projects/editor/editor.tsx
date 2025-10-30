@@ -458,7 +458,9 @@ export default function Editor({
     setIsStarting(true);
 
     let session = activeSession;
-    if (moment(new Date()).isAfter(moment(activeSession?.date).add("10", "m"))) {
+    if (
+      moment(new Date()).isAfter(moment(activeSession?.date).add("10", "m"))
+    ) {
       //validate session ID
       const renewedSession = await renewProjectSession(id);
       setActiveSession(renewedSession);

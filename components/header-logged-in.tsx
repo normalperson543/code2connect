@@ -19,7 +19,7 @@ export default function HeaderLoggedIn() {
         </Link>
         <SearchBar />
         <CreateButton />
-        <Button leftSection={<FlagIcon width={16} height={16} />}>
+        <Button leftSection={<FlagIcon width={16} height={16} />} component={Link} href="/tutorials">
           Tutorials
         </Button>
         <Link href="/ideas">
