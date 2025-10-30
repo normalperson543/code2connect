@@ -173,6 +173,18 @@ export default function ProjectPreviewPageUI({
         });
         return;
       }
+      if (!cluster.allowCollab) {
+        notifications.show({
+          position: "top-right",
+          withCloseButton: true,
+          autoClose: false,
+          title: "This cluster doesn't allow adding projects",
+          message: "Please contact the owner of this cluster to add a project.",
+          color: "red",
+          icon: <XMarkIcon />,
+        });
+        return;
+      }
     } catch (e) {
       notifications.show({
         position: "top-right",
