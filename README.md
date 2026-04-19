@@ -1,5 +1,7 @@
 # Code2Connect
 
+This project was submitted for the 2025-2026 Congressional App Challenge
+
 A platform for students to create Python projects right in their browser and share with others across the world
 
 This codebase contains the community site, marketing pages, and IDE. For the Vite app that runs project code, see [this](https://github.com/normalperson543/code2connect-bare-runner) link.
