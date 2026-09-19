@@ -1,8 +1,10 @@
 # Code2Connect
 
+This project was submitted for the 2025-2026 Congressional App Challenge
+
 A platform for students to create Python projects right in their browser and share with others across the world
 
-This codebase contains the community site, marketing pages, and IDE.
+This codebase contains the community site, marketing pages, and IDE. For the Vite app that runs project code, see [this](https://github.com/normalperson543/code2connect-bare-runner) link.
 
 This project uses the Next.js framework with:
 
@@ -18,7 +20,7 @@ You'll need:
 - A Cloudflare R2 bucket and S3-compatible credentials
 - A GitHub OAuth app
 - A Pexels key (for thumbnails)
-- Ideally, the [runner](https://github.com/normalperson543/code2connect-runner) running on your computer
+- Ideally, the [runner](https://github.com/normalperson543/code2connect-bare-runner) running on your computer
 
 First, see the `.env.template` file and copy it to `.env`, then fill in the variables.
 
@@ -54,7 +56,7 @@ bun run build
 
 ## Libraries
 
-Consistent to the CAC Rulesbook, we used the following libraries publicly available on NPM:
+Consistent to the CAC Rulesbook, we used the following libraries publicly available on NPM (based on package.json):
 
 ```
 "@codemirror/autocomplete": "^6.18.6",
@@ -89,7 +91,6 @@ Consistent to the CAC Rulesbook, we used the following libraries publicly availa
 "@uiw/codemirror-theme-basic": "^4.25.2",
 "@uiw/react-codemirror": "^4.24.1",
 "@vercel/analytics": "^1.5.0",
-"@webcontainer/api": "^1.6.1",
 "@xterm/addon-fit": "^0.10.0",
 "@xterm/xterm": "^5.5.0",
 "class-variance-authority": "^0.7.1",
@@ -101,7 +102,6 @@ Consistent to the CAC Rulesbook, we used the following libraries publicly availa
 "embla-carousel-react": "^8.5.2",
 "file-saver": "^2.0.5",
 "jszip": "^3.10.1",
-"lucide-react": "^0.511.0",
 "moment": "^2.30.1",
 "next": "15.5.6",
 "next-themes": "^0.4.6",
