@@ -11,8 +11,8 @@ import {
   isLiked,
 } from "@/app/lib/data";
 import ProjectPreviewPageUI from "@/components/projects/project-preview-page";
-import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 export default async function ProjectPreviewPage({
   params,
@@ -21,9 +21,8 @@ export default async function ProjectPreviewPage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  if (!user.data.user) {
+  const session = await getSession();
+  if (!session?.user) {
     throw new Error("Could not get current user while accessing project.");
   }
 
@@ -31,10 +30,10 @@ export default async function ProjectPreviewPage({
 
   if (!project) notFound();
 
-  const canEditInfo = project.owner?.id === (user.data.user?.id as string);
+  const canEditInfo = project.owner?.id === session.user.id;
   const likes = await getProjectLikes(id);
-  const liked = await isLiked(id, user.data.user?.id as string);
-  const userDb = await getProfile(user.data.user?.id as string);
+  const liked = await isLiked(id, session.user.id);
+  const userDb = await getProfile(session.user.id);
   const projectComments = await getProjectComments(project.id);
 
   async function handleSaveDesc(newDesc: string) {
@@ -65,7 +64,7 @@ export default async function ProjectPreviewPage({
       isLiked={liked}
       handleLike={handleLike}
       isAdmin={userDb?.isAdmin as boolean}
-      currentUserId={user.data.user?.id}
+      currentUserId={session.user.id}
       project={project}
       projectId={project.id}
       currentUsername={userDb?.username as string}

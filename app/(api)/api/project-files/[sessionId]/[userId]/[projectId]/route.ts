@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
+import { listProjectFiles } from "@/lib/storage";
 import moment from "moment";
-import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function GET(
   request: Request,
@@ -11,12 +11,6 @@ export async function GET(
     params: Promise<{ sessionId: string; userId: string; projectId: string }>;
   },
 ) {
-  // This endpoint generates a PyScript compatible configuration that is
-  // loaded with the Code2Connect runner.
-  // PyScript handles all of the downloading of the files.
-
-  const supabase = await createAdminClient();
-
   const { sessionId, userId, projectId } = await params;
   const session = await getProjectSession(sessionId, projectId);
 
@@ -41,25 +35,21 @@ export async function GET(
     );
   }
 
-  const { data: projectFiles } = await supabase.storage
-    .from("projects")
-    .list(`${userId}/${projectId}`);
+  const projectFiles = await listProjectFiles(userId, projectId);
 
-  let pysConfig = {};
-
-  if (!projectFiles) {
+  if (!projectFiles.length) {
     return Response.json({
       packages: [],
     });
   }
+
   const fileUrls = projectFiles.map((file) => [
     `${process.env.DEPLOY_URL}/api/project-files/${sessionId}/${userId}/${projectId}/${file.name}?ts=${Date.now()}`,
     `./${file.name}`,
   ]);
 
-  pysConfig = {
+  return Response.json({
     packages: [],
     files: Object.fromEntries(fileUrls),
-  };
-  return Response.json(pysConfig);
+  });
 }

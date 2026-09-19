@@ -1,19 +1,15 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { BoltIcon } from "@heroicons/react/24/solid";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 import CreateButton from "./create-button";
+import { getSession } from "@/lib/session";
 
 export default async function CreateButtonWrapper() {
-  const supabase = await createClient();
+  const session = await getSession();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  if (!session?.user) {
     return (
       <Button
         leftSection={<BoltIcon width={16} height={16} />}

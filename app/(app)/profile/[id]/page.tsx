@@ -1,5 +1,4 @@
 import ProfileUI from "@/components/profile/profile-ui";
-import { createClient } from "@/lib/supabase/server";
 import {
   getIsFollowing,
   getProfileReceivedComments,
@@ -12,6 +11,7 @@ import {
 import { getProfileFollowInfo } from "@/app/lib/data";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getSession } from "@/lib/session";
 
 export async function generateMetadata({
   params,
@@ -35,11 +35,9 @@ export default async function Profile({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const session = await getSession();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = session?.user;
   const profileAccessed = await cachedGetProfileWithUsername(id);
   if (!profileAccessed) notFound();
   const followInfo = await getProfileFollowInfo(id);
@@ -50,8 +48,8 @@ export default async function Profile({
   let isFollowing = false;
   let currentProfile;
   if (user && user.id) {
-    isFollowing = await getIsFollowing(id, user?.id as string);
-    currentProfile = await getProfile(user?.id as string);
+    isFollowing = await getIsFollowing(id, user.id);
+    currentProfile = await getProfile(user.id);
   }
 
   if (profileAccessed) {
