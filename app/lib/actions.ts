@@ -302,6 +302,7 @@ export async function saveProjectFiles(
 
   const fileEntries = Object.entries(files);
   await Promise.all(
+    //eslint-disable-next-line
     fileEntries.map(([_, file]) =>
       uploadProjectFile(userId, projectId, file.name, file.contents),
     ),
