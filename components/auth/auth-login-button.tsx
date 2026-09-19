@@ -1,20 +1,18 @@
 "use server";
+
 import Link from "next/link";
 import { Avatar, Button } from "@mantine/core";
-import { createClient } from "@/lib/supabase/server";
 import AuthLogoutButton from "./auth-logout-button";
 import {
   ArrowRightStartOnRectangleIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import { getProfile } from "@/app/lib/data";
+import { getSession } from "@/lib/session";
 
 export default async function AuthButton() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getSession();
+  const user = session?.user;
 
   const profile = user ? await getProfile(user.id) : null;
 

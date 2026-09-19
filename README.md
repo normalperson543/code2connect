@@ -4,34 +4,52 @@ A platform for students to create Python projects right in their browser and sha
 
 This codebase contains the community site, marketing pages, and IDE.
 
-This project uses the Next.js framework and Supabase as the backend.
+This project uses the Next.js framework with:
+
+- **Better Auth** for GitHub authentication
+- **Neon Postgres** as the database
+- **Cloudflare R2** for project file storage
 
 ## Run locally
 
 You'll need:
 
-- A Supabase project
+- A Neon Postgres project
+- A Cloudflare R2 bucket and S3-compatible credentials
+- A GitHub OAuth app
 - A Pexels key (for thumbnails)
 - Ideally, the [runner](https://github.com/normalperson543/code2connect-runner) running on your computer
 
-First, see the `.env.local.template` file and rename it to `.env.local`, and change the variables accordingly.
+First, see the `.env.template` file and copy it to `.env`, then fill in the variables.
 
 Install dependencies:
 
 ```
-pnpm i
+bun install
 ```
 
 Then run the development server:
 
 ```
-pnpm run dev
+bun run dev
 ```
+
+## Migrating from the old Supabase backend
+
+1. Provision a Neon Postgres database and a Cloudflare R2 bucket.
+2. Copy `.env.template` to `.env` and fill in `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and the `R2_*` variables.
+3. Migrate your app data to Neon (e.g. with `pg_dump` / `pg_restore`).
+4. Run `bun x prisma migrate dev` to add the Better Auth tables.
+5. Migrate existing Supabase auth users so project ownership is preserved:
+   - Set `SUPABASE_MIGRATION_DATABASE_URL` to your old Supabase Postgres URL.
+   - Run `bun run scripts/migrate-supabase-auth-users.ts`.
+6. Configure your GitHub OAuth app callback URL to `https://your-domain.com/api/auth/callback/github`.
+7. Deploy to Vercel.
 
 ## Building
 
 ```
-pnpm build
+bun run build
 ```
 
 ## Libraries
@@ -64,9 +82,10 @@ Consistent to the CAC Rulesbook, we used the following libraries publicly availa
 "@radix-ui/react-dropdown-menu": "^2.1.14",
 "@radix-ui/react-label": "^2.1.6",
 "@radix-ui/react-slot": "^1.2.2",
+"@aws-sdk/client-s3": "^3.750.0",
+"@better-auth/prisma-adapter": "^1.1.0",
 "@react-spring/web": "^10.0.1",
-"@supabase/ssr": "latest",
-"@supabase/supabase-js": "latest",
+"better-auth": "^1.1.0",
 "@uiw/codemirror-theme-basic": "^4.25.2",
 "@uiw/react-codemirror": "^4.24.1",
 "@vercel/analytics": "^1.5.0",

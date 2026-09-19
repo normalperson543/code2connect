@@ -64,7 +64,7 @@ import CtrlCmd from "../../ctrl-cmd";
 import { openSearchPanel } from "@codemirror/search";
 import StoppedProject from "../../stopped-project";
 import { useDisclosure, useForceUpdate } from "@mantine/hooks";
-import { createClient } from "@/lib/supabase/client";
+import { useSession } from "@/lib/auth-client";
 import { ProjectSessionToken } from "@prisma/client";
 import {
   getFileUrl,
@@ -80,7 +80,9 @@ import RenameProjectModal from "@/components/modals/rename-project-modal";
 import {
   changeDescription,
   createProject,
+  deleteProjectFileAction,
   renameProject,
+  saveProjectFiles,
   setThumbnail,
   shareProject,
   unshareProject,
@@ -161,11 +163,11 @@ export default function Editor({
 
   let frameSrc = "";
 
-  const supabase = createClient();
+  const { data: authSession } = useSession();
 
   async function loadFiles() {
     const session = await syncSession();
-    const userId = (await supabase.auth.getUser()).data.user?.id;
+    const userId = authSession?.user?.id;
 
     const fileArr: (
       | string
@@ -210,16 +212,8 @@ export default function Editor({
   }
   async function handleDelete(file: FileInfo) {
     if (!canEditInfo) return;
-    const userId = (await supabase.auth.getUser()).data.user?.id;
     try {
-      const supabase = await createClient();
-      const err = await supabase.storage
-        .from("projects")
-        .remove([`${userId}/${id}/${file.name}`]);
-      if (err.error) {
-        console.error(err);
-        saveError(err.error?.message as string);
-      }
+      await deleteProjectFileAction(id, file.name);
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
@@ -252,20 +246,9 @@ export default function Editor({
   async function handleSave() {
     if (!canEditInfo) return;
     setIsSaving(true);
-    const userId = (await supabase.auth.getUser()).data.user?.id;
 
     try {
-      const fileArr = Object.entries(files);
-      fileArr.forEach(async (file) => {
-        const err = await supabase.storage
-          .from("projects")
-          .upload(`/${userId}/${id}/${file[1].name}`, file[1].contents, {
-            upsert: true,
-          });
-        if (err.error) {
-          saveError(err.error?.message as string);
-        }
-      });
+      await saveProjectFiles(id, files);
       notifications.clean();
       setIsChanged(false);
       setLastSave(new Date());

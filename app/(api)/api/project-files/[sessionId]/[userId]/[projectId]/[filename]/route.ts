@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/db";
 import { getProjectSession } from "@/app/lib/data";
+import { getProjectFileContent } from "@/lib/storage";
 import moment from "moment";
-import { createAdminClient } from "@/lib/supabase/server-admin";
 
 export async function GET(
   request: Request,
@@ -16,8 +16,6 @@ export async function GET(
     }>;
   },
 ) {
-  const supabase = await createAdminClient();
-
   const { sessionId, userId, projectId, filename } = await params;
 
   const session = await getProjectSession(sessionId, projectId);
@@ -43,12 +41,8 @@ export async function GET(
     );
   }
 
-  const { data: dataUrl } = supabase.storage
-    .from("projects")
-    .getPublicUrl(`/${userId}/${projectId}/${filename}`);
-  const fetched = await fetch(`${dataUrl.publicUrl}?t=${Date.now()}`, {
-    cache: "no-store",
+  const content = await getProjectFileContent(userId, projectId, filename);
+  return new Response(content, {
+    headers: { "Content-Type": "text/plain" },
   });
-
-  return new Response(await fetched.blob());
 }

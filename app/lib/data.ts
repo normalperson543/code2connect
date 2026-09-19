@@ -1,7 +1,10 @@
 "use server";
 import prisma from "./db";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/server-admin";
+import { getSession } from "@/lib/session";
+import {
+  listProjectFiles,
+  getProjectFileUrl,
+} from "@/lib/storage";
 import { createClient as createPexelsClient } from "pexels";
 import { cache } from "react";
 export async function getFirstProjectSession(projectId: string) {
@@ -49,16 +52,12 @@ export async function getProjectFiles(
   id: string,
   isPublic: boolean,
 ) {
-  const supabaseAdmin = await createAdminClient();
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const authUserId = user.data.user?.id;
+  const session = await getSession();
+  const authUserId = session?.user?.id;
 
   if (userId === authUserId || isPublic) {
-    const list = await supabaseAdmin.storage
-      .from("projects")
-      .list(`${userId}/${id}`);
-    return list;
+    const files = await listProjectFiles(userId, id);
+    return { data: files };
   }
   return;
 }
@@ -66,9 +65,8 @@ export async function canAccessProject(
   isPublic: boolean | undefined | null,
   ownerId: string | undefined | null,
 ) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const authUserId = user.data.user?.id;
+  const session = await getSession();
+  const authUserId = session?.user?.id;
 
   if (isPublic || ownerId === authUserId) {
     return true;
@@ -271,18 +269,9 @@ export async function getIsFollowing(
 }
 
 export async function getProfileProjects(profileId: string) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const authUserId = user.data.user?.id;
+  const session = await getSession();
+  const authUserId = session?.user?.id;
 
-  /*const projects = await prisma.profile.findUnique({
-    where: {
-      username: profileUsername
-    },
-    include: {
-      projects: true,
-    }
-  })*/
   if (authUserId === profileId) {
     const projects = await prisma.project.findMany({
       where: {
@@ -386,16 +375,12 @@ export async function getFileUrl(
   fileName: string,
   isPublic: boolean,
 ) {
-  const supabaseAdmin = await createAdminClient();
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const authUserId = user.data.user?.id;
+  const session = await getSession();
+  const authUserId = session?.user?.id;
 
   if (userId === authUserId || isPublic) {
-    const { data: dataUrl } = supabaseAdmin.storage
-      .from("projects")
-      .getPublicUrl(`/${userId}/${projectId}/${fileName}`);
-    return dataUrl;
+    const url = await getProjectFileUrl(userId, projectId, fileName);
+    return { publicUrl: url };
   }
   return;
 }

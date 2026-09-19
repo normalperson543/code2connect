@@ -9,12 +9,12 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+COPY package.json bun.lock* .npmrc* ./
 COPY /prisma /app/
 COPY .env /app/
 
-RUN \
-  corepack enable pnpm && pnpm i --frozen-lockfile;
+RUN npm install -g bun@1.1.0 && \
+  bun install --frozen-lockfile;
 
 
 # Rebuild the source code only when needed
@@ -36,12 +36,7 @@ COPY eslint.config.mjs /app/
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN bun run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
