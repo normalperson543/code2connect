@@ -371,15 +371,13 @@ export async function countSearchProjects(query: string) {
 }
 export async function getFileUrl(
   userId: string,
-  projectId: string,
-  fileName: string,
   isPublic: boolean,
 ) {
   const session = await getSession();
   const authUserId = session?.user?.id;
 
   if (userId === authUserId || isPublic) {
-    const url = await getProjectFileUrl(userId, projectId, fileName);
+    const url = await getProjectFileUrl();
     return { publicUrl: url };
   }
   return;

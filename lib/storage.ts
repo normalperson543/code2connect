@@ -72,11 +72,7 @@ export async function listProjectFiles(userId: string, projectId: string) {
   }
 }
 
-export async function getProjectFileUrl(
-  _userId: string,
-  _projectId: string,
-  _fileName: string,
-) {
+export async function getProjectFileUrl() {
   // Files are private and served through the session-token-protected /api/project-files route.
   // This helper is kept for compatibility with the old Supabase storage API shape.
   return "";

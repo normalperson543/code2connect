@@ -187,12 +187,7 @@ export default function Editor({
     if (!projectFiles || projectFiles.length === 0) setFilesLoaded(true);
     projectFiles?.forEach(async (file) => {
       if (!(file.name === ".emptyFolderPlaceholder")) {
-        const dataUrl = await getFileUrl(
-          userId as string,
-          id,
-          file.name,
-          isPublic,
-        );
+        const dataUrl = await getFileUrl(userId as string, isPublic);
         if (!dataUrl) return;
         const fileContents = await fetch(
           `/api/project-files/${session?.id}/${creatorId}/${id}/${file.name}?cache=${Math.random()}`,
