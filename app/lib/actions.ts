@@ -2,17 +2,22 @@
 
 import { redirect } from "next/navigation";
 import prisma from "./db";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/session";
 import { canAccessProject, getProject } from "./data";
 import { revalidatePath } from "next/cache";
 import { words } from "./words";
-import { createAdminClient } from "@/lib/supabase/server-admin";
+import {
+  copyProjectFile,
+  deleteProjectFile,
+  listProjectFiles,
+  uploadProjectFile,
+} from "@/lib/storage";
 
 export async function createProject() {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth/login");
   }
 
@@ -22,24 +27,24 @@ export async function createProject() {
       title: title,
       owner: {
         connect: {
-          id: user.data.user?.id,
+          id: userId,
         },
       },
     },
   });
-  await supabase.storage
-    .from("projects")
-    .upload(
-      `/${user.data.user?.id}/${project.id}/main.py`,
-      "print('Hello, World!')",
-    );
+  await uploadProjectFile(
+    userId,
+    project.id,
+    "main.py",
+    "print('Hello, World!')",
+  );
   redirect(`/projects/${project.id}/editor`);
 }
 export async function createCluster() {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth/login");
   }
 
@@ -49,7 +54,7 @@ export async function createCluster() {
       title: title,
       owner: {
         connect: {
-          id: user.data.user?.id,
+          id: userId,
         },
       },
     },
@@ -85,11 +90,10 @@ export async function createAccount(username: string, userId: string) {
   return user;
 }
 export async function fork(projectId: string) {
-  const supabaseAdmin = await createAdminClient();
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth/login");
   }
 
@@ -107,22 +111,21 @@ export async function fork(projectId: string) {
       },
       owner: {
         connect: {
-          id: user.data.user?.id,
+          id: userId,
         },
       },
     },
   });
-  const { data: projectFiles } = await supabaseAdmin.storage
-    .from("projects")
-    .list(`${old.owner?.id}/${old.id}`);
+  const projectFiles = await listProjectFiles(
+    old.owner?.id as string,
+    old.id,
+  );
   if (projectFiles) {
     for (const file of projectFiles) {
-      await supabaseAdmin.storage
-        .from("projects")
-        .copy(
-          `${old.owner?.id as string}/${old.id}/${file.name}`,
-          `${user.data.user?.id}/${project.id}/${file.name}`,
-        );
+      await copyProjectFile(
+        `${old.owner?.id as string}/${old.id}/${file.name}`,
+        `${userId}/${project.id}/${file.name}`,
+      );
     }
   }
   redirect(`/projects/${project.id}/editor`);
@@ -286,6 +289,44 @@ export async function deleteProject(id: string, profileName: string) {
   redirect(`/profile/${profileName}`);
 }
 
+export async function saveProjectFiles(
+  projectId: string,
+  files: Record<string, { name: string; contents: string }>,
+) {
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
+
+  const fileEntries = Object.entries(files);
+  await Promise.all(
+    fileEntries.map(([_, file]) =>
+      uploadProjectFile(userId, projectId, file.name, file.contents),
+    ),
+  );
+
+  await prisma.project.update({
+    where: { id: projectId },
+    data: { dateModified: new Date() },
+  });
+}
+
+export async function deleteProjectFileAction(
+  projectId: string,
+  fileName: string,
+) {
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
+
+  await deleteProjectFile(userId, projectId, fileName);
+}
+
 export async function changeDescription(id: string, desc: string) {
   return await prisma.project.update({
     where: {
@@ -423,35 +464,48 @@ export async function deleteProfileCommentReply(replyId: string) {
   return reply;
 }
 export async function incrementLikes(projectId: string) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
 
   await prisma.like.create({
     data: {
       projectId: projectId,
-      profileId: user.data.user?.id as string,
+      profileId: userId,
     },
   });
   revalidatePath(`/projects/${projectId}`);
 }
 export async function decrementLikes(projectId: string) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
 
   await prisma.like.delete({
     where: {
       likeId: {
         projectId: projectId,
-        profileId: user.data.user?.id as string,
+        profileId: userId,
       },
     },
   });
 }
 export async function feature(projectId: string) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
+
   const userDb = await prisma.profile.findUnique({
-    where: { id: user.data.user?.id as string },
+    where: { id: userId },
   });
 
   if (!userDb || !userDb.isAdmin) return;
@@ -468,10 +522,15 @@ export async function feature(projectId: string) {
   return project;
 }
 export async function unfeature(projectId: string) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect("/auth/login");
+  }
+
   const userDb = await prisma.profile.findUnique({
-    where: { id: user.data.user?.id as string },
+    where: { id: userId },
   });
 
   if (!userDb || !userDb.isAdmin) return;

@@ -1,7 +1,7 @@
 import { getCluster, getProfile, isClusterFollower } from "@/app/lib/data";
 import ClusterUI from "@/components/clusters/cluster-ui";
-import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 export default async function Cluster({
   params,
@@ -12,23 +12,20 @@ export default async function Cluster({
   const cluster = await getCluster(id);
   if (!cluster) notFound();
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login");
+  const session = await getSession();
+  if (!session?.user) redirect("/auth/login");
 
-  const userDb = await getProfile(user.id as string);
+  const userDb = await getProfile(session.user.id);
   let canEditInfo = false;
   let isFollower = false;
   let isAdmin = false;
-  if (user && user.id) {
-    const currentProfile = await getProfile(user?.id as string);
+  if (session.user?.id) {
+    const currentProfile = await getProfile(session.user.id);
     if (currentProfile) {
       isAdmin = currentProfile.isAdmin;
     }
-    canEditInfo = cluster.owner?.id === (user?.id as string) || isAdmin;
-    isFollower = await isClusterFollower(user.id, id);
+    canEditInfo = cluster.owner?.id === session.user.id || isAdmin;
+    isFollower = await isClusterFollower(session.user.id, id);
   }
 
   return (
@@ -45,7 +42,7 @@ export default async function Cluster({
       followers={cluster.followers}
       allowCollab={cluster.allowCollab}
       canEdit={canEditInfo}
-      currentUser={user?.id}
+      currentUser={session.user.id}
       comments={cluster.comments}
       cluster={cluster}
       currentUsername={userDb?.username as string}

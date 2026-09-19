@@ -1,9 +1,5 @@
-import { SignUpForm } from "@/components/sign-up-form";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return (
-    <div className="flex w-full h-full items-center justify-center ">
-      <SignUpForm />
-    </div>
-  );
+  redirect("/auth/login");
 }

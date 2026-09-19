@@ -5,17 +5,16 @@ import {
   getIotm,
   getTopLiked,
 } from "../lib/data";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/session";
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const authUserId = user.data.user?.id;
+  const session = await getSession();
+  const authUserId = session?.user?.id;
 
   const featured = await getFeatured();
   const topLiked = await getTopLiked();
 
-  if (!user || !authUserId)
+  if (!session?.user || !authUserId)
     return <Home featured={featured} topLiked={topLiked} />;
 
   const profile = await getHomeProfileInfo(authUserId);
